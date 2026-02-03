@@ -1,0 +1,7 @@
+export { HeroSection } from './HeroSection'
+export { AdministrativeValueSection } from './AdministrativeValueSection'
+export { DifferentiationSection } from './DifferentiationSection'
+export { HowItWorksSection } from './HowItWorksSection'
+export { ForProfessionalsSection } from './ForProfessionalsSection'
+export { CTASection } from './CTASection'
+export { FAQSection } from './FAQSection'

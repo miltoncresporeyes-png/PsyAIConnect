@@ -1,0 +1,33 @@
+
+> psyconnect@0.1.0 lint
+> next lint
+
+
+./src/app/dashboard/citas/page.tsx
+65:8  Warning: React Hook useEffect has a missing dependency: 'fetchAppointments'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/dashboard/disponibilidad/page.tsx
+49:8  Warning: React Hook useEffect has a missing dependency: 'fetchAvailability'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/dashboard/pacientes/[id]/page.tsx
+66:8  Warning: React Hook useEffect has a missing dependency: 'fetchPatientData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/privacidad/page.tsx
+131:48  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+131:63  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/app/reservar/[slug]/page.tsx
+72:8  Warning: React Hook useEffect has a missing dependency: 'fetchProfessional'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/terminos/page.tsx
+24:63  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+24:77  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/ui/ComunaAutocomplete.tsx
+194:69  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+194:82  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/ui/PhoneInput.tsx
+58:8  Warning: React Hook useEffect has a missing dependency: 'value'. Either include it or remove the dependency array. If 'setPhoneNumber' needs the current value of 'value', you can also switch to useReducer instead of useState and read 'value' in the reducer.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

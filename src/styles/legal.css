@@ -1,0 +1,298 @@
+/* ============================================
+   PsyConnect Legal Documents - Architecture v2.0
+   Design: Two-column Fixed Sidebar Layout (30/70 split)
+   Focus: Alignment, Readability, Professional Trust
+   ============================================ */
+
+/* === RESET & BASE === */
+:root {
+    --legal-sidebar-width: 300px;
+    --legal-content-max-width: 900px;
+    --legal-gap: 4rem;
+    --color-primary-teal: #0f766e;
+    /* Teal-700 */
+    --color-text-main: #1f2937;
+    /* Gray-800 */
+    --color-text-body: #4b5563;
+    /* Gray-600 */
+    --color-border: #e5e7eb;
+}
+
+/* === LAYOUT ARCHITECTURE === */
+/* Main Grid - Strict alignment */
+.legal-layout {
+    display: grid;
+    grid-template-columns: var(--legal-sidebar-width) 1fr;
+    gap: var(--legal-gap);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    min-height: 100vh;
+    align-items: start;
+    /* CRITICAL: Ensures sidebar and content start at exact same pixel Y */
+    position: relative;
+    background-color: #ffffff;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .legal-layout {
+        display: block;
+        /* Collapse grid */
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* === COLUMN 1: SIDEBAR (TOC) === */
+.legal-toc-sidebar {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    padding-right: 1.5rem;
+    /* Clean look: No border, no background */
+}
+
+@media (max-width: 1024px) {
+    .legal-toc-sidebar {
+        position: relative;
+        top: 0;
+        max-height: none;
+        width: 100%;
+        margin-bottom: 3rem;
+        padding-right: 0;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 1.5rem;
+    }
+}
+
+.legal-toc-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: #9ca3af;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.legal-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.legal-toc-link {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    /* Fixed width for numbers ensures alignment */
+    align-items: baseline;
+    text-decoration: none;
+    color: #4b5563;
+    font-size: 0.95rem;
+    /* 15px */
+    line-height: 1.5;
+    transition: all 0.2s ease;
+}
+
+.legal-toc-number {
+    font-weight: 700;
+    color: #111827;
+}
+
+.legal-toc-link:hover {
+    color: var(--color-primary-teal);
+}
+
+.legal-toc-link:hover .legal-toc-number {
+    color: var(--color-primary-teal);
+}
+
+/* === COLUMN 2: MAIN CONTENT === */
+.legal-container {
+    padding: 0;
+    margin: 0;
+    /* Remove any top padding here to ensure alignment with sidebar */
+}
+
+/* Wrapper for readable width within the column */
+.legal-wrapper {
+    max-width: var(--legal-content-max-width);
+    margin: 0;
+    /* Align left within the column */
+}
+
+/* Header Typography */
+.legal-title {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 2rem;
+    /* Reduced from 2.5rem (40px) -> 32px */
+    line-height: 1.2;
+    font-weight: 800;
+    color: var(--color-primary-teal);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.legal-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8125rem;
+    /* Reduced from 0.875rem -> 13px */
+    color: #6b7280;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Content Typography */
+.legal-content {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    color: var(--color-text-body);
+}
+
+/* Section Titles (1º, 2º...) */
+.legal-section-title {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1.25rem;
+    /* Reduced from 1.5rem (24px) -> 20px */
+    font-weight: 700;
+    color: #111827;
+    margin-top: 2.5rem;
+    /* Reduced spacing */
+    margin-bottom: 1rem;
+    scroll-margin-top: 2rem;
+}
+
+.legal-section-title:first-child {
+    margin-top: 0;
+}
+
+.legal-subsection-title {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1.0625rem;
+    /* Reduced from 1.25rem -> 17px */
+    font-weight: 600;
+    color: #374151;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.legal-paragraph {
+    font-size: 0.9375rem;
+    /* Reduced from 1.0625rem (17px) -> 15px */
+    line-height: 1.6;
+    /* Reduced from 1.75 */
+    margin-bottom: 1.25rem;
+    text-align: justify;
+}
+
+/* Lists */
+.legal-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.legal-list-item {
+    position: relative;
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    /* Matching paragraph size 15px */
+    line-height: 1.5;
+    color: var(--color-text-body);
+}
+
+.legal-list-item::before {
+    content: "•";
+    position: absolute;
+    left: 0.25rem;
+    color: var(--color-primary-teal);
+    font-weight: bold;
+}
+
+/* Tables */
+.legal-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.legal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: system-ui, sans-serif;
+}
+
+.legal-table th {
+    background-color: #f9fafb;
+    text-align: left;
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.legal-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.legal-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Utilities */
+.legal-link {
+    color: var(--color-primary-teal);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(15, 118, 110, 0.2);
+    transition: all 0.2s;
+}
+
+.legal-link:hover {
+    text-decoration-color: var(--color-primary-teal);
+    color: #134e4a;
+}
+
+/* Footer & Disclaimers */
+.legal-footer {
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.legal-footer-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* Alerts */
+.legal-alert {
+    background: #f8fafc;
+    border-left: 4px solid var(--color-primary-teal);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.legal-alert-warning {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}

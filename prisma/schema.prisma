@@ -1,0 +1,639 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model EmailVerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expires   DateTime
+  attempts  Int      @default(0)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([email, code])
+  @@index([email])
+}
+
+model User {
+  id                    String          @id @default(cuid())
+  email                 String          @unique
+  emailVerified         DateTime?
+  name                  String?
+  password              String?
+  phone                 String?
+  image                 String?
+  role                  UserRole        @default(PATIENT)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  profileCompleted      Boolean         @default(false)
+  accounts              Account[]
+  appointmentsAsPatient Appointment[]   @relation("PatientAppointments")
+  consents              ConsentLog[]
+  patientProfile        PatientProfile?
+  professional          Professional?
+  sessions              Session[]
+  waitlistEntry         WaitlistEntry?
+  reimbursementRequests ReimbursementRequest[]
+}
+
+model PatientProfile {
+  id                     String                        @id @default(cuid())
+  userId                 String                        @unique
+  birthDate              DateTime?
+  gender                 Gender?
+  region                 String?
+  comuna                 String?
+  occupation             String?
+  occupationStatus       OccupationStatus?
+  maritalStatus          MaritalStatus?
+  hasChildren            Boolean?
+  healthSystem           HealthSystem?
+  previousTherapy        Boolean?
+  consultationReason     String?
+  interestAreas          String[]
+  modalityPreference     ModalityPreference?
+  professionalGenderPref ProfessionalGenderPreference?
+  createdAt              DateTime                      @default(now())
+  updatedAt              DateTime                      @updatedAt
+  emergencyContact       EmergencyContact?
+  coverage               PatientCoverage?
+  user                   User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmergencyContact {
+  id               String                @id @default(cuid())
+  patientProfileId String                @unique
+  name             String
+  relationship     EmergencyRelationship
+  phone            String
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  patientProfile   PatientProfile        @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+}
+
+model Professional {
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  professionalType       ProfessionalType
+  licenseNumber          String?
+  bio                    String?
+  slug                   String             @unique
+  specialties            String[]
+  modality               Modality           @default(BOTH)
+  sessionPrice           Int
+  sessionDuration        Int                @default(50)
+  profileImageUrl        String?
+  verificationStatus     VerificationStatus @default(PENDING)
+  verifiedAt             DateTime?
+  subscriptionTier       SubscriptionTier   @default(STARTER)
+  subscriptionEnds       DateTime?
+  isActive               Boolean            @default(true)
+  isPublic               Boolean            @default(false)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  comuna                 String?
+  officeAddress          String?
+  region                 String?
+  acceptedPaymentMethods String[]
+  linkedinUrl            String?
+  // UX Redesign: Human-centered fields
+  targetAudience         String?   // "Para quién suele ser útil"
+  approachDescription    String?   // "Cómo acompaña"
+  yearsExperience        Int?      // Años de experiencia
+  firstSessionInfo       String?   // Info sobre primera sesión
+  appointments           Appointment[]                   @relation("ProfessionalAppointments")
+  availability           Availability[]
+  clinicalNotes          ClinicalNote[]
+  isapreConvenios        ProfessionalIsapreConvenio[]
+  fonasaAcceptance       ProfessionalFonasaAcceptance[]
+  monthlyReports         MonthlyReport[]
+  user                   User                            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Availability {
+  id             String       @id @default(cuid())
+  professionalId String
+  dayOfWeek      Int
+  startTime      String
+  endTime        String
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@unique([professionalId, dayOfWeek, startTime])
+}
+
+model Appointment {
+  id                 String            @id @default(cuid())
+  patientId          String
+  professionalId     String
+  scheduledAt        DateTime
+  duration           Int
+  modality           Modality
+  status             AppointmentStatus @default(PENDING)
+  videoLink          String?
+  consultationReason String?
+  cancelledAt        DateTime?
+  cancelledBy        String?
+  cancellationReason String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  patient            User              @relation("PatientAppointments", fields: [patientId], references: [id])
+  professional       Professional      @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+  clinicalNotes      ClinicalNote[]
+  payment            Payment?
+  invoice            Invoice?
+  reimbursementRequestId String?
+  reimbursementRequest   ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  appointmentId String        @unique
+  amount        Int
+  commission    Int
+  netAmount     Int
+  status        PaymentStatus @default(PENDING)
+  flowToken     String?
+  flowOrderId   String?
+  paidAt        DateTime?
+  refundedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+}
+
+model ClinicalNote {
+  id                    String       @id @default(cuid())
+  appointmentId         String
+  professionalId        String
+  encryptedContent      Bytes?
+  deletedAt             DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  encryptedIndicaciones Bytes?
+  appointment           Appointment  @relation(fields: [appointmentId], references: [id])
+  professional          Professional @relation(fields: [professionalId], references: [id])
+}
+
+model ConsentLog {
+  id              String      @id @default(cuid())
+  userId          String
+  consentType     ConsentType
+  consentVersion  String
+  consentTextHash String
+  granted         Boolean
+  grantedAt       DateTime    @default(now())
+  ipAddress       String?
+  userAgent       String?
+  revokedAt       DateTime?
+  revokedReason   String?
+  user            User        @relation(fields: [userId], references: [id])
+}
+
+model WaitlistEntry {
+  id         String       @id @default(cuid())
+  email      String       @unique
+  name       String?
+  type       WaitlistType @default(PATIENT)
+  profession String?
+  source     String?
+  userId     String?      @unique
+  createdAt  DateTime     @default(now())
+  user       User?        @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  PATIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  OTHER
+  PREFER_NOT_SAY
+}
+
+enum OccupationStatus {
+  EMPLOYED
+  SELF_EMPLOYED
+  STUDENT
+  UNEMPLOYED
+  RETIRED
+  HOMEMAKER
+}
+
+enum MaritalStatus {
+  SINGLE
+  IN_RELATIONSHIP
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum HealthSystem {
+  FONASA
+  ISAPRE
+  PRIVATE
+  NONE
+}
+
+enum ModalityPreference {
+  ONLINE
+  IN_PERSON
+  BOTH
+}
+
+enum ProfessionalGenderPreference {
+  MALE
+  FEMALE
+  NO_PREFERENCE
+}
+
+enum EmergencyRelationship {
+  FAMILY
+  PARTNER
+  FRIEND
+  OTHER
+}
+
+enum ProfessionalType {
+  PSYCHOLOGIST
+  PSYCHIATRIST
+  CLINICAL_PSYCHOLOGIST
+  THERAPIST
+  COUNSELOR
+  OTHER
+}
+
+enum Modality {
+  ONLINE
+  IN_PERSON
+  BOTH
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum SubscriptionTier {
+  STARTER
+  PRO
+  PREMIUM
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+enum ConsentType {
+  TERMS_OF_SERVICE
+  PRIVACY_POLICY
+  CLINICAL_CONSENT
+  DATA_SHARING
+}
+
+enum WaitlistType {
+  PATIENT
+  PROFESSIONAL
+}
+
+// ============================================
+// SISTEMA DE MATCHING POR PREVISIÓN
+// ============================================
+
+// Catálogo de Isapres en Chile
+model Isapre {
+  id                  String                         @id @default(cuid())
+  code                String                         @unique
+  name                String
+  legalName           String
+  rut                 String                         @unique
+  isActive            Boolean                        @default(true)
+  createdAt           DateTime                       @default(now())
+  updatedAt           DateTime                       @updatedAt
+  
+  professionalConvenios ProfessionalIsapreConvenio[]
+  patientCoverages    PatientCoverage[]
+  reimbursementRequests ReimbursementRequest[]
+  
+  @@index([code])
+  @@index([isActive])
+}
+
+// Planes de Fonasa
+model FonasaTramo {
+  id                  String                         @id @default(cuid())
+  tramo               String                         @unique
+  name                String
+  description         String?
+  copaymentPercentage Int
+  isActive            Boolean                        @default(true)
+  
+  professionalAcceptance ProfessionalFonasaAcceptance[]
+  patientCoverages    PatientCoverage[]
+}
+
+// Convenios con Isapres que acepta el profesional
+model ProfessionalIsapreConvenio {
+  id                  String       @id @default(cuid())
+  professionalId      String
+  isapreId            String
+  
+  acceptsBono         Boolean      @default(false)
+  acceptsReembolso    Boolean      @default(false)
+  
+  convenioCode        String?
+  prestacionCode      String?
+  bonoAmount          Int?
+  copaymentAmount     Int?
+  
+  reembolsoPercentage Int?
+  
+  isActive            Boolean      @default(true)
+  validFrom           DateTime?
+  validUntil          DateTime?
+  notes               String?
+  
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  
+  professional        Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  isapre              Isapre       @relation(fields: [isapreId], references: [id])
+  
+  @@unique([professionalId, isapreId])
+  @@index([professionalId])
+  @@index([isapreId])
+  @@index([isActive])
+}
+
+// Aceptación de Fonasa por el profesional
+model ProfessionalFonasaAcceptance {
+  id                  String       @id @default(cuid())
+  professionalId      String
+  fonasaTramoId       String
+  
+  acceptsMLE          Boolean      @default(false)
+  acceptsBonoArancel  Boolean      @default(false)
+  
+  bonoLevel           String?
+  bonoAmount          Int?
+  copaymentPercentage Int?
+  
+  isActive            Boolean      @default(true)
+  notes               String?
+  
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  
+  professional        Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  fonasaTramo         FonasaTramo  @relation(fields: [fonasaTramoId], references: [id])
+  
+  @@unique([professionalId, fonasaTramoId])
+  @@index([professionalId])
+  @@index([fonasaTramoId])
+}
+
+// Cobertura del paciente
+model PatientCoverage {
+  id                  String           @id @default(cuid())
+  patientProfileId    String           @unique
+  
+  healthSystem        HealthSystem
+  
+  isapreId            String?
+  isapre              Isapre?          @relation(fields: [isapreId], references: [id])
+  isaprePlan          String?
+  hasBonoIMED         Boolean          @default(false)
+  
+  fonasaTramoId       String?
+  fonasaTramo         FonasaTramo?     @relation(fields: [fonasaTramoId], references: [id])
+  
+  credentialNumber    String?
+  validUntil          DateTime?
+  
+  isVerified          Boolean          @default(false)
+  verifiedAt          DateTime?
+  verificationMethod  String?
+  
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  
+  patientProfile      PatientProfile   @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+  
+  @@index([isapreId])
+  @@index([fonasaTramoId])
+  @@index([healthSystem])
+}
+
+// ============================================
+// NOTA: SQLite no soporta ENUMs nativos
+// Los siguientes campos usan String con validación en código:
+//
+// FonasaBonoLevel (valores: "NIVEL_1", "NIVEL_2", "NIVEL_3")
+// PaymentMethod (valores: "BONO_IMED", "REEMBOLSO", "BONO_FONASA", "COPAGO", "PRIVATE")
+// ============================================
+
+// ============================================
+// REPORTES Y FACTURACIÓN
+// ============================================
+
+// Reporte mensual consolidado del profesional
+model MonthlyReport {
+  id                String   @id @default(cuid())
+  professionalId    String
+  professional      Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  
+  // Período del reporte
+  year              Int
+  month             Int      // 1-12
+  generatedAt       DateTime @default(now())
+  
+  // Resumen Financiero
+  totalSessions     Int
+  totalBrut         Int      // Total bruto acumulado
+  totalSiiRetention Int      // 15.25% del bruto
+  totalCommission   Int      // Comisión plataforma
+  totalNet          Int      // Líquido a percibir
+  
+  // Desglose por Previsión
+  isapresCount      Int      @default(0)
+  isapresBrut       Int      @default(0)
+  fonasaCount       Int      @default(0)
+  fonasaBrut        Int      @default(0)
+  privateCount      Int      @default(0)
+  privateBrut       Int      @default(0)
+  
+  // Métricas de Gestión
+  completedCount    Int      // Sesiones asistidas
+  cancelledCount    Int      // Sesiones canceladas
+  attendanceRate    Float    // % asistencia
+  avgIncomePerHour  Int      // Promedio por hora
+  
+  // Metadata
+  pdfUrl            String?  // URL del PDF generado
+  csvUrl            String?  // URL del CSV generado
+  
+  // Relaciones
+  invoices          Invoice[]
+  
+  @@unique([professionalId, year, month])
+  @@index([professionalId, year, month])
+  @@index([year, month])
+}
+
+// Boleta de honorarios individual
+model Invoice {
+  id                String   @id @default(cuid())
+  reportId          String?
+  report            MonthlyReport? @relation(fields: [reportId], references: [id])
+  
+  appointmentId     String   @unique
+  appointment       Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  
+  // Datos de la Boleta
+  invoiceNumber     String   @unique // Número de boleta (auto-generado)
+  issueDate         DateTime
+  
+  // Montos
+  brutAmount        Int
+  siiRetention      Int      // 15.25%
+  netAmount         Int
+  
+  // Clasificación
+  healthSystem      HealthSystem // FONASA, ISAPRE, PRIVATE
+  isapre            String?  // Nombre de Isapre si aplica
+  
+  // Estado
+  status            InvoiceStatus @default(PENDING)
+  paidAt            DateTime?
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([reportId])
+  @@index([invoiceNumber])
+  @@index([issueDate])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ============================================
+// SISTEMA DE REEMBOLSOS
+// ============================================
+
+// Solicitud de reembolso del paciente
+model ReimbursementRequest {
+  id                String   @id @default(cuid())
+  patientId         String
+  patient           User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  // Período
+  requestDate       DateTime @default(now())
+  month             Int
+  year              Int
+  
+  // Sesiones incluidas
+  appointments      Appointment[]
+  totalAmount       Int
+  estimatedReimbursement Int
+  
+  // Previsión
+  healthSystem      HealthSystem
+  isapreId          String?
+  isapre            Isapre?  @relation(fields: [isapreId], references: [id])
+  
+  // Documentos generados
+  kitPdfUrl         String?
+  hasMedicalReferral Boolean @default(false)
+  referralDocUrl    String?
+  
+  // Estado y seguimiento
+  status            ReimbursementStatus @default(DRAFT)
+  submittedAt       DateTime?
+  processedAt       DateTime?
+  reimbursedAmount  Int?
+  trackingNumber    String?
+  notes             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([patientId])
+  @@index([status])
+  @@index([year, month])
+}
+
+enum ReimbursementStatus {
+  DRAFT           // Borrador, no enviado
+  PENDING         // Enviado, esperando respuesta
+  IN_REVIEW       // En revisión por Isapre
+  APPROVED        // Aprobado
+  REJECTED        // Rechazado
+  PAID            // Pagado
+  CANCELLED       // Cancelado por usuario
+}
+
