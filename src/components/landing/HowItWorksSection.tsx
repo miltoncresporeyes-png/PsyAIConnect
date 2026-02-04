@@ -49,41 +49,42 @@ const steps = [
 
 export function HowItWorksSection() {
     return (
-        <section id="como-funciona" className="section pt-4 pb-12 bg-gradient-to-b from-white via-secondary-50/30 to-white">
+        <section id="como-funciona" className="py-16 md:py-24 bg-white">
             <div className="container-wide">
-                <div className="max-w-2xl mb-12">
-                    <span className="text-primary-600 font-bold text-xs uppercase tracking-[0.15em] mb-4 block">
-                        PARA PACIENTES
+                {/* Encabezado mejorado */}
+                <div className="max-w-3xl mx-auto text-center mb-16">
+                    <span className="inline-block px-4 py-1.5 bg-purple-100 text-purple-700 font-semibold text-sm rounded-full mb-4 uppercase tracking-wide">
+                        Para Pacientes
                     </span>
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-2 text-balance">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
                         Cómo funciona
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mb-8">
-                        Un proceso pensado para respetar tu tiempo y tu proceso.
+                    <p className="text-xl text-gray-600 leading-relaxed">
+                        Un proceso pensado para respetar tu tiempo y tu proceso
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 relative">
-                    {/* Connection Line (Desktop) */}
-                    <div className="hidden lg:block absolute top-[88px] left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent -z-10" />
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+                    {/* Línea de conexión mejorada (Desktop) */}
+                    <div className="hidden lg:block absolute top-20 left-[8%] right-[8%] h-0.5 bg-gradient-to-r from-purple-200 via-indigo-200 to-rose-200 -z-10 opacity-40" />
 
                     {steps.map((step, index) => (
                         <div key={index} className="relative group">
-                            <div className="relative bg-white">
-                                {/* Number */}
-                                <div className="text-[10px] font-bold text-gray-400 mb-6 font-mono tracking-widest pl-1">
-                                    {step.number}
+                            <div className="relative bg-white p-6 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:shadow-xl transition-all duration-300 h-full">
+                                {/* Número con mejor diseño */}
+                                <div className="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <span className="text-white font-bold text-sm">{step.number}</span>
                                 </div>
 
-                                {/* Icon */}
-                                <div className={`w-16 h-16 rounded-[1.25rem] ${step.iconBg} border ${step.iconBorder} flex items-center justify-center mb-6 ${step.iconHoverBg} ${step.iconHoverBorder} group-hover:scale-105 transition-all duration-300`}>
-                                    <step.icon className={`w-7 h-7 ${step.iconColor} transition-colors`} strokeWidth={1.5} />
+                                {/* Icono mejorado */}
+                                <div className={`w-16 h-16 rounded-xl ${step.iconBg} border-2 ${step.iconBorder} flex items-center justify-center mb-5 ${step.iconHoverBg} ${step.iconHoverBorder} group-hover:scale-110 transition-all duration-300 shadow-sm mt-4`}>
+                                    <step.icon className={`w-8 h-8 ${step.iconColor}`} strokeWidth={2} />
                                 </div>
 
                                 <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">
                                     {step.title}
                                 </h3>
-                                <p className="text-gray-500 text-[0.95rem] leading-relaxed pr-4">
+                                <p className="text-gray-600 text-base leading-relaxed">
                                     {step.description}
                                 </p>
                             </div>

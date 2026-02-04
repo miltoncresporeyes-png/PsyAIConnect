@@ -7,14 +7,12 @@ const footerLinks = {
         { name: 'Precios', href: '/planes' },
     ],
     recursos: [
-        { name: 'Blog', href: '/blog' },
         { name: 'Preguntas Frecuentes', href: '/faq' },
         { name: 'Cómo Funciona', href: '/#como-funciona' },
     ],
     legal: [
         { name: 'Términos de Uso', href: '/terminos' },
         { name: 'Política de Privacidad', href: '/privacidad' },
-        { name: 'Consentimiento Informado', href: '/consentimiento' },
     ],
 }
 

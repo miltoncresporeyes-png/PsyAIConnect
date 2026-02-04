@@ -165,8 +165,8 @@ export function BetaLaunchBanner() {
 
             <style jsx>{`
                 .beta-launch-banner {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    padding: 2rem 1.5rem;
+                    background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 100%);
+                    padding: 3rem 1.5rem;
                     position: relative;
                     overflow: hidden;
                 }
@@ -200,9 +200,9 @@ export function BetaLaunchBanner() {
 
                 .countdown-grid {
                     display: grid;
-                    grid-template-columns: repeat(4, minmax(80px, 1fr));
-                    gap: 1rem;
-                    max-width: 560px;
+                    grid-template-columns: repeat(4, minmax(85px, 1fr));
+                    gap: 0.875rem;
+                    max-width: 540px;
                     width: 100%;
                     justify-items: center;
                 }
@@ -217,22 +217,24 @@ export function BetaLaunchBanner() {
                 }
 
                 .beta-title {
-                    font-size: 2rem;
+                    font-size: 2.25rem;
                     font-weight: 800;
                     color: white;
-                    line-height: 1.2;
-                    margin: 0 0 1rem 0;
-                    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                    line-height: 1.15;
+                    margin: 0 0 1.25rem 0;
+                    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                    letter-spacing: -0.02em;
                 }
 
                 .beta-description {
                     font-size: 1.125rem;
-                    color: rgba(255, 255, 255, 0.95);
-                    line-height: 1.6;
+                    color: rgba(255, 255, 255, 0.92);
+                    line-height: 1.65;
                     margin: 0;
-                    max-width: 700px;
+                    max-width: 680px;
                     margin-left: auto;
                     margin-right: auto;
+                    font-weight: 400;
                 }
 
                 /* Formulario */
