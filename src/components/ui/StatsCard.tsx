@@ -8,6 +8,7 @@ interface StatsCardProps {
     variant?: 'default' | 'primary' | 'success' | 'warning' | 'purple' | 'indigo' | 'teal'
     size?: 'sm' | 'md' | 'lg'
     className?: string
+    children?: React.ReactNode
 }
 
 const variantStyles = {
@@ -58,6 +59,7 @@ export function StatsCard({
     variant = 'default',
     size = 'md',
     className,
+    children,
 }: StatsCardProps) {
     const styles = sizeStyles[size]
     const textColor = textColorVariants[variant]
@@ -85,25 +87,27 @@ export function StatsCard({
                         <Icon className={styles.icon} strokeWidth={2} />
                     </div>
                 )}
+                {children}
             </div>
         </div>
     )
 }
 
-// Specialized variants for common use cases
+interface StatsCardWithTrendProps {
+    value: string | number
+    label: string
+    trend: string
+    trendDirection: 'up' | 'down'
+    icon?: LucideIcon
+}
+
 export function StatsCardWithTrend({
     value,
     label,
     trend,
     trendDirection,
     icon,
-}: {
-    value: string | number
-    label: string
-    trend: string
-    trendDirection: 'up' | 'down'
-    icon?: LucideIcon
-}) {
+}: StatsCardWithTrendProps) {
     return (
         <StatsCard
             value={value}

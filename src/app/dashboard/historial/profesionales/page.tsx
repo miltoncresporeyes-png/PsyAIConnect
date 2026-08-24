@@ -60,8 +60,8 @@ export default function ProfessionalsHistoryPage() {
                 })
 
                 setProfessionals(Array.from(profMap.values()))
-            } catch (error) {
-                console.error('Error loading history:', error)
+            } catch {
+                console.error('Error loading history')
             } finally {
                 setLoading(false)
             }

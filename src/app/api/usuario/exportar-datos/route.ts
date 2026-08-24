@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -89,8 +89,8 @@ export async function GET() {
                 grantedAt: c.grantedAt.toISOString(),
                 revokedAt: c.revokedAt?.toISOString(),
             })),
-            note: 'Este archivo contiene todos tus datos personales almacenados en PsyConnect. ' +
-                'Las notas clínicas están cifradas y solo son accesibles por tu profesional.',
+            note: 'Este archivo contiene todos tus datos personales almacenados en PsyDoctor. ' +
+                'Las notas clÃ­nicas estÃ¡n cifradas y solo son accesibles por tu profesional.',
         }
 
         // Return as downloadable JSON
@@ -99,7 +99,7 @@ export async function GET() {
         return new NextResponse(jsonString, {
             headers: {
                 'Content-Type': 'application/json',
-                'Content-Disposition': `attachment; filename="psyconnect-data-${session.user.id.slice(0, 8)}.json"`,
+                'Content-Disposition': `attachment; filename="PsyDoctor-data-${session.user.id.slice(0, 8)}.json"`,
             },
         })
     } catch (error) {
@@ -110,3 +110,4 @@ export async function GET() {
         )
     }
 }
+

@@ -8,7 +8,7 @@ import { Loader2, CreditCard, CheckCircle, XCircle } from 'lucide-react'
 function SimuladorContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const appointmentId = searchParams.get('appointmentId')
+    const appointmentId = searchParams?.get('appointmentId')
 
     const [isProcessing, setIsProcessing] = useState(false)
 
@@ -103,7 +103,7 @@ export default function SimuladorPagoPage() {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
                 </div>

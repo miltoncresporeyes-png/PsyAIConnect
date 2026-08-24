@@ -1,73 +1,63 @@
 import { Stethoscope, User, Target, Clock } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-const differentiators = [
-    {
-        icon: Stethoscope,
-        title: 'Continuidad real',
-        description: 'Tu historial viaja contigo entre profesionales. No vuelves a empezar de cero.',
-        iconBg: 'bg-teal-50',
-        iconColor: 'text-teal-600',
-    },
-    {
-        icon: User,
-        title: 'Tú decides',
-        description: 'Control total sobre qué información compartes y con quién.',
-        iconBg: 'bg-blue-50',
-        iconColor: 'text-blue-600',
-    },
-    {
-        icon: Target,
-        title: 'Sin prueba y error',
-        description: 'Información clara para tomar decisiones informadas, no adivinanzas.',
-        iconBg: 'bg-purple-50',
-        iconColor: 'text-purple-600',
-    },
-    {
-        icon: Clock,
-        title: 'Tu ritmo',
-        description: 'Sin presión. Avanzas cuando estés listo.',
-        iconBg: 'bg-amber-50',
-        iconColor: 'text-amber-600',
-    },
+const iconList = [Stethoscope, User, Target, Clock]
+const styles = [
+    { iconBg: 'bg-teal-50',    iconColor: 'text-teal-600',    borderAccent: 'border-l-[3px] border-l-teal-400',    bgGradient: 'bg-gradient-to-br from-white to-teal-50/40' },
+    { iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600', borderAccent: 'border-l-[3px] border-l-emerald-400', bgGradient: 'bg-gradient-to-br from-white to-emerald-50/40' },
+    { iconBg: 'bg-cyan-50',    iconColor: 'text-cyan-600',    borderAccent: 'border-l-[3px] border-l-cyan-400',    bgGradient: 'bg-gradient-to-br from-white to-cyan-50/40' },
+    { iconBg: 'bg-teal-50/80', iconColor: 'text-teal-500',    borderAccent: 'border-l-[3px] border-l-teal-300',    bgGradient: 'bg-gradient-to-br from-white to-teal-50/30' },
 ]
 
-export function DifferentiationSection() {
+export async function DifferentiationSection() {
+    const t = await getTranslations('differentiation')
+    const items = t.raw('items') as Array<{ title: string; description: string }>
+
     return (
-        <section className="py-16 md:py-24 bg-gradient-to-b from-white via-gray-50/30 to-white relative overflow-hidden">
-            {/* Background decoration mejorada */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_rgba(147,51,234,0.03)_0%,_transparent_50%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,_rgba(79,70,229,0.03)_0%,_transparent_50%)] pointer-events-none" />
-
-            <div className="container-wide relative z-10">
-                {/* Título mejorado */}
-                <div className="max-w-3xl mx-auto text-center mb-14 md:mb-16">
-                    <p className="text-base font-semibold text-purple-600 mb-3 tracking-wide uppercase">Por qué somos diferentes</p>
-                    <h2 className="text-2xl md:text-4xl text-gray-900 font-bold leading-tight mb-4">
-                        No somos un buscador médico
-                    </h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-                        Somos una plataforma diseñada para{' '}
-                        <span className="text-gray-900 font-semibold">respetar la complejidad de los procesos de salud mental</span>
+        <section 
+            className="py-16 md:py-20 bg-white"
+            aria-labelledby="differentiators-heading"
+            style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, rgba(20,184,166,0.04) 0%, transparent 60%)' }}
+        >
+            <div className="container-wide">
+                <header className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
+                    <p className="text-sm font-semibold text-teal-600 mb-3 tracking-wide uppercase">
+                        {t('sectionLabel')}
                     </p>
-                </div>
+                    <h2 id="differentiators-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        {t('heading')}
+                    </h2>
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                        {t('subheading')}{' '}
+                        <span className="font-semibold text-gray-900">{t('subheadingBold')}</span>
+                    </p>
+                </header>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                    {differentiators.map((item, index) => (
-                        <div
-                            key={index}
-                            className="group bg-white p-7 md:p-8 rounded-2xl border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-purple-200/50 transition-all duration-300 hover:-translate-y-2"
-                        >
-                            <div className={`w-14 h-14 rounded-xl ${item.iconBg} flex items-center justify-center mb-5 ${item.iconColor} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
-                                <item.icon className="w-7 h-7" strokeWidth={2} />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">
-                                {item.title}
-                            </h3>
-                            <p className="text-gray-600 text-base leading-relaxed">
-                                {item.description}
-                            </p>
-                        </div>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" role="list" aria-label={t('sectionLabel')}>
+                    {items.map((item, index) => {
+                        const Icon = iconList[index]
+                        const s = styles[index]
+                        return (
+                            <article 
+                                key={index}
+                                className={`flex flex-col ${s.bgGradient} p-7 rounded-3xl border border-slate-100/80 ${s.borderAccent} shadow-sm hover:shadow-lg hover:shadow-teal-100/50 hover:-translate-y-0.5 transition-all duration-300`}
+                                role="listitem"
+                            >
+                                <div 
+                                    className={`w-14 h-14 rounded-xl ${s.iconBg} flex items-center justify-center mb-4 ${s.iconColor} shadow-md`}
+                                    aria-hidden="true"
+                                >
+                                    <Icon className="w-7 h-7" strokeWidth={2} />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                    {item.title}
+                                </h3>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    {item.description}
+                                </p>
+                            </article>
+                        )
+                    })}
                 </div>
             </div>
         </section>

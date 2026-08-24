@@ -1,17 +1,17 @@
-/**
+﻿/**
  * Templates de email para la lista de espera Beta
  */
 
 export const betaWaitlistEmailTemplates = {
     patient: {
-        subject: '🎉 ¡Bienvenido a PsyConnect Beta!',
+        subject: 'ðŸŽ‰ Â¡Bienvenido a PsyDoctor!',
         html: (email: string) => `
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a PsyConnect Beta</title>
+    <title>Bienvenido a PsyDoctor</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f7fa;">
     <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f5f7fa;">
@@ -21,7 +21,7 @@ export const betaWaitlistEmailTemplates = {
                     <!-- Header -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🎉 ¡Bienvenido a PsyConnect Beta!</h1>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ðŸŽ‰ Â¡Bienvenido a PsyDoctor!</h1>
                         </td>
                     </tr>
                     
@@ -33,31 +33,31 @@ export const betaWaitlistEmailTemplates = {
                             </p>
                             
                             <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
-                                ¡Gracias por unirte a la lista de espera de PsyConnect! Estás a un paso de vivir una nueva experiencia en salud mental.
+                                Â¡Gracias por unirte a la lista de espera de PsyDoctor! EstÃ¡s a un paso de vivir una nueva experiencia en salud mental.
                             </p>
                             
                             <div style="background: #f9fafb; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 8px;">
                                 <p style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">
-                                    ✨ En 7 días dejaremos de buscar profesionales y empezaremos a conectar con los correctos.
+                                    âœ¨ En 7 dÃ­as dejaremos de buscar profesionales y empezaremos a conectar con los correctos.
                                 </p>
                             </div>
                             
-                            <h2 style="margin: 30px 0 15px; color: #1f2937; font-size: 20px; font-weight: 700;">¿Qué puedes esperar?</h2>
+                            <h2 style="margin: 30px 0 15px; color: #1f2937; font-size: 20px; font-weight: 700;">Â¿QuÃ© puedes esperar?</h2>
                             
                             <ul style="margin: 0 0 20px; padding-left: 20px; color: #4b5563; font-size: 15px; line-height: 1.8;">
-                                <li><strong>Orientación inteligente:</strong> Un sistema que te conecta con el profesional ideal para ti</li>
+                                <li><strong>OrientaciÃ³n inteligente:</strong> Un sistema que te conecta con el profesional ideal para ti</li>
                                 <li><strong>Transparencia total:</strong> Perfiles completos con especialidades, modalidades y tarifas claras</li>
                                 <li><strong>Facilidad de uso:</strong> Agenda, paga y gestiona tus sesiones en un solo lugar</li>
-                                <li><strong>Seguridad:</strong> Tus datos están protegidos con los más altos estándares</li>
+                                <li><strong>Seguridad:</strong> Tus datos estÃ¡n protegidos con los mÃ¡s altos estÃ¡ndares</li>
                             </ul>
                             
                             <p style="margin: 20px 0; color: #1f2937; font-size: 16px; line-height: 1.6;">
-                                Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en acceder a la plataforma.
+                                Te mantendremos informado sobre el lanzamiento y serÃ¡s uno de los primeros en acceder a la plataforma.
                             </p>
                             
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="https://psyconnect.app" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                                    Visitar PsyConnect
+                                <a href="https://PsyDoctor.app" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                                    Visitar PsyDoctor
                                 </a>
                             </div>
                         </td>
@@ -67,10 +67,10 @@ export const betaWaitlistEmailTemplates = {
                     <tr>
                         <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
                             <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                                © 2026 PsyConnect. Transformando la gestión en salud mental.
+                                Â© 2026 PsyDoctor SpA. Conectando la gestiÃ³n en salud mental.
                             </p>
                             <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                                🔒 Tus datos están protegidos. No compartimos información personal.
+                                ðŸ”’ Tus datos estÃ¡n protegidos. No compartimos informaciÃ³n personal.
                             </p>
                         </td>
                     </tr>
@@ -82,34 +82,34 @@ export const betaWaitlistEmailTemplates = {
 </html>
         `,
         text: (email: string) => `
-¡Bienvenido a PsyConnect Beta!
+Â¡Bienvenido a PsyDoctor!
 
-Gracias por unirte a la lista de espera. Estás a un paso de vivir una nueva experiencia en salud mental.
+Gracias por unirte a la lista de espera. EstÃ¡s a un paso de vivir una nueva experiencia en salud mental.
 
-✨ En 7 días dejaremos de buscar profesionales y empezaremos a conectar con los correctos.
+âœ¨ En 7 dÃ­as dejaremos de buscar profesionales y empezaremos a conectar con los correctos.
 
-¿Qué puedes esperar?
-- Orientación inteligente: Un sistema que te conecta con el profesional ideal para ti
+Â¿QuÃ© puedes esperar?
+- OrientaciÃ³n inteligente: Un sistema que te conecta con el profesional ideal para ti
 - Transparencia total: Perfiles completos con especialidades, modalidades y tarifas claras
 - Facilidad de uso: Agenda, paga y gestiona tus sesiones en un solo lugar
-- Seguridad: Tus datos están protegidos con los más altos estándares
+- Seguridad: Tus datos estÃ¡n protegidos con los mÃ¡s altos estÃ¡ndares
 
-Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en acceder a la plataforma.
+Te mantendremos informado sobre el lanzamiento y serÃ¡s uno de los primeros en acceder a la plataforma.
 
 ---
-© 2026 PsyConnect. Transformando la gestión en salud mental.
-🔒 Tus datos están protegidos. No compartimos información personal.
+Â© 2026 PsyDoctor SpA. Conectando la gestiÃ³n en salud mental.
+ðŸ”’ Tus datos estÃ¡n protegidos. No compartimos informaciÃ³n personal.
         `,
     },
     professional: {
-        subject: '🚀 ¡Únete a PsyConnect Beta - Para Profesionales!',
+        subject: 'ðŸš€ Â¡Ãšnete a PsyDoctor - Para Profesionales!',
         html: (email: string) => `
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a PsyConnect Beta</title>
+    <title>Bienvenido a PsyDoctor</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f7fa;">
     <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f5f7fa;">
@@ -119,7 +119,7 @@ Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en a
                     <!-- Header -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🚀 ¡Bienvenido a PsyConnect Beta!</h1>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ðŸš€ Â¡Bienvenido a PsyDoctor!</h1>
                         </td>
                     </tr>
                     
@@ -131,22 +131,22 @@ Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en a
                             </p>
                             
                             <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
-                                ¡Gracias por unirte! Estás a punto de transformar la gestión administrativa de tu práctica.
+                                Â¡Gracias por unirte! EstÃ¡s a punto de transformar la gestiÃ³n administrativa de tu prÃ¡ctica.
                             </p>
                             
                             <div style="background: #f9fafb; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 8px;">
                                 <p style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">
-                                    💼 Estás a un paso de automatizar tu contabilidad y tus boletas de honorarios del SII.
+                                    ðŸ’¼ EstÃ¡s a un paso de automatizar tu contabilidad y tus boletas de honorarios del SII.
                                 </p>
                             </div>
                             
-                            <h2 style="margin: 30px 0 15px; color: #1f2937; font-size: 20px; font-weight: 700;">Autonomía administrativa total:</h2>
+                            <h2 style="margin: 30px 0 15px; color: #1f2937; font-size: 20px; font-weight: 700;">AutonomÃ­a administrativa total:</h2>
                             
                             <ul style="margin: 0 0 20px; padding-left: 20px; color: #4b5563; font-size: 15px; line-height: 1.8;">
-                                <li><strong>Boletas automáticas del SII:</strong> Genera boletas con un clic</li>
-                                <li><strong>Gestión de agenda:</strong> Controla tu disponibilidad y citas fácilmente</li>
+                                <li><strong>Boletas automÃ¡ticas del SII:</strong> Genera boletas con un clic</li>
+                                <li><strong>GestiÃ³n de agenda:</strong> Controla tu disponibilidad y citas fÃ¡cilmente</li>
                                 <li><strong>Pagos seguros:</strong> Recibe pagos directamente en tu cuenta</li>
-                                <li><strong>Notas clínicas encriptadas:</strong> Registros seguros y privados</li>
+                                <li><strong>Notas clÃ­nicas encriptadas:</strong> Registros seguros y privados</li>
                                 <li><strong>Dashboard financiero:</strong> Visualiza tus ingresos y comisiones en tiempo real</li>
                             </ul>
                             
@@ -155,8 +155,8 @@ Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en a
                             </p>
                             
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="https://psyconnect.app/profesional" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                                    Conocer más
+                                <a href="https://PsyDoctor.app/profesional" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                                    Conocer mÃ¡s
                                 </a>
                             </div>
                         </td>
@@ -166,10 +166,10 @@ Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en a
                     <tr>
                         <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
                             <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                                © 2026 PsyConnect. Transformando la gestión en salud mental.
+                                Â© 2026 PsyDoctor SpA. Conectando la gestiÃ³n en salud mental.
                             </p>
                             <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                                🔒 Tus datos están protegidos. No compartimos información personal.
+                                ðŸ”’ Tus datos estÃ¡n protegidos. No compartimos informaciÃ³n personal.
                             </p>
                         </td>
                     </tr>
@@ -181,26 +181,27 @@ Te mantendremos informado sobre el lanzamiento y serás uno de los primeros en a
 </html>
         `,
         text: (email: string) => `
-¡Bienvenido a PsyConnect Beta!
+Â¡Bienvenido a PsyDoctor!
 
 Estimado profesional,
 
-Gracias por unirte. Estás a punto de transformar la gestión administrativa de tu práctica.
+Gracias por unirte. EstÃ¡s a punto de transformar la gestiÃ³n administrativa de tu prÃ¡ctica.
 
-💼 Estás a un paso de automatizar tu contabilidad y tus boletas de honorarios del SII.
+ðŸ’¼ EstÃ¡s a un paso de automatizar tu contabilidad y tus boletas de honorarios del SII.
 
-Autonomía administrativa total:
-- Boletas automáticas del SII: Genera boletas con un clic
-- Gestión de agenda: Controla tu disponibilidad y citas fácilmente
+AutonomÃ­a administrativa total:
+- Boletas automÃ¡ticas del SII: Genera boletas con un clic
+- GestiÃ³n de agenda: Controla tu disponibilidad y citas fÃ¡cilmente
 - Pagos seguros: Recibe pagos directamente en tu cuenta
-- Notas clínicas encriptadas: Registros seguros y privados
+- Notas clÃ­nicas encriptadas: Registros seguros y privados
 - Dashboard financiero: Visualiza tus ingresos y comisiones en tiempo real
 
 Te contactaremos pronto con los detalles de acceso temprano a la plataforma.
 
 ---
-© 2026 PsyConnect. Transformando la gestión en salud mental.
-🔒 Tus datos están protegidos. No compartimos información personal.
+Â© 2026 PsyDoctor SpA. Conectando la gestiÃ³n en salud mental.
+ðŸ”’ Tus datos estÃ¡n protegidos. No compartimos informaciÃ³n personal.
         `,
     },
 }
+

@@ -98,8 +98,8 @@ export default function MonthlyReportViewer() {
 
             const data = await res.json()
             setReport(data)
-        } catch (err) {
-            console.error('Error loading report:', err)
+        } catch {
+            console.error('Error loading report')
             setError('No se pudo cargar el reporte. Intenta nuevamente.')
         } finally {
             setLoading(false)

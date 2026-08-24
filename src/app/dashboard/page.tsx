@@ -79,8 +79,8 @@ export default function DashboardPage() {
                             pendingCount: data.pendingCount || 0,
                         })
                     }
-                } catch (error) {
-                    console.error("Error fetching professional stats", error)
+                } catch {
+                    console.error("Error fetching professional stats")
                 } finally {
                     setLoading(false)
                 }
@@ -148,8 +148,8 @@ export default function DashboardPage() {
                             hasHistory: completedSessions.length > 0
                         })
                     }
-                } catch (error) {
-                    console.error("Error fetching patient summary", error)
+                } catch {
+                    console.error("Error fetching patient summary")
                 }
             }
             fetchAppointments()
@@ -182,22 +182,22 @@ export default function DashboardPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-[#F8F9FA] py-8">
-                <div className="container-wide max-w-5xl mx-auto px-4">
+            <div className="dashboard-shell">
+                <div className="dashboard-container">
 
                     {/* =========================================================
                         VISTA PROFESIONAL
                        ========================================================= */}
                     {isProfessional && (
                         <>
-                            <div className="mb-8">
+                            <div className="dashboard-header">
                                 <h1 className="text-2xl font-heading font-bold text-gray-900 mb-1">
                                     Hola, {userName} 👋
                                 </h1>
                                 <p className="text-gray-600">Gestiona tu práctica profesional</p>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                                 <StatCard
                                     icon={Calendar}
                                     label="Citas hoy"
@@ -226,7 +226,7 @@ export default function DashboardPage() {
 
                             {/* Pending notification */}
                             {professionalStats.pendingCount > 0 && (
-                                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-[22px] p-4 mb-5 shadow-sm">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
                                             <Clock className="w-5 h-5 text-yellow-600" />
@@ -244,11 +244,11 @@ export default function DashboardPage() {
                             )}
 
                             {/* Fee Calculator */}
-                            <div className="mb-8">
+                            <div className="mb-6">
                                 <FeeCalculator />
                             </div>
 
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
                                 <DashboardCard icon={Calendar} title="Mis citas" description="Revisa y gestiona tus próximas citas" href="/dashboard/citas" />
                                 <DashboardCard icon={Users} title="Mis pacientes" description="Ver historial y notas de pacientes" href="/dashboard/pacientes" />
                                 <DashboardCard icon={Clock} title="Disponibilidad" description="Configura tu horario de atención" href="/dashboard/disponibilidad" />
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                     {!isProfessional && (
                         <>
                             {/* Encabezado */}
-                            <div className="mb-6">
+                            <div className="dashboard-header">
                                 <h1 className="text-xl font-heading font-semibold text-gray-900 mb-1">
                                     Tu panel de salud mental
                                 </h1>
@@ -291,10 +291,10 @@ export default function DashboardPage() {
                             />
 
                             {/* ZONA 3, 4, 5: Layout de dos columnas */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
                                 {/* Columna Principal */}
-                                <div className="lg:col-span-7 space-y-6">
+                                <div className="lg:col-span-7 space-y-5">
                                     {/* ZONA 3: Historial */}
                                     <HistorySection hasHistory={patientData.hasHistory} />
                                 </div>
@@ -318,7 +318,7 @@ export default function DashboardPage() {
                     )}
 
                     {/* Sign Out (Común) */}
-                    <div className="mt-12 text-center">
+                    <div className="mt-10 text-center">
                         <button
                             onClick={() => signOut({ callbackUrl: '/' })}
                             className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
@@ -344,7 +344,7 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any, label: strin
         green: 'bg-green-50 text-green-600',
     }
     return (
-        <div className="card p-4">
+        <div className="dashboard-panel p-4">
             <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
                     <Icon className="w-5 h-5" />
@@ -360,7 +360,7 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any, label: strin
 
 function DashboardCard({ icon: Icon, title, description, href, target }: { icon: any, title: string, description: string, href: string, target?: string }) {
     return (
-        <Link href={href} target={target} className="card p-6 hover:border-primary-300 transition-colors group">
+        <Link href={href} target={target} className="dashboard-panel p-5 hover:border-primary-300 transition-colors group hover:-translate-y-0.5">
             <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors">
                 <Icon className="w-6 h-6 text-primary-600" />
             </div>

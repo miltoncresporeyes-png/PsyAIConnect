@@ -67,6 +67,8 @@ model User {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
   profileCompleted      Boolean         @default(false)
+  isActive             Boolean         @default(true)
+  adminNotes           String?         // Notas internas del admin
   accounts              Account[]
   appointmentsAsPatient Appointment[]   @relation("PatientAppointments")
   consents              ConsentLog[]
@@ -75,11 +77,13 @@ model User {
   sessions              Session[]
   waitlistEntry         WaitlistEntry?
   reimbursementRequests ReimbursementRequest[]
+  preReservations       PreReservation[]
 }
 
 model PatientProfile {
   id                     String                        @id @default(cuid())
   userId                 String                        @unique
+  rut                    String?
   birthDate              DateTime?
   gender                 Gender?
   region                 String?
@@ -115,8 +119,10 @@ model EmergencyContact {
 model Professional {
   id                     String             @id @default(cuid())
   userId                 String             @unique
+  rut                    String?
   professionalType       ProfessionalType
   licenseNumber          String?
+  licensePdfUrl          String?  // URL del PDF del título profesional
   bio                    String?
   slug                   String             @unique
   specialties            String[]
@@ -148,6 +154,7 @@ model Professional {
   isapreConvenios        ProfessionalIsapreConvenio[]
   fonasaAcceptance       ProfessionalFonasaAcceptance[]
   monthlyReports         MonthlyReport[]
+  preReservations        PreReservation[]
   user                   User                            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -165,6 +172,21 @@ model Availability {
   @@unique([professionalId, dayOfWeek, startTime])
 }
 
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AttendanceStatus {
+  AUSENTE
+  EN_ESPERA
+  EN_SESION
+  FINALIZADA
+}
+
 model Appointment {
   id                 String            @id @default(cuid())
   patientId          String
@@ -175,11 +197,22 @@ model Appointment {
   status             AppointmentStatus @default(PENDING)
   videoLink          String?
   consultationReason String?
+  
+  // Campos de asistencia en tiempo real
+  attendanceStatus   AttendanceStatus  @default(EN_ESPERA)
+  pacienteOnline     Boolean           @default(false)
+  profesionalOnline  Boolean           @default(false)
+  patientJoinedAt   DateTime?
+  professionalJoinedAt DateTime?
+  sessionStartedAt  DateTime?
+  sessionEndedAt     DateTime?
+  
   cancelledAt        DateTime?
   cancelledBy        String?
   cancellationReason String?
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
+  
   patient            User              @relation("PatientAppointments", fields: [patientId], references: [id])
   professional       Professional      @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
   clinicalNotes      ClinicalNote[]
@@ -187,6 +220,10 @@ model Appointment {
   invoice            Invoice?
   reimbursementRequestId String?
   reimbursementRequest   ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id])
+  
+  @@index([attendanceStatus])
+  @@index([pacienteOnline])
+  @@index([profesionalOnline])
 }
 
 model Payment {
@@ -214,8 +251,106 @@ model ClinicalNote {
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
   encryptedIndicaciones Bytes?
+  
+  // Firma digital para inmutabilidad
+  contentHash           String?      @unique
+  signature            String?      // Firma digital del profesional
+  signedAt             DateTime?    // Timestamp de firma
+  
+  // Metadata de auditoría
+  isFinalized          Boolean      @default(false)
+  finalizedAt          DateTime?
+  
+  // Tags para analytics
+  diagnosticTag        String?      // Tag de diagnóstico para agregación
+  treatmentType         String?      // Tipo de tratamiento
+  
   appointment           Appointment  @relation(fields: [appointmentId], references: [id])
   professional          Professional @relation(fields: [professionalId], references: [id])
+  annexes              ClinicalNoteAnnex[]
+  
+  @@index([diagnosticTag])
+  @@index([professionalId])
+}
+
+model ClinicalNoteAnnex {
+  id                    String       @id @default(cuid())
+  clinicalNoteId        String
+  content               String       @db.Text
+  encryptedContent      Bytes?
+  createdAt             DateTime     @default(now())
+  createdBy             String       // professionalId
+  
+  // Firma del anexo
+  contentHash           String?      @unique
+  signature            String?
+  signedAt             DateTime?
+  
+  clinicalNote          ClinicalNote @relation(fields: [clinicalNoteId], references: [id], onDelete: Cascade)
+  
+  @@index([clinicalNoteId])
+}
+
+model ClinicalNoteDraft {
+  id                    String       @id @default(cuid())
+  appointmentId         String       @unique
+  professionalId        String
+  content               String       @db.Text
+  templateId            String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  locked                Boolean      @default(false)
+  lockedAt              DateTime?
+  lockedBySession       String?
+  
+  @@index([appointmentId])
+  @@index([professionalId])
+}
+
+model ClinicalNoteSnapshot {
+  id                    String       @id @default(cuid())
+  draftId               String
+  content               String       @db.Text
+  createdAt             DateTime     @default(now())
+  
+  @@index([draftId])
+}
+
+model ClinicalTemplate {
+  id              String       @id @default(cuid())
+  name            String
+  description     String?
+  content         String       @db.Text
+  category        String       @default("general")
+  professionalId  String?
+  isGlobal        Boolean      @default(false)
+  isActive        Boolean      @default(true)
+  sortOrder       Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  @@index([professionalId])
+  @@index([isGlobal])
+  @@index([category])
+}
+
+model ClinicalAnalytics {
+  id                    String       @id @default(cuid())
+  professionalId        String?
+  
+  // Tipo de análisis
+  analysisType          String       // "medications", "diagnoses", "patterns", "outcomes"
+  
+  // Resultados agregados (JSON)
+  results               Json
+  sampleSize            Int
+  
+  // Metadata
+  generatedAt           DateTime     @default(now())
+  
+  @@index([professionalId])
+  @@index([analysisType])
+  @@index([generatedAt])
 }
 
 model ConsentLog {
@@ -327,14 +462,6 @@ enum SubscriptionTier {
   STARTER
   PRO
   PREMIUM
-}
-
-enum AppointmentStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-  NO_SHOW
 }
 
 enum PaymentStatus {
@@ -635,5 +762,146 @@ enum ReimbursementStatus {
   REJECTED        // Rechazado
   PAID            // Pagado
   CANCELLED       // Cancelado por usuario
+}
+
+// =============================================
+// PRE-RESERVA TEMPORAL (10 minutos de vigencia)
+// =============================================
+
+model PreReservation {
+  id             String   @id @default(cuid())
+  professionalId String
+  sessionEmail   String?  // Email de sesión anónima (antes de registro)
+  userId         String?  // Usuario si ya está registrado
+  scheduledAt    DateTime // Fecha y hora de la cita
+  duration       Int      @default(50)
+  expiresAt      DateTime // Expira en 10 minutos
+  token          String   @unique // Token único para validar la reserva
+  confirmed      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  
+  professional   Professional @relation(fields: [professionalId], references: [id])
+  user           User?        @relation(fields: [userId], references: [id])
+
+  @@index([professionalId, scheduledAt])
+  @@index([expiresAt])
+  @@index([token])
+}
+
+model AdminLog {
+  id            String   @id @default(cuid())
+  adminId       String   // ID del admin que realizó la acción
+  adminName     String?  // Nombre del admin (por si se borra el usuario)
+  action        String   // Tipo de acción: APPROVE_PROFESSIONAL, REJECT_PROFESSIONAL, BAN_USER, UNBAN_USER, RESET_PASSWORD, UPDATE_NOTES
+  targetType    String   // Tipo de objetivo: USER, PROFESSIONAL
+  targetId      String   // ID del usuario/profesional afectado
+  targetName    String?  // Nombre del objetivo (por si se borra)
+  targetEmail   String?  // Email del objetivo
+  details       Json?    // Detalles adicionales en formato JSON
+  createdAt     DateTime @default(now())
+
+  @@index([adminId])
+  @@index([targetId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// =============================================
+// COLA DE EMISIÓN DE BOLETAS SII
+// Sistema de reintentos automáticos
+// =============================================
+
+model InvoiceQueue {
+  id                String           @id @default(cuid())
+  appointmentId     String           @unique
+  
+  // Datos necesarios para emitir la boleta
+  pacienteRut      String
+  pacienteNombre   String
+  pacienteEmail    String?
+  pacienteTelefono String?
+  
+  servicioDescripcion String
+  servicioFecha    DateTime
+  servicioMonto    Int
+  descuento         Int              @default(0)
+  
+  // Datos del profesional/emisor
+  profesionalRut   String
+  profesionalNombre String
+  
+  // Estado del procesamiento
+  status            InvoiceQueueStatus @default(PENDING)
+  attempts          Int              @default(0)
+  maxAttempts      Int              @default(3)
+  lastAttemptAt    DateTime?
+  nextAttemptAt    DateTime?
+  
+  // Resultado
+  invoiceNumber    String?          // Número de boleta emitida
+  siiFolio         String?          // Folio SII
+  siiStatus        String?           // Estado del SII
+  errorMessage     String?
+  errorCode        String?
+  
+  // Tracking
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  completedAt      DateTime?
+  
+  @@index([status])
+  @@index([nextAttemptAt])
+  @@index([createdAt])
+}
+
+enum InvoiceQueueStatus {
+  PENDING       // En cola, sin procesar
+  PROCESSING    // Actualmente procesándose
+  COMPLETED     // Emitida exitosamente
+  FAILED        // Fallida después de todos los reintentos
+  CANCELLED    // Cancelada por el usuario
+  MANUAL_REVIEW // Requiere revisión manual
+}
+
+// =============================================
+// SALA DE ESPERA VIRTUAL
+// Estados: CHECK_IN, WAITING, READY, IN_SESSION
+// =============================================
+
+model WaitingRoom {
+  id                  String          @id @default(cuid())
+  appointmentId       String          @unique
+  
+  // Estado de la sala
+  status              WaitingRoomStatus @default(CHECK_IN)
+  
+  // Tiempos
+  patientJoinedAt     DateTime?
+  patientReadyAt      DateTime?
+  professionalJoinedAt DateTime?
+  sessionStartedAt    DateTime?
+  
+  // Device checks
+  cameraTested        Boolean         @default(false)
+  micTested           Boolean         @default(false)
+  speakerTested       Boolean         @default(false)
+  
+  // Profesional
+  professionalNotified Boolean         @default(false)
+  
+  // Metadata
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  @@index([status])
+  @@index([appointmentId])
+}
+
+enum WaitingRoomStatus {
+  CHECK_IN      // Paciente verificando equipo
+  WAITING       // Paciente esperando al profesional
+  READY         // Profesional unido, listo para entrar
+  IN_SESSION    // En la sesión
+  COMPLETED     // Sesión finalizada
 }
 

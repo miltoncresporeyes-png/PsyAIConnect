@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ChevronRight, Heart, Brain, Users, Clock, Calendar, MapPin, CreditCard, DollarSign, ArrowLeft } from 'lucide-react'
 
 // ============================================
@@ -204,9 +205,8 @@ export default function OrientadorInteligentePage() {
 
             const data = await response.json()
             setProfessionals(data)
-        } catch (error) {
-            console.error('Error fetching professionals:', error)
-            // Fallback to empty array if error
+        } catch {
+            console.error('Error fetching professionals')
             setProfessionals([])
         } finally {
             setLoading(false)

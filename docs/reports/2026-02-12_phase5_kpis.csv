@@ -1,0 +1,8 @@
+date,metric,current_value,previous_date,previous_value,delta_pct
+2026-02-12,registros_nuevos,0,2026-02-11,0,0.00%
+2026-02-12,reservas_creadas,0,2026-02-11,0,0.00%
+2026-02-12,pagos_completados,0,2026-02-11,0,0.00%
+2026-02-12,conversion_registro_a_reserva_pct,N/A,2026-02-11,N/A,N/A
+2026-02-12,conversion_reserva_a_pago_pct,N/A,2026-02-11,N/A,N/A
+2026-02-12,no_show_pct,N/A,2026-02-11,N/A,N/A
+2026-02-12,cancelaciones_pct,N/A,2026-02-11,N/A,N/A

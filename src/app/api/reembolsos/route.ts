@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
-            include: { patientProfile: true }
+            include: { patientProfile: { include: { coverage: true } } }
         })
 
         if (!user) {
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
 
         // Obtener previsión del paciente
         const healthSystem = user.patientProfile?.healthSystem || 'PRIVATE'
-        const isapreId = user.patientProfile?.isapreId
+        const isapreId = user.patientProfile?.coverage?.isapreId
 
         // Obtener slug de Isapre si existe
         let isapreSlug: string | undefined

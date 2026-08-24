@@ -8,7 +8,7 @@ import { Loader2, Lock, Eye, EyeOff, CheckCircle, XCircle, ArrowLeft } from 'luc
 function ResetPasswordForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const token = searchParams.get('token')
+    const token = searchParams?.get('token')
 
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -227,7 +227,7 @@ export default function RestablecerContrasenaPage() {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
                 </div>

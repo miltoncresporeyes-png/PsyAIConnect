@@ -232,8 +232,8 @@ export default function PerfilPage() {
                     setProfessionalData(data.professionalProfile)
                     setUserRole(data.user?.role || 'PATIENT')
                 }
-            } catch (err) {
-                console.error('Error fetching profile:', err)
+            } catch {
+                console.error('Error fetching profile')
             } finally {
                 setIsLoading(false)
             }

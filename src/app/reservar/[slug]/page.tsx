@@ -107,8 +107,8 @@ export default function ReservarPage({ params }: Props) {
 
             setRequiresConsent(data.requiresConsent || false)
             setHasSignedConsent(data.hasSignedConsent || false)
-        } catch (error) {
-            console.error('Error checking first session:', error)
+        } catch {
+            console.error('Error checking first session')
             setRequiresConsent(false)
         } finally {
             setCheckingConsent(false)
@@ -208,29 +208,10 @@ export default function ReservarPage({ params }: Props) {
         setStep(nextStep)
     }
 
-    const handleConsentAccept = async () => {
-        if (!session?.user || !professional) return
-
-        try {
-            const response = await fetch('/api/consent/clinical', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    professionalId: professional.id,
-                    signature: session.user.name,
-                }),
-            })
-
-            if (!response.ok) {
-                throw new Error('Error al guardar consentimiento')
-            }
-
-            setHasSignedConsent(true)
-            setStep('confirm')
-        } catch (error) {
-            console.error('Error saving consent:', error)
-            setError('Error al guardar consentimiento. Por favor intenta nuevamente.')
-        }
+    const handleConsentAccept = () => {
+        setHasSignedConsent(true)
+        setError('')
+        setStep('confirm')
     }
 
     const handleConsentCancel = () => {
@@ -297,24 +278,24 @@ export default function ReservarPage({ params }: Props) {
         <>
             <Header />
 
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-[linear-gradient(180deg,_#f7fbfa_0%,_#f8fafc_24%,_#ffffff_100%)] py-6 md:py-8">
                 <div className="container-wide">
                     <div className="max-w-4xl mx-auto">
                         {/* Back link */}
                         <Link
                             href={`/profesional/${params.slug}`}
-                            className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 mb-6"
+                            className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 mb-5"
                         >
                             <ChevronLeft className="w-4 h-4" />
                             Volver al perfil
                         </Link>
 
-                        <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="grid lg:grid-cols-3 gap-6">
                             {/* Calendar / Booking Flow */}
                             <div className="lg:col-span-2">
-                                <div className="card p-6">
+                                <div className="dashboard-panel p-5 md:p-6">
                                     {/* Step Indicator */}
-                                    <div className="flex items-center gap-4 mb-8">
+                                    <div className="flex items-center gap-3 mb-6 flex-wrap">
                                         {(requiresConsent && !hasSignedConsent
                                             ? ['Fecha', 'Hora', 'Consentimiento', 'Confirmar']
                                             : ['Fecha', 'Hora', 'Confirmar']
@@ -352,7 +333,7 @@ export default function ReservarPage({ params }: Props) {
                                     {/* Step: Date Selection */}
                                     {step === 'date' && (
                                         <div>
-                                            <h2 className="text-xl font-heading font-semibold mb-6">
+                                            <h2 className="text-xl font-heading font-semibold mb-5">
                                                 Selecciona una fecha
                                             </h2>
 
@@ -376,7 +357,7 @@ export default function ReservarPage({ params }: Props) {
                                             </div>
 
                                             {/* Calendar Grid */}
-                                            <div className="grid grid-cols-7 gap-1 mb-4">
+                                            <div className="grid grid-cols-7 gap-1 mb-3">
                                                 {DAYS.map(day => (
                                                     <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
                                                         {day}
@@ -418,7 +399,7 @@ export default function ReservarPage({ params }: Props) {
                                         <div>
                                             <button
                                                 onClick={() => setStep('date')}
-                                                className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                                                className="text-sm text-gray-500 hover:text-gray-700 mb-3"
                                             >
                                                 ← Cambiar fecha
                                             </button>
@@ -426,7 +407,7 @@ export default function ReservarPage({ params }: Props) {
                                             <h2 className="text-xl font-heading font-semibold mb-2">
                                                 Selecciona una hora
                                             </h2>
-                                            <p className="text-gray-600 mb-6">
+                                            <p className="text-gray-600 mb-5">
                                                 {selectedDate.toLocaleDateString('es-CL', {
                                                     weekday: 'long',
                                                     day: 'numeric',
@@ -457,7 +438,7 @@ export default function ReservarPage({ params }: Props) {
 
                                             {/* Selección de modalidad - solo si el profesional ofrece ambas */}
                                             {selectedTime && professional.modality === 'BOTH' && (
-                                                <div className="mt-8 pt-6 border-t border-gray-100">
+                                                <div className="mt-6 pt-5 border-t border-gray-100">
                                                     <h3 className="text-lg font-heading font-semibold mb-4">
                                                         ¿Cómo prefieres tu sesión?
                                                     </h3>
@@ -491,7 +472,7 @@ export default function ReservarPage({ params }: Props) {
                                     {/* Step: Consent */}
                                     {step === 'consent' && requiresConsent && !hasSignedConsent && (
                                         <div>
-                                            <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                                            <div className="mb-5 p-4 bg-primary-50 border border-primary-200 rounded-xl">
                                                 <div className="flex items-start gap-3">
                                                     <FileText className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" />
                                                     <div>
@@ -508,6 +489,7 @@ export default function ReservarPage({ params }: Props) {
                                             <ClinicalConsentForm
                                                 patientName={session?.user?.name || ''}
                                                 professionalName={professional?.user.name || ''}
+                                                professionalId={professional.id}
                                                 onAccept={handleConsentAccept}
                                                 onCancel={handleConsentCancel}
                                             />
@@ -519,17 +501,17 @@ export default function ReservarPage({ params }: Props) {
                                         <div>
                                             <button
                                                 onClick={() => setStep('time')}
-                                                className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                                                className="text-sm text-gray-500 hover:text-gray-700 mb-3"
                                             >
                                                 ← Cambiar hora
                                             </button>
 
-                                            <h2 className="text-xl font-heading font-semibold mb-6">
+                                            <h2 className="text-xl font-heading font-semibold mb-5">
                                                 Confirma tu reserva
                                             </h2>
 
                                             {/* Resumen de modalidad seleccionada */}
-                                            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                                            <div className="mb-5 p-4 bg-gray-50 rounded-xl">
                                                 <p className="text-sm text-gray-500 mb-1">Modalidad seleccionada</p>
                                                 <div className="flex items-center gap-2">
                                                     {selectedModality === 'ONLINE' ? (
@@ -558,7 +540,7 @@ export default function ReservarPage({ params }: Props) {
                                             </div>
 
                                             {/* Reason */}
-                                            <div className="mb-6">
+                                            <div className="mb-5">
                                                 <label className="label">¿Qué te gustaría trabajar? (opcional)</label>
                                                 <textarea
                                                     value={consultationReason}
@@ -593,9 +575,9 @@ export default function ReservarPage({ params }: Props) {
 
                             {/* Sidebar - Summary */}
                             <div className="lg:col-span-1">
-                                <div className="card p-6 sticky top-24">
+                                <div className="dashboard-panel p-5 md:p-6 sticky top-24">
                                     {/* Professional info */}
-                                    <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
+                                    <div className="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
                                         <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center overflow-hidden relative">
                                             {professional.user.image ? (
                                                 <Image
@@ -634,7 +616,7 @@ export default function ReservarPage({ params }: Props) {
                                     )}
 
                                     {/* Booking Summary */}
-                                    <div className="space-y-3 mb-6">
+                                    <div className="space-y-3 mb-5">
                                         {selectedDate && (
                                             <div className="flex items-center gap-3 text-gray-600">
                                                 <Calendar className="w-5 h-5 text-gray-400" />
@@ -656,7 +638,7 @@ export default function ReservarPage({ params }: Props) {
                                     </div>
 
                                     {/* Price */}
-                                    <div className="pt-6 border-t border-gray-100">
+                                    <div className="pt-5 border-t border-gray-100">
                                         <div className="flex items-center justify-between">
                                             <span className="text-gray-600">Total a pagar</span>
                                             <span className="text-2xl font-bold text-gray-900">

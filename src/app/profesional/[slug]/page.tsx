@@ -74,7 +74,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
         <>
             <Header />
 
-            <div className="min-h-screen bg-gray-50 py-12">
+            <div className="min-h-screen bg-[linear-gradient(180deg,_#f6faf9_0%,_#f8fafc_24%,_#ffffff_100%)] py-8 md:py-10">
                 <div className="container-wide">
                     {isOwner && (
                         <div className="max-w-4xl mx-auto">
@@ -82,12 +82,12 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                         </div>
                     )}
 
-                    <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="grid lg:grid-cols-3 gap-6">
                         {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="lg:col-span-2 space-y-5">
                             {/* Profile Header */}
-                            <div className="card p-8">
-                                <div className="flex items-start gap-6">
+                            <div className="dashboard-panel p-6 md:p-7">
+                                <div className="flex items-start gap-5">
                                     {/* Avatar */}
                                     <div className="w-24 h-24 rounded-2xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                                         {professional.profileImageUrl ? (
@@ -167,7 +167,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
 
                             {/* Para quién es útil - Human-centered UX */}
                             {professional.targetAudience && (
-                                <div className="card p-8">
+                                <div className="dashboard-panel p-6 md:p-7">
                                     <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
                                         Para quién suele ser útil
                                     </h2>
@@ -179,7 +179,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
 
                             {/* Cómo acompaña - Human-centered UX */}
                             {professional.approachDescription && (
-                                <div className="card p-8">
+                                <div className="dashboard-panel p-6 md:p-7">
                                     <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
                                         Cómo acompaña
                                     </h2>
@@ -190,7 +190,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                             )}
 
                             {/* Bio */}
-                            <div className="card p-8">
+                            <div className="dashboard-panel p-6 md:p-7">
                                 <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
                                     Acerca de mí
                                 </h2>
@@ -200,7 +200,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                             </div>
 
                             {/* Specialties */}
-                            <div className="card p-8">
+                            <div className="dashboard-panel p-6 md:p-7">
                                 <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
                                     Áreas de trabajo
                                 </h2>
@@ -219,8 +219,8 @@ export default async function ProfessionalProfilePage({ params }: Props) {
 
                         {/* Sidebar - Book Appointment */}
                         <div className="lg:col-span-1">
-                            <div className="card p-6 sticky top-24">
-                                <div className="text-center mb-6">
+                            <div className="dashboard-panel p-5 md:p-6 sticky top-24">
+                                <div className="text-center mb-5">
                                     <p className="text-sm text-gray-500 mb-1">Valor por sesión</p>
                                     <p className="text-3xl font-bold text-gray-900">
                                         {formatPrice(professional.sessionPrice)}
@@ -250,7 +250,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                                 </p>
 
                                 {/* Trust badges */}
-                                <div className="mt-6 pt-6 border-t border-gray-100 space-y-3">
+                                <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
                                     <div className="flex items-center gap-3 text-sm text-gray-600">
                                         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                                             <Shield className="w-4 h-4 text-green-600" />
@@ -277,12 +277,17 @@ export default async function ProfessionalProfilePage({ params }: Props) {
 
 // Generate static params for known professionals
 export async function generateStaticParams() {
-    const professionals = await prisma.professional.findMany({
-        where: { isPublic: true },
-        select: { slug: true },
-    })
+    try {
+        const professionals = await prisma.professional.findMany({
+            where: { isPublic: true },
+            select: { slug: true },
+        })
 
-    return professionals.map((p) => ({
-        slug: p.slug,
-    }))
+        return professionals.map((p) => ({
+            slug: p.slug,
+        }))
+    } catch (error) {
+        console.warn('Skipping professional static params generation during build:', error)
+        return []
+    }
 }

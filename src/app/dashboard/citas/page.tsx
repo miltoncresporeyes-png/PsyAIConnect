@@ -65,8 +65,8 @@ export default function CitasPage() {
                 const data = await response.json()
                 setAppointments(data)
             }
-        } catch (err) {
-            console.error('Error fetching appointments:', err)
+        } catch {
+            console.error('Error fetching appointments')
         } finally {
             setIsLoading(false)
         }
@@ -96,8 +96,8 @@ export default function CitasPage() {
             if (response.ok) {
                 fetchAppointments()
             }
-        } catch (err) {
-            console.error('Error cancelling appointment:', err)
+        } catch {
+            console.error('Error cancelling appointment')
         }
     }
 
@@ -121,14 +121,14 @@ export default function CitasPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="container-wide">
+            <div className="dashboard-shell">
+                <div className="dashboard-container">
                     <div className="max-w-4xl mx-auto">
                         {/* Back to Dashboard */}
                         <BackToDashboard />
 
                         {/* Header */}
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
                             <div>
                                 <h1 className="text-2xl font-heading font-bold text-gray-900">
                                     Mis citas
@@ -145,7 +145,7 @@ export default function CitasPage() {
                         </div>
 
                         {/* Filter Tabs */}
-                        <div className="flex gap-2 mb-6">
+                        <div className="flex gap-2 mb-5 flex-wrap">
                             {(['upcoming', 'past', 'all'] as const).map(f => (
                                 <button
                                     key={f}
@@ -162,7 +162,7 @@ export default function CitasPage() {
 
                         {/* Appointments List */}
                         {filteredAppointments.length === 0 ? (
-                            <div className="card p-12 text-center">
+                            <div className="dashboard-panel p-10 text-center">
                                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                     No hay citas {filter === 'upcoming' ? 'próximas' : filter === 'past' ? 'pasadas' : ''}
@@ -179,7 +179,7 @@ export default function CitasPage() {
                                 )}
                             </div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {filteredAppointments.map(apt => {
                                     const aptDate = new Date(apt.scheduledAt)
                                     const isUpcoming = aptDate >= now && apt.status === 'CONFIRMED'
@@ -189,7 +189,7 @@ export default function CitasPage() {
                                     const person = isProfessional ? apt.patient : apt.professional?.user
 
                                     return (
-                                        <div key={apt.id} className="card p-6 hover:border-primary-200 transition-colors">
+                                        <div key={apt.id} className="dashboard-panel p-5 hover:border-primary-200 transition-colors">
                                             <div className="flex items-start gap-4">
                                                 {/* Avatar */}
                                                 <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">

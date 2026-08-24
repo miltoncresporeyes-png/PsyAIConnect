@@ -1,5 +1,5 @@
 /**
- * Email Service for PsyConnect
+ * Email Service for PsyDoctor
  * Uses Resend for transactional emails
  * Fallback to console logging in development
  */
@@ -20,7 +20,7 @@ interface EmailResult {
 // Email templates
 const EMAIL_TEMPLATES = {
     VERIFICATION: {
-        subject: '✅ Verifica tu cuenta en PsyConnect',
+        subject: '✅ Verifica tu cuenta en PsyDoctor',
         getHtml: (name: string, verificationUrl: string) => `
 <!DOCTYPE html>
 <html>
@@ -30,12 +30,12 @@ const EMAIL_TEMPLATES = {
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyConnect</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyDoctor</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Plataforma de Salud Mental</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
         <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${name}! 👋</h2>
-        <p style="color: #4b5563;">Gracias por registrarte en PsyConnect. Para completar tu registro y empezar a usar la plataforma, por favor verifica tu correo electrónico.</p>
+        <p style="color: #4b5563;">Gracias por registrarte en PsyDoctor. Para completar tu registro y empezar a usar la plataforma, por favor verifica tu correo electrónico.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="${verificationUrl}" 
                style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
@@ -55,7 +55,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: #9ca3af; font-size: 12px; margin: 0;">Este enlace expirará en 24 horas. Si no solicitaste esta verificación, puedes ignorar este correo.</p>
     </div>
     <div style="background: #f9fafb; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #e5e7eb; border-top: none; text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyConnect. Todos los derechos reservados.</p>
+        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor SpA. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -63,7 +63,7 @@ const EMAIL_TEMPLATES = {
     },
 
     PASSWORD_RESET: {
-        subject: '🔐 Restablecer contraseña - PsyConnect',
+        subject: '🔐 Restablecer contraseña - PsyDoctor',
         getHtml: (name: string, resetUrl: string) => `
 <!DOCTYPE html>
 <html>
@@ -73,7 +73,7 @@ const EMAIL_TEMPLATES = {
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyConnect</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyDoctor</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Plataforma de Salud Mental</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
@@ -99,7 +99,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: #9ca3af; font-size: 12px; margin-top: 10px;">Este enlace expirará en 1 hora.</p>
     </div>
     <div style="background: #f9fafb; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #e5e7eb; border-top: none; text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyConnect. Todos los derechos reservados.</p>
+        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor SpA. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -107,7 +107,7 @@ const EMAIL_TEMPLATES = {
     },
 
     APPOINTMENT_CONFIRMATION: {
-        subject: '📅 Cita confirmada - PsyConnect',
+        subject: '📅 Cita confirmada - PsyDoctor',
         getHtml: (
             patientName: string,
             professionalName: string,
@@ -124,7 +124,7 @@ const EMAIL_TEMPLATES = {
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyConnect</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyDoctor</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">¡Cita confirmada!</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
@@ -171,7 +171,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: #6b7280; font-size: 13px;">💡 Te recomendamos conectarte 5 minutos antes de la cita para asegurar una buena conexión.</p>
     </div>
     <div style="background: #f9fafb; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #e5e7eb; border-top: none; text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyConnect. Todos los derechos reservados.</p>
+        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor SpA. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -179,7 +179,7 @@ const EMAIL_TEMPLATES = {
     },
 
     APPOINTMENT_REMINDER: {
-        subject: '⏰ Recordatorio: Tu cita es mañana - PsyConnect',
+        subject: '⏰ Recordatorio: Tu cita es mañana - PsyDoctor',
         getHtml: (patientName: string, professionalName: string, date: string, time: string) => `
 <!DOCTYPE html>
 <html>
@@ -189,7 +189,7 @@ const EMAIL_TEMPLATES = {
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyConnect</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyDoctor</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">⏰ Recordatorio de cita</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
@@ -208,7 +208,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: #6b7280; font-size: 13px; text-align: center;">¡Te esperamos! Recuerda conectarte unos minutos antes.</p>
     </div>
     <div style="background: #f9fafb; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #e5e7eb; border-top: none; text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyConnect. Todos los derechos reservados.</p>
+        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor SpA. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -239,7 +239,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
                 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: process.env.EMAIL_FROM || 'PsyConnect <noreply@psyconnect.cl>',
+                from: process.env.EMAIL_FROM || 'PsyDoctor <noreply@psydoctor.cl>',
                 to: [to],
                 subject,
                 html,
@@ -372,12 +372,12 @@ export async function sendVerificationCodeEmail(
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
     <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyConnect</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">🧠 PsyDoctor</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Tu bienestar mental, nuestra prioridad</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
         <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${name}! 👋</h2>
-        <p style="color: #4b5563;">Gracias por registrarte en PsyConnect. Para completar tu registro, ingresa el siguiente código de verificación:</p>
+        <p style="color: #4b5563;">Gracias por registrarte en PsyDoctor. Para completar tu registro, ingresa el siguiente código de verificación:</p>
         
         <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border: 2px solid #14b8a6; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
             <p style="margin: 0 0 10px; color: #0d9488; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">
@@ -396,7 +396,7 @@ export async function sendVerificationCodeEmail(
         <p style="color: #9ca3af; font-size: 12px; margin: 0; text-align: center;">🔒 Si no solicitaste este código, puedes ignorar este correo.</p>
     </div>
     <div style="background: #f9fafb; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #e5e7eb; border-top: none; text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyConnect Chile. Todos los derechos reservados.</p>
+        <p style="color: #6b7280; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor SpA Chile. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -404,7 +404,7 @@ export async function sendVerificationCodeEmail(
 
     return sendEmail({
         to: email,
-        subject: '🔐 Tu código de verificación - PsyConnect',
+        subject: '🔐 Tu código de verificación - PsyDoctor',
         html,
     })
 }

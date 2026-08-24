@@ -4,10 +4,53 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 
 export async function POST(req: NextRequest) {
     try {
+        if (process.env.NODE_ENV === 'production') {
+            return NextResponse.json(
+                { error: 'Seed de reembolsos no permitido en produccion' },
+                { status: 403 }
+            )
+        }
+
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: 'No autorizado' },
+                { status: 401 }
+            )
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { role: true },
+        })
+
+        if (user?.role !== 'ADMIN') {
+            return NextResponse.json(
+                { error: 'Acceso denegado' },
+                { status: 403 }
+            )
+        }
+
+        const clientIp = getClientIp(req)
+        const seedLimit = checkRateLimit(`admin:seed-reimbursement:${session.user.id}:${clientIp}`, {
+            limit: 5,
+            windowMs: 60 * 60 * 1000,
+        })
+
+        if (!seedLimit.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiadas ejecuciones de seed. Intenta nuevamente mas tarde.' },
+                { status: 429, headers: createRateLimitHeaders(seedLimit) }
+            )
+        }
+
         console.log('🌱 Generando datos de prueba...')
 
         // 1. Buscar paciente demo

@@ -45,7 +45,7 @@ export function SearchFilters({
 
     const createQueryString = useCallback(
         (updates: Record<string, string>) => {
-            const params = new URLSearchParams(searchParams.toString())
+            const params = new URLSearchParams(searchParams?.toString() || '')
 
             Object.entries(updates).forEach(([name, value]) => {
                 if (value) {

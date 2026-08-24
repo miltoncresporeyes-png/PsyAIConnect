@@ -1,6 +1,8 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+function cn(...classes: (string | undefined)[]): string {
+    return classes.filter(Boolean).join(' ')
+}
 
 const Card = React.forwardRef<
     HTMLDivElement,
@@ -9,7 +11,7 @@ const Card = React.forwardRef<
     <div
         ref={ref}
         className={cn(
-            "rounded-xl border bg-card text-card-foreground shadow-sm",
+            "rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm",
             className
         )}
         {...props}
@@ -50,7 +52,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <p
         ref={ref}
-        className={cn("text-sm text-muted-foreground", className)}
+        className={cn("text-sm text-gray-600", className)}
         {...props}
     />
 ))

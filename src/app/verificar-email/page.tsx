@@ -8,7 +8,7 @@ import { Loader2, CheckCircle, XCircle, Mail } from 'lucide-react'
 function VerifyEmailContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const token = searchParams.get('token')
+    const token = searchParams?.get('token')
 
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
     const [message, setMessage] = useState('')
@@ -130,7 +130,7 @@ export default function VerificarEmailPage() {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
                 </div>

@@ -55,8 +55,8 @@ export default function BuscarConCoberturaPage() {
                 setProfessionals(data.professionals)
                 setMeta(data.meta)
             }
-        } catch (error) {
-            console.error('Error searching professionals:', error)
+        } catch {
+            console.error('Error searching professionals')
         } finally {
             setLoading(false)
         }
@@ -71,28 +71,28 @@ export default function BuscarConCoberturaPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+        <div className="min-h-screen bg-[linear-gradient(180deg,_#f5fbfa_0%,_#f8fafc_24%,_#ffffff_100%)]">
             {/* Header */}
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-4xl font-bold mb-4">
+            <div className="bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-600 text-white py-10 md:py-12">
+                <div className="container-wide">
+                    <h1 className="text-4xl font-bold mb-3">
                         Encuentra tu Profesional Ideal
                     </h1>
-                    <p className="text-xl text-purple-100">
+                    <p className="text-lg md:text-xl text-teal-50/90 max-w-2xl">
                         Filtra por tu cobertura de salud y ahorra en copago
                     </p>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="container-wide py-6 md:py-8">
                 <div className="lg:grid lg:grid-cols-12 lg:gap-8">
                     {/* Sidebar de Filtros */}
                     <div className="lg:col-span-3">
-                        <div className="sticky top-4 space-y-6">
+                        <div className="sticky top-4 space-y-5">
                             {/* Toggle de filtros en móvil */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="lg:hidden w-full flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-md mb-4"
+                                className="lg:hidden w-full flex items-center justify-between bg-white px-4 py-3 rounded-[18px] shadow-sm border border-slate-200 mb-4"
                             >
                                 <span className="font-semibold flex items-center gap-2">
                                     <Filter className="w-5 h-5" />
@@ -107,7 +107,7 @@ export default function BuscarConCoberturaPage() {
                                 <CoverageFilter onCoverageChange={setCoverage} />
 
                                 {/* Filtro de Especialidades */}
-                                <div className="bg-white rounded-xl shadow-md p-6">
+                                <div className="dashboard-panel p-5">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">
                                         Especialidades
                                     </h3>
@@ -121,9 +121,9 @@ export default function BuscarConCoberturaPage() {
                                                     type="checkbox"
                                                     checked={selectedSpecialties.includes(specialty)}
                                                     onChange={() => toggleSpecialty(specialty)}
-                                                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                                    className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-purple-600">
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-teal-600">
                                                     {specialty}
                                                 </span>
                                             </label>
@@ -132,7 +132,7 @@ export default function BuscarConCoberturaPage() {
                                 </div>
 
                                 {/* Filtro de Modalidad */}
-                                <div className="bg-white rounded-xl shadow-md p-6">
+                                <div className="dashboard-panel p-5">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">
                                         Modalidad
                                     </h3>
@@ -145,9 +145,9 @@ export default function BuscarConCoberturaPage() {
                                                     value={mod}
                                                     checked={modality === mod}
                                                     onChange={(e) => setModality(e.target.value)}
-                                                    className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                                                    className="w-4 h-4 text-teal-600 border-gray-300 focus:ring-teal-500"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-purple-600">
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-teal-600">
                                                     {mod === 'ONLINE' && 'Online'}
                                                     {mod === 'IN_PERSON' && 'Presencial'}
                                                     {mod === 'BOTH' && 'Ambas'}
@@ -163,7 +163,7 @@ export default function BuscarConCoberturaPage() {
                     {/* Resultados */}
                     <div className="lg:col-span-9 mt-6 lg:mt-0">
                         {/* Barra de resultados */}
-                        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+                        <div className="dashboard-panel p-4 mb-5">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div>
                                     <p className="text-lg font-semibold text-gray-900">
@@ -186,12 +186,12 @@ export default function BuscarConCoberturaPage() {
                                             {selectedSpecialties.map((specialty) => (
                                                 <span
                                                     key={specialty}
-                                                    className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium"
+                                                    className="inline-flex items-center gap-1 px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-medium"
                                                 >
                                                     {specialty}
                                                     <button
                                                         onClick={() => toggleSpecialty(specialty)}
-                                                        className="hover:text-purple-900"
+                                                        className="hover:text-teal-900"
                                                     >
                                                         <X className="w-3 h-3" />
                                                     </button>
@@ -202,7 +202,7 @@ export default function BuscarConCoberturaPage() {
                                 </div>
 
                                 {/* Ordenar */}
-                                <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white">
                                     <option>Mejor match</option>
                                     <option>Menor copago</option>
                                     <option>Mejor calificación</option>
@@ -213,11 +213,11 @@ export default function BuscarConCoberturaPage() {
 
                         {/* Grid de profesionales */}
                         {loading ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
-                                        className="bg-white rounded-xl shadow-md p-6 animate-pulse"
+                                        className="dashboard-panel p-5 animate-pulse"
                                     >
                                         <div className="h-16 bg-gray-200 rounded mb-4"></div>
                                         <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -226,13 +226,13 @@ export default function BuscarConCoberturaPage() {
                                 ))}
                             </div>
                         ) : professionals.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 {professionals.map((prof: any) => (
                                     <ProfessionalCardWithCoverage key={prof.id} professional={prof} />
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                            <div className="dashboard-panel p-10 text-center">
                                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                                 <h3 className="text-xl font-bold text-gray-900 mb-2">
                                     No encontramos profesionales

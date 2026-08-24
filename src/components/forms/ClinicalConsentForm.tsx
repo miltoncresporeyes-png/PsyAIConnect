@@ -6,43 +6,55 @@ import { Check, FileText, Shield, AlertCircle } from 'lucide-react'
 interface ClinicalConsentFormProps {
     patientName: string
     professionalName: string
-    onAccept: () => void
+    professionalId: string
+    onAccept: (consentId: string) => void
     onCancel: () => void
 }
 
 export function ClinicalConsentForm({
     patientName,
     professionalName,
+    professionalId,
     onAccept,
     onCancel
 }: ClinicalConsentFormProps) {
     const [accepted, setAccepted] = useState(false)
     const [signature, setSignature] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState('')
 
     const handleSubmit = async () => {
         if (!accepted || !signature.trim()) {
-            alert('Debe aceptar el consentimiento y firmar para continuar')
+            setSubmitError('Debe aceptar el consentimiento y firmar para continuar.')
             return
         }
 
         setIsSubmitting(true)
+        setSubmitError('')
+
         try {
-            // Log consent to database
-            await fetch('/api/consent/clinical', {
+            const response = await fetch('/api/consent/clinical', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     consentType: 'CLINICAL_CONSENT',
                     digitalSignature: signature,
+                    professionalId,
                     acceptedAt: new Date().toISOString(),
                 })
             })
 
-            onAccept()
-        } catch (error) {
-            console.error('Error logging consent:', error)
-            alert('Error al registrar el consentimiento. Por favor intente nuevamente.')
+            const result = await response.json()
+
+            if (!response.ok || !result?.success || !result?.consentId) {
+                setSubmitError(result?.error || 'No fue posible registrar el consentimiento.')
+                return
+            }
+
+            onAccept(result.consentId as string)
+        } catch {
+            console.error('Error logging consent')
+            setSubmitError('Error al registrar el consentimiento. Por favor intente nuevamente.')
         } finally {
             setIsSubmitting(false)
         }
@@ -70,7 +82,7 @@ export function ClinicalConsentForm({
                     {/* Introduction */}
                     <div className="prose prose-sm max-w-none">
                         <p>
-                            Yo, <strong>{patientName}</strong>, declaro que he sido informado/a sobre los aspectos fundamentales del proceso terapéutico que iniciaré con <strong>{professionalName}</strong> a través de la plataforma PsyConnect, y otorgo mi consentimiento libre e informado para ello.
+                            Yo, <strong>{patientName}</strong>, declaro que he sido informado/a sobre los aspectos fundamentales del proceso terapéutico que iniciaré con <strong>{professionalName}</strong> a través de la plataforma PsyDoctor, y otorgo mi consentimiento libre e informado para ello.
                         </p>
                     </div>
 
@@ -119,7 +131,7 @@ export function ClinicalConsentForm({
                         <ul className="text-sm text-gray-700 space-y-1 ml-4">
                             <li>• Las sesiones <strong>NO se graban</strong> por defecto.</li>
                             <li>• Si el profesional o yo deseamos grabar por motivos clínicos o de supervisión, se solicitará consentimiento explícito previo.</li>
-                            <li>• PsyConnect (la plataforma) NO graba, almacena ni accede al contenido de las videollamadas.</li>
+                            <li>• PsyDoctor (la plataforma) NO graba, almacena ni accede al contenido de las videollamadas.</li>
                         </ul>
                     </div>
 
@@ -161,7 +173,7 @@ export function ClinicalConsentForm({
                         <h3 className="font-semibold text-gray-900 mb-2">8. Protección de Datos Personales</h3>
                         <ul className="text-sm text-gray-700 space-y-1 ml-4">
                             <li>• Mis datos personales y de salud serán tratados conforme a la Ley 19.628 de Chile.</li>
-                            <li>• He leído y acepto la <a href="/privacidad" target="_blank" className="text-primary-600 underline">Política de Privacidad</a> de PsyConnect.</li>
+                            <li>• He leído y acepto la <a href="/privacidad" target="_blank" className="text-primary-600 underline">Política de Privacidad</a> de PsyDoctor.</li>
                             <li>• Comprendo que las notas clínicas se conservarán por 15 años (normativa sanitaria).</li>
                         </ul>
                     </div>
@@ -224,6 +236,12 @@ export function ClinicalConsentForm({
                         <p>• Profesional: {professionalName}</p>
                         <p>• Este consentimiento quedará registrado de forma segura en su historial clínico.</p>
                     </div>
+
+                    {submitError && (
+                        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                            {submitError}
+                        </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex gap-3">

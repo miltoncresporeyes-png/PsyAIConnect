@@ -1,95 +1,70 @@
 import { Search, Calendar, LayoutDashboard, ArrowRightLeft } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-const steps = [
-    {
-        number: '01',
-        icon: Search,
-        title: 'Encuentra orientación',
-        description: 'Filtra por especialidad, modalidad y ubicación. Sin llamadas, sin esperas.',
-        iconBg: 'bg-emerald-50',
-        iconBorder: 'border-emerald-100',
-        iconColor: 'text-emerald-700',
-        iconHoverBg: 'group-hover:bg-emerald-100',
-        iconHoverBorder: 'group-hover:border-emerald-200',
-    },
-    {
-        number: '02',
-        icon: Calendar,
-        title: 'Agenda cuando quieras',
-        description: 'Elige horario, confirma online. Recordatorios automáticos.',
-        iconBg: 'bg-indigo-50',
-        iconBorder: 'border-indigo-100',
-        iconColor: 'text-indigo-700',
-        iconHoverBg: 'group-hover:bg-indigo-100',
-        iconHoverBorder: 'group-hover:border-indigo-200',
-    },
-    {
-        number: '03',
-        icon: LayoutDashboard,
-        title: 'Tu espacio personal',
-        description: 'Historial de sesiones, notas compartidas, todo en un lugar.',
-        iconBg: 'bg-violet-50',
-        iconBorder: 'border-violet-100',
-        iconColor: 'text-violet-700',
-        iconHoverBg: 'group-hover:bg-violet-100',
-        iconHoverBorder: 'group-hover:border-violet-200',
-    },
-    {
-        number: '04',
-        icon: ArrowRightLeft,
-        title: 'Continuidad garantizada',
-        description: 'Si cambias de profesional, tu proceso no se pierde.',
-        iconBg: 'bg-rose-50',
-        iconBorder: 'border-rose-100',
-        iconColor: 'text-rose-700',
-        iconHoverBg: 'group-hover:bg-rose-100',
-        iconHoverBorder: 'group-hover:border-rose-200',
-    },
+const iconList = [Search, Calendar, LayoutDashboard, ArrowRightLeft]
+const stepNumbers = ['01', '02', '03', '04']
+const stepStyles = [
+    { iconBg: 'bg-teal-50',    iconBorder: 'border-teal-200',    iconColor: 'text-teal-700',    cardBg: 'bg-white', accentBorder: 'hover:border-teal-300 hover:shadow-teal-100/60' },
+    { iconBg: 'bg-cyan-50',    iconBorder: 'border-cyan-200',    iconColor: 'text-cyan-700',    cardBg: 'bg-white', accentBorder: 'hover:border-cyan-300 hover:shadow-cyan-100/60' },
+    { iconBg: 'bg-emerald-50', iconBorder: 'border-emerald-200', iconColor: 'text-emerald-700', cardBg: 'bg-white', accentBorder: 'hover:border-emerald-300 hover:shadow-emerald-100/60' },
+    { iconBg: 'bg-teal-50/70', iconBorder: 'border-teal-100',    iconColor: 'text-teal-600',    cardBg: 'bg-white', accentBorder: 'hover:border-teal-200 hover:shadow-teal-100/50' },
 ]
 
-export function HowItWorksSection() {
+export async function HowItWorksSection() {
+    const t = await getTranslations('howItWorks')
+    const steps = t.raw('steps') as Array<{ title: string; description: string }>
+
     return (
-        <section id="como-funciona" className="py-16 md:py-24 bg-white">
+        <section 
+            id="como-funciona"
+            className="py-16 md:py-20 bg-slate-50"
+            aria-labelledby="how-it-works-heading"
+        >
             <div className="container-wide">
-                {/* Encabezado mejorado */}
-                <div className="max-w-3xl mx-auto text-center mb-16">
-                    <span className="inline-block px-4 py-1.5 bg-purple-100 text-purple-700 font-semibold text-sm rounded-full mb-4 uppercase tracking-wide">
-                        Para Pacientes
+                <header className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
+                    <span className="inline-block px-4 py-1.5 bg-teal-100 text-teal-700 font-semibold text-sm rounded-full mb-4 uppercase tracking-wide">
+                        {t('sectionLabel')}
                     </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-                        Cómo funciona
+                    <h2 id="how-it-works-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        {t('heading')}
                     </h2>
-                    <p className="text-xl text-gray-600 leading-relaxed">
-                        Un proceso pensado para respetar tu tiempo y tu proceso
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                        {t('subheading')}
                     </p>
-                </div>
+                </header>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-                    {/* Línea de conexión mejorada (Desktop) */}
-                    <div className="hidden lg:block absolute top-20 left-[8%] right-[8%] h-0.5 bg-gradient-to-r from-purple-200 via-indigo-200 to-rose-200 -z-10 opacity-40" />
-
-                    {steps.map((step, index) => (
-                        <div key={index} className="relative group">
-                            <div className="relative bg-white p-6 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:shadow-xl transition-all duration-300 h-full">
-                                {/* Número con mejor diseño */}
-                                <div className="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <span className="text-white font-bold text-sm">{step.number}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {steps.map((step, index) => {
+                        const Icon = iconList[index]
+                        const s = stepStyles[index]
+                        return (
+                            <article 
+                                key={index}
+                                className={`relative flex flex-col ${s.cardBg} p-7 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg ${s.accentBorder} hover:-translate-y-0.5 transition-all duration-300`}
+                            >
+                                <div 
+                                    className="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg"
+                                    aria-hidden="true"
+                                >
+                                    <span className="text-white text-sm font-bold">{stepNumbers[index]}</span>
                                 </div>
 
-                                {/* Icono mejorado */}
-                                <div className={`w-16 h-16 rounded-xl ${step.iconBg} border-2 ${step.iconBorder} flex items-center justify-center mb-5 ${step.iconHoverBg} ${step.iconHoverBorder} group-hover:scale-110 transition-all duration-300 shadow-sm mt-4`}>
-                                    <step.icon className={`w-8 h-8 ${step.iconColor}`} strokeWidth={2} />
+                                <div 
+                                    className={`w-16 h-16 rounded-xl ${s.iconBg} border-2 ${s.iconBorder} flex items-center justify-center mb-4 shadow-md`}
+                                    aria-hidden="true"
+                                >
+                                    <Icon className={`w-8 h-8 ${s.iconColor}`} strokeWidth={2} />
                                 </div>
 
-                                <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">
                                     {step.title}
                                 </h3>
-                                <p className="text-gray-600 text-base leading-relaxed">
+                                <p className="text-gray-600 text-sm leading-relaxed">
                                     {step.description}
                                 </p>
-                            </div>
-                        </div>
-                    ))}
+                            </article>
+                        )
+                    })}
                 </div>
             </div>
         </section>

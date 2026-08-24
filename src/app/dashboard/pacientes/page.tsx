@@ -44,8 +44,8 @@ export default function PacientesPage() {
                 const data = await response.json()
                 setPatients(data)
             }
-        } catch (err) {
-            console.error('Error fetching patients:', err)
+        } catch {
+            console.error('Error fetching patients')
         } finally {
             setIsLoading(false)
         }
@@ -68,14 +68,14 @@ export default function PacientesPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="container-wide">
+            <div className="dashboard-shell">
+                <div className="dashboard-container">
                     <div className="max-w-4xl mx-auto">
                         {/* Back to Dashboard */}
                         <BackToDashboard />
 
                         {/* Header */}
-                        <div className="mb-8">
+                        <div className="dashboard-header">
                             <h1 className="text-2xl font-heading font-bold text-gray-900">
                                 Mis pacientes
                             </h1>
@@ -85,7 +85,7 @@ export default function PacientesPage() {
                         </div>
 
                         {/* Search */}
-                        <div className="mb-6">
+                        <div className="mb-5">
                             <input
                                 type="text"
                                 placeholder="Buscar paciente..."
@@ -97,7 +97,7 @@ export default function PacientesPage() {
 
                         {/* Patients List */}
                         {filteredPatients.length === 0 ? (
-                            <div className="card p-12 text-center">
+                            <div className="dashboard-panel p-10 text-center">
                                 <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                     No hay pacientes aún
@@ -112,7 +112,7 @@ export default function PacientesPage() {
                                     <Link
                                         key={patient.id}
                                         href={`/dashboard/pacientes/${patient.id}`}
-                                        className="card p-6 flex items-center gap-4 hover:border-primary-200 transition-colors"
+                                        className="dashboard-panel p-5 flex items-center gap-4 hover:border-primary-200 transition-colors"
                                     >
                                         {/* Avatar */}
                                         <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
@@ -157,7 +157,7 @@ export default function PacientesPage() {
                         )}
 
                         {/* Info box */}
-                        <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-blue-700 flex items-start gap-3">
+                        <div className="mt-6 p-4 bg-blue-50 rounded-[22px] text-sm text-blue-700 flex items-start gap-3 border border-blue-100">
                             <Lock className="w-5 h-5 flex-shrink-0 mt-0.5" />
                             <p>
                                 Las notas clínicas están cifradas con AES-256. Solo tú puedes acceder a ellas.

@@ -45,8 +45,8 @@ export default function EstadisticasPage() {
                 const data = await response.json()
                 setStats(data)
             }
-        } catch (err) {
-            console.error('Error fetching stats:', err)
+        } catch {
+            console.error('Error fetching stats')
         } finally {
             setIsLoading(false)
         }
@@ -68,12 +68,12 @@ export default function EstadisticasPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="container-wide">
+            <div className="dashboard-shell">
+                <div className="dashboard-container">
                     <div className="max-w-5xl mx-auto">
                         {/* Back to Dashboard */}
                         <BackToDashboard />
-                        <div className="mb-8">
+                        <div className="dashboard-header">
                             <h1 className="text-2xl font-heading font-bold text-gray-900">
                                 Estadísticas
                             </h1>
@@ -83,7 +83,7 @@ export default function EstadisticasPage() {
                         </div>
 
                         {/* Main Stats */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                             <StatCard
                                 icon={Calendar}
                                 label="Citas totales"
@@ -111,8 +111,8 @@ export default function EstadisticasPage() {
                         </div>
 
                         {/* Comparison */}
-                        <div className="grid md:grid-cols-2 gap-6 mb-8">
-                            <div className="card p-6">
+                        <div className="grid md:grid-cols-2 gap-5 mb-6">
+                            <div className="dashboard-panel p-5">
                                 <h3 className="font-semibold text-gray-900 mb-4">Este mes vs. anterior</h3>
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1">
@@ -135,7 +135,7 @@ export default function EstadisticasPage() {
                                 </div>
                             </div>
 
-                            <div className="card p-6">
+                            <div className="dashboard-panel p-5">
                                 <h3 className="font-semibold text-gray-900 mb-4">Tasa de completado</h3>
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1">
@@ -154,7 +154,7 @@ export default function EstadisticasPage() {
 
                         {/* Empty state */}
                         {(!stats || stats.totalAppointments === 0) && (
-                            <div className="card p-12 text-center">
+                            <div className="dashboard-panel p-10 text-center">
                                 <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                     Sin datos aún
@@ -192,7 +192,7 @@ function StatCard({
     }
 
     return (
-        <div className="card p-6">
+        <div className="dashboard-panel p-5">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[color]} mb-4`}>
                 <Icon className="w-6 h-6" />
             </div>

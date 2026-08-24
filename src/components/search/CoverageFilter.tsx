@@ -60,8 +60,8 @@ export function CoverageFilter({ onCoverageChange }: CoverageFilterProps) {
                 const data = await response.json()
                 setIsapres(data.isapres)
             }
-        } catch (error) {
-            console.error('Error fetching isapres:', error)
+        } catch {
+            console.error('Error fetching isapres')
         }
     }
 
@@ -72,8 +72,8 @@ export function CoverageFilter({ onCoverageChange }: CoverageFilterProps) {
                 const data = await response.json()
                 setFonasaTramos(data.tramos)
             }
-        } catch (error) {
-            console.error('Error fetching fonasa tramos:', error)
+        } catch {
+            console.error('Error fetching fonasa tramos')
         }
     }
 

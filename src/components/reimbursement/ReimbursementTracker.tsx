@@ -48,8 +48,8 @@ export default function ReimbursementTracker() {
                 const data = await res.json()
                 setRequests(data)
             }
-        } catch (error) {
-            console.error('Error loading requests:', error)
+        } catch {
+            console.error('Error loading requests')
         } finally {
             setLoading(false)
         }

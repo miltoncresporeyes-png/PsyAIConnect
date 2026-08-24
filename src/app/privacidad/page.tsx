@@ -1,10 +1,11 @@
 import { Header, Footer } from '@/components/layout'
 import Link from 'next/link'
 import '@/styles/legal.css'
+import { BackButton } from '@/components/ui/BackButton'
 
 export const metadata = {
-    title: 'Política de Privacidad | PsyConnect',
-    description: 'Política de privacidad y protección de datos de PsyConnect - Cumplimiento Ley 19.628 Chile',
+    title: 'Política de Privacidad | PsyDoctor',
+    description: 'Política de privacidad y protección de datos de PsyDoctor - Cumplimiento Ley 19.628 Chile',
 }
 
 export default function PrivacidadPage() {
@@ -128,7 +129,7 @@ export default function PrivacidadPage() {
 
                             <h2 id="seccion-1" className="legal-section-title">1º Introducción.</h2>
                             <p className="legal-paragraph">
-                                En <strong className="text-gray-900">PsyConnect</strong> (en adelante, "nosotros", "nuestro" o "la <strong>Plataforma</strong>"), operado por <strong>FTC Consultores Chile SpA</strong>, <strong>RUT 76.048.028-8</strong>, nos comprometemos a proteger la privacidad y los datos personales de nuestros usuarios.
+                                En <strong className="text-gray-900">PsyDoctor</strong> (en adelante, "nosotros", "nuestro" o "la <strong>Plataforma</strong>"), operado por <strong>FTC Consultores Chile SpA</strong>, <strong>RUT 76.048.028-8</strong>, nos comprometemos a proteger la privacidad y los datos personales de nuestros usuarios.
                             </p>
                             <p className="legal-paragraph">
                                 Esta Política de Privacidad describe cómo recopilamos, usamos, almacenamos, compartimos y protegemos su información personal cuando utiliza nuestra plataforma digital de conexión entre pacientes y profesionales de salud mental.
@@ -147,7 +148,7 @@ export default function PrivacidadPage() {
                                 <p><strong>Responsable:</strong> FTC Consultores Chile SpA</p>
                                 <p><strong>RUT:</strong> 76.048.028-8</p>
                                 <p><strong>Domicilio:</strong> Padre Alberto Hurtado 0131, Estación Central, Santiago, Región Metropolitana</p>
-                                <p><strong>Email de Privacidad:</strong> <a href="mailto:privacidad@psyconnect.cl" className="legal-link">privacidad@psyconnect.cl</a></p>
+                                <p><strong>Email de Privacidad:</strong> <a href="mailto:privacidad@psydoctor.cl" className="legal-link">privacidad@psydoctor.cl</a></p>
                                 <p><strong>DPO:</strong> [En proceso de designación]</p>
                             </div>
 
@@ -202,7 +203,7 @@ export default function PrivacidadPage() {
                                 <li className="legal-list-item">Tokens de pasarela de pago</li>
                             </ul>
                             <p className="legal-paragraph text-gray-700" style={{ fontSize: '0.875rem' }}>
-                                <strong>Nota:</strong> Los datos completos de tarjetas NO se almacenan en PsyConnect, son manejados por procesadores certificados PCI-DSS.
+                                <strong>Nota:</strong> Los datos completos de tarjetas NO se almacenan en PsyDoctor, son manejados por procesadores certificados PCI-DSS.
                             </p>
 
                             <h3 className="legal-subsection-title">4.6 Datos Sensibles de Salud</h3>
@@ -212,7 +213,7 @@ export default function PrivacidadPage() {
                                     Las <strong>notas clínicas</strong> son creadas exclusivamente por profesionales y están almacenadas con <strong>cifrado punto-a-punto AES-256</strong>.
                                 </p>
                                 <p className="legal-alert-content mb-0">
-                                    <strong>PsyConnect NO accede, lee ni procesa el contenido clínico de las notas para ningún fin.</strong>
+                                    <strong>PsyDoctor NO accede, lee ni procesa el contenido clínico de las notas para ningún fin.</strong>
                                 </p>
                             </div>
 
@@ -288,7 +289,7 @@ export default function PrivacidadPage() {
 
                             <div className="legal-alert legal-alert-success">
                                 <p className="legal-alert-content text-bold mb-0" style={{ color: '#047857' }}>
-                                    ✓ PsyConnect NUNCA vende, alquila ni comercializa datos personales de usuarios a terceros.
+                                    ✓ PsyDoctor NUNCA vende, alquila ni comercializa datos personales de usuarios a terceros.
                                 </p>
                             </div>
 
@@ -355,7 +356,7 @@ export default function PrivacidadPage() {
 
                             <h3 className="legal-subsection-title">Cómo Ejercer Sus Derechos</h3>
                             <div className="legal-info-box">
-                                <p><strong>Email:</strong> <a href="mailto:privacidad@psyconnect.cl" className="legal-link">privacidad@psyconnect.cl</a></p>
+                                <p><strong>Email:</strong> <a href="mailto:privacidad@psydoctor.cl" className="legal-link">privacidad@psydoctor.cl</a></p>
                                 <p className="mb-0"><strong>Tiempo de respuesta:</strong> Máximo 30 días hábiles</p>
                             </div>
 
@@ -372,7 +373,7 @@ export default function PrivacidadPage() {
 
                             <h2 id="seccion-11" className="legal-section-title">11º Menores de Edad.</h2>
                             <p className="legal-paragraph">
-                                PsyConnect está dirigido a <strong>mayores de 18 años</strong>. No recopilamos intencionalmente datos de menores sin consentimiento parental verificado.
+                                PsyDoctor está dirigido a <strong>mayores de 18 años</strong>. No recopilamos intencionalmente datos de menores sin consentimiento parental verificado.
                             </p>
                             <p className="legal-paragraph">
                                 Si un profesional atiende a pacientes menores de edad, el consentimiento debe ser otorgado por el tutor legal.
@@ -385,7 +386,7 @@ export default function PrivacidadPage() {
 
                             <h2 id="seccion-13" className="legal-section-title">13º Contacto y Reclamos.</h2>
                             <div className="legal-contact-box">
-                                <p><strong>Email:</strong> <a href="mailto:privacidad@psyconnect.cl" className="legal-link">privacidad@psyconnect.cl</a></p>
+                                <p><strong>Email:</strong> <a href="mailto:privacidad@psydoctor.cl" className="legal-link">privacidad@psydoctor.cl</a></p>
                                 <p><strong>Domicilio:</strong> Padre Alberto Hurtado 0131, Estación Central, Santiago, Región Metropolitana</p>
                                 <p><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00 hrs (Chile)</p>
                             </div>
@@ -401,15 +402,13 @@ export default function PrivacidadPage() {
 
                             <div className="legal-footer">
                                 <p className="legal-footer-text text-bold">
-                                    Esta Política de Privacidad constituye un compromiso vinculante de PsyConnect con sus usuarios.
+                                    Esta Política de Privacidad constituye un compromiso vinculante de PsyDoctor con sus usuarios.
                                 </p>
                                 <div className="legal-footer-links">
                                     <Link href="/terminos" className="legal-link">
                                         Ver Términos y Condiciones
                                     </Link>
-                                    <Link href="/" className="legal-link">
-                                        Volver al inicio
-                                    </Link>
+                                    <BackButton variant="chevron" className="legal-link" />
                                 </div>
                             </div>
 

@@ -7,8 +7,8 @@ import { Loader2, CheckCircle, XCircle, Calendar } from 'lucide-react'
 
 function ConfirmacionContent() {
     const searchParams = useSearchParams()
-    const status = searchParams.get('status') || 'success'
-    const appointmentId = searchParams.get('appointmentId')
+    const status = searchParams?.get('status') || 'success'
+    const appointmentId = searchParams?.get('appointmentId')
 
     const isSuccess = status === 'success' || status === '2' // Flow status 2 = completed
 
@@ -126,7 +126,7 @@ export default function ConfirmacionPagoPage() {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
                 </div>

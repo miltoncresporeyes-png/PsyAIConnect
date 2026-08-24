@@ -46,7 +46,7 @@ export default function OlvideContrasenaPage() {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
                 </div>

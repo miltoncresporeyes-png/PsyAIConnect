@@ -93,6 +93,35 @@ Este conjunto de documentos contiene la **arquitectura técnica completa** de lo
 
 ---
 
+### 6️⃣ **PHASE3_QA_CHECKLIST.md / PHASE4_GOLIVE_CHECKLIST.md / PHASE5_POSTLAUNCH_CHECKLIST.md**
+**Propósito**: Control operativo de salida a producción y estabilización
+
+**Contenido**:
+- ✅ Checklist de QA y hardening de Fase 3
+- ✅ Evidencia de simulaciones P1 (`PHASE3_P1_SIMULATION_EVIDENCE.md`)
+- ✅ Checklist de go-live readiness (Fase 4)
+- ✅ Evidencia de smoke tests (`PHASE4_SMOKE_EVIDENCE.md`)
+- ✅ Acta de cierre parcial Fase 4 + plan inmediato Fase 5 (`PHASE4_CIERRE_PARCIAL_Y_PLAN_FASE5.md`)
+- ✅ Checklist de estabilización post-lanzamiento (Fase 5)
+- ✅ Tablero operativo semana 1 Fase 5 (`PHASE5_WEEK1_OPERATING_DASHBOARD.md`)
+- ✅ Playbook diario operativo Fase 5.1 (`PHASE5_DAILY_PLAYBOOK.md`)
+- ✅ Plantilla operativa de incidentes (`INCIDENT_P1_P2_TEMPLATE.md`)
+- ✅ Guia de programacion diaria en Windows (`OPS_REPORT_SCHEDULER_WINDOWS.md`)
+- ✅ Automatizacion de review semanal (`npm run ops:weekly`)
+- ✅ Programacion semanal automatica (`npm run ops:weekly:schedule`)
+- ✅ Ritual semanal de priorizacion (`PHASE5_WEEKLY_REVIEW_RITUAL.md`)
+- ✅ Acta semanal automatizada (`npm run ops:decisions`)
+- ✅ Programacion automatica de acta semanal (`npm run ops:decisions:schedule`)
+- ✅ Baseline y ajuste de umbrales (`npm run ops:baseline`)
+- ✅ Bootstrap baseline de 3 dias (`npm run ops:backfill:3`)
+- ✅ Snapshot ejecutivo de avance (`npm run ops:status`)
+- ✅ Snapshot de go-live readiness (`npm run ops:golive:status`)
+- ✅ Diseno de pruebas locales (`LOCAL_TESTING_DESIGN.md`)
+
+**Para quién**: Tech Lead, QA, Ops, Product
+
+---
+
 ## 🗂️ Estructura de Archivos
 
 ```
@@ -102,6 +131,17 @@ c:\workspace\PsyAI\docs\
 ├── RESUMEN_EJECUTIVO_ARQUITECTURA.md           (45 KB)
 ├── CODIGO_EJEMPLOS_QUICK_START.md              (38 KB)
 ├── BETA_LAUNCH_IMPLEMENTATION.md               (28 KB)
+├── PHASE3_QA_CHECKLIST.md                      (QA operativo)
+├── PHASE3_P1_SIMULATION_EVIDENCE.md            (evidencia P1)
+├── PHASE4_GOLIVE_CHECKLIST.md                  (go-live)
+├── PHASE4_SMOKE_EVIDENCE.md                    (evidencia smoke)
+├── PHASE4_CIERRE_PARCIAL_Y_PLAN_FASE5.md       (acta + plan)
+├── PHASE5_POSTLAUNCH_CHECKLIST.md              (post-lanzamiento)
+├── PHASE5_WEEK1_OPERATING_DASHBOARD.md         (tablero semana 1)
+├── PHASE5_WEEKLY_REVIEW_RITUAL.md              (ritual semanal)
+├── PHASE5_DAILY_PLAYBOOK.md                    (playbook diario)
+├── INCIDENT_P1_P2_TEMPLATE.md                  (plantilla incidentes)
+├── OPS_REPORT_SCHEDULER_WINDOWS.md             (scheduler Windows)
 └── README_DOCUMENTACION.md                     (este archivo)
 ```
 

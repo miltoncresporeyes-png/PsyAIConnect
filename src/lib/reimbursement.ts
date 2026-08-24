@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Reimbursement Service
  * 
  * Handles generation of reimbursement kits, validation of appointments,
@@ -53,24 +53,24 @@ export async function validateAppointmentsForReimbursement(
         for (const apt of appointments) {
             const dateStr = new Date(apt.scheduledAt).toLocaleDateString('es-CL')
 
-            // Validar que esté completada
+            // Validar que estÃ© completada
             if (apt.status !== 'COMPLETED') {
-                errors.push(`La sesión del ${dateStr} no está completada`)
+                errors.push(`La sesiÃ³n del ${dateStr} no estÃ¡ completada`)
             }
 
             // Validar que tenga boleta
             if (!apt.invoice) {
-                errors.push(`La sesión del ${dateStr} no tiene boleta generada`)
+                errors.push(`La sesiÃ³n del ${dateStr} no tiene boleta generada`)
             }
 
-            // Validar que esté pagada
+            // Validar que estÃ© pagada
             if (apt.payment?.status !== 'COMPLETED') {
-                errors.push(`La sesión del ${dateStr} no está pagada`)
+                errors.push(`La sesiÃ³n del ${dateStr} no estÃ¡ pagada`)
             }
 
-            // Validar que no esté ya en otra solicitud
+            // Validar que no estÃ© ya en otra solicitud
             if (apt.reimbursementRequestId) {
-                errors.push(`La sesión del ${dateStr} ya está en otra solicitud de reembolso`)
+                errors.push(`La sesiÃ³n del ${dateStr} ya estÃ¡ en otra solicitud de reembolso`)
             }
         }
 
@@ -88,7 +88,7 @@ export async function validateAppointmentsForReimbursement(
 }
 
 /**
- * Calcula el reembolso estimado según la Isapre
+ * Calcula el reembolso estimado segÃºn la Isapre
  */
 export function calculateEstimatedReimbursement(
     totalAmount: number,
@@ -146,19 +146,19 @@ export async function generateReimbursementKit(
         const doc = new jsPDF()
 
         // ============================================
-        // PÁGINA 1: PORTADA Y RESUMEN
+        // PÃGINA 1: PORTADA Y RESUMEN
         // ============================================
 
         // Header
         doc.setFontSize(20)
         doc.setTextColor(79, 70, 229) // Indigo
-        doc.text('PsyConnect', 14, 20)
+        doc.text('PsyDoctor', 14, 20)
 
         doc.setFontSize(18)
         doc.setTextColor(0, 0, 0)
         doc.text('Kit de Reembolso', 14, 32)
 
-        // Línea separadora
+        // LÃ­nea separadora
         doc.setDrawColor(200, 200, 200)
         doc.line(14, 38, 196, 38)
 
@@ -171,16 +171,16 @@ export async function generateReimbursementKit(
         doc.setTextColor(0, 0, 0)
         doc.text(`Nombre: ${request.patient.name}`, 14, 56)
         doc.text(`RUT: ${request.patient.patientProfile?.rut || 'No registrado'}`, 14, 62)
-        doc.text(`Previsión: ${request.isapre?.name || 'FONASA'}`, 14, 68)
+        doc.text(`PrevisiÃ³n: ${request.isapre?.name || 'FONASA'}`, 14, 68)
 
-        // Período
+        // PerÃ­odo
         const monthNames = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ]
         const monthName = monthNames[request.month - 1]
-        doc.text(`Período: ${monthName} ${request.year}`, 14, 74)
-        doc.text(`Fecha de generación: ${new Date().toLocaleDateString('es-CL')}`, 14, 80)
+        doc.text(`PerÃ­odo: ${monthName} ${request.year}`, 14, 74)
+        doc.text(`Fecha de generaciÃ³n: ${new Date().toLocaleDateString('es-CL')}`, 14, 80)
 
         // Resumen de sesiones
         doc.setFontSize(12)
@@ -205,7 +205,7 @@ export async function generateReimbursementKit(
 
         autoTable(doc, {
             startY: 102,
-            head: [['Fecha', 'Profesional', 'N° Boleta', 'Duración', 'Monto']],
+            head: [['Fecha', 'Profesional', 'NÂ° Boleta', 'DuraciÃ³n', 'Monto']],
             body: tableData,
             theme: 'grid',
             headStyles: { fillColor: [79, 70, 229], fontSize: 9 },
@@ -225,23 +225,23 @@ export async function generateReimbursementKit(
 
         doc.setFontSize(8)
         doc.setTextColor(100, 100, 100)
-        doc.text('* El monto real puede variar según tu plan y cobertura', 14, finalY + 23)
+        doc.text('* El monto real puede variar segÃºn tu plan y cobertura', 14, finalY + 23)
 
         // ============================================
-        // PÁGINA 2: BOLETAS DE HONORARIOS
+        // PÃGINA 2: BOLETAS DE HONORARIOS
         // ============================================
 
         doc.addPage()
         doc.setFontSize(14)
         doc.setTextColor(0, 0, 0)
-        doc.text('Boletas de Honorarios Electrónicas', 14, 20)
+        doc.text('Boletas de Honorarios ElectrÃ³nicas', 14, 20)
 
         let yPos = 30
 
         for (const apt of request.appointments) {
             if (!apt.invoice) continue
 
-            // Verificar si necesitamos nueva página
+            // Verificar si necesitamos nueva pÃ¡gina
             if (yPos > 250) {
                 doc.addPage()
                 yPos = 20
@@ -253,19 +253,19 @@ export async function generateReimbursementKit(
 
             doc.setFontSize(10)
             doc.setTextColor(0, 0, 0)
-            doc.text(`Boleta N°: ${apt.invoice.invoiceNumber}`, 18, yPos + 8)
+            doc.text(`Boleta NÂ°: ${apt.invoice.invoiceNumber}`, 18, yPos + 8)
             doc.text(`Fecha: ${new Date(apt.invoice.issueDate).toLocaleDateString('es-CL')}`, 18, yPos + 15)
 
             doc.setFontSize(9)
             doc.text(`Profesional: ${apt.professional.user.name}`, 18, yPos + 22)
             doc.text(`RUT: ${apt.professional.rut}`, 18, yPos + 28)
 
-            doc.text(`Prestación: Psicoterapia Individual`, 120, yPos + 22)
-            doc.text(`Duración: ${apt.duration} minutos`, 120, yPos + 28)
+            doc.text(`PrestaciÃ³n: Psicoterapia Individual`, 120, yPos + 22)
+            doc.text(`DuraciÃ³n: ${apt.duration} minutos`, 120, yPos + 28)
 
             doc.setFontSize(10)
             doc.text(`Monto Bruto: ${formatCurrency(apt.invoice.brutAmount)}`, 18, yPos + 36)
-            doc.text(`Retención SII: ${formatCurrency(apt.invoice.siiRetention)}`, 18, yPos + 42)
+            doc.text(`RetenciÃ³n SII: ${formatCurrency(apt.invoice.siiRetention)}`, 18, yPos + 42)
 
             doc.setTextColor(34, 197, 94)
             doc.text(`Monto Neto: ${formatCurrency(apt.invoice.netAmount)}`, 120, yPos + 36)
@@ -274,7 +274,7 @@ export async function generateReimbursementKit(
         }
 
         // ============================================
-        // PÁGINA 3: CERTIFICADO DE ASISTENCIA
+        // PÃGINA 3: CERTIFICADO DE ASISTENCIA
         // ============================================
 
         doc.addPage()
@@ -291,7 +291,7 @@ Por medio del presente, se certifica que el/la paciente:
 ${request.patient.name}
 RUT: ${request.patient.patientProfile?.rut || 'No registrado'}
 
-Asistió a las siguientes sesiones de psicoterapia durante el período de ${monthName} ${request.year}:
+AsistiÃ³ a las siguientes sesiones de psicoterapia durante el perÃ­odo de ${monthName} ${request.year}:
     `.trim()
 
         const lines = doc.splitTextToSize(certText, 170)
@@ -314,23 +314,23 @@ Asistió a las siguientes sesiones de psicoterapia durante el período de ${mont
         yPos += 15
         doc.setFontSize(8)
         doc.setTextColor(100, 100, 100)
-        doc.text('Este certificado es generado automáticamente por PsyConnect', 14, yPos)
-        doc.text('y tiene validez para trámites de reembolso ante Isapres y FONASA.', 14, yPos + 5)
+        doc.text('Este certificado es generado automÃ¡ticamente por PsyDoctor', 14, yPos)
+        doc.text('y tiene validez para trÃ¡mites de reembolso ante Isapres y FONASA.', 14, yPos + 5)
 
-        // Footer en todas las páginas
+        // Footer en todas las pÃ¡ginas
         const pageCount = doc.getNumberOfPages()
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i)
             doc.setFontSize(8)
             doc.setTextColor(150, 150, 150)
             doc.text(
-                `Página ${i} de ${pageCount}`,
+                `PÃ¡gina ${i} de ${pageCount}`,
                 doc.internal.pageSize.width / 2,
                 doc.internal.pageSize.height - 10,
                 { align: 'center' }
             )
             doc.text(
-                'Generado por PsyConnect - www.psyconnect.cl',
+                'Generado por PsyDoctor - www.PsyDoctor.cl',
                 14,
                 doc.internal.pageSize.height - 10
             )
@@ -430,3 +430,4 @@ export async function formatReimbursementData(requestId: string) {
         createdAt: request.createdAt
     }
 }
+

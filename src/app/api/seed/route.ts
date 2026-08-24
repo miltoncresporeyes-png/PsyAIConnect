@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,12 +46,41 @@ const TEST_USERS = [
 /**
  * GET /api/seed - Create test users (development only)
  */
-export async function GET() {
+export async function GET(request: Request) {
     // Only allow in development
     if (process.env.NODE_ENV === 'production') {
         return NextResponse.json(
             { error: 'Seed not allowed in production' },
             { status: 403 }
+        )
+    }
+
+    const seedApiKey = process.env.SEED_API_KEY
+    const providedSeedKey = request.headers.get('x-seed-key')
+    if (!seedApiKey) {
+        return NextResponse.json(
+            { error: 'SEED_API_KEY no configurada. No se permite ejecutar seed.' },
+            { status: 403 }
+        )
+    }
+
+    if (!providedSeedKey || providedSeedKey !== seedApiKey) {
+        return NextResponse.json(
+            { error: 'x-seed-key invalida o ausente' },
+            { status: 403 }
+        )
+    }
+
+    const clientIp = getClientIp(request)
+    const seedLimit = checkRateLimit(`seed:run:${clientIp}`, {
+        limit: 5,
+        windowMs: 60 * 60 * 1000,
+    })
+
+    if (!seedLimit.allowed) {
+        return NextResponse.json(
+            { error: 'Demasiadas ejecuciones de seed. Intenta nuevamente mas tarde.' },
+            { status: 429, headers: createRateLimitHeaders(seedLimit) }
         )
     }
 

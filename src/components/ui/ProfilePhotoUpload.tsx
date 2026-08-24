@@ -38,8 +38,8 @@ export function ProfilePhotoUpload({ value, onChange, error }: ProfilePhotoUploa
                 setIsUploading(false)
             }
             reader.readAsDataURL(file)
-        } catch (err) {
-            console.error('Error reading file:', err)
+        } catch {
+            console.error('Error reading file')
             setIsUploading(false)
         }
     }

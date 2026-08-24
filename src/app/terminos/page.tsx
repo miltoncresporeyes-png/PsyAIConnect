@@ -1,10 +1,11 @@
 import { Header, Footer } from '@/components/layout'
 import Link from 'next/link'
 import '@/styles/legal.css'
+import { BackButton } from '@/components/ui/BackButton'
 
 export const metadata = {
-    title: 'Términos y Condiciones | PsyConnect',
-    description: 'Términos y condiciones de uso de la plataforma PsyConnect - Plataforma de intermediación para servicios de salud mental',
+    title: 'Términos y Condiciones | PsyDoctor',
+    description: 'Términos y condiciones de uso de la plataforma PsyDoctor - Plataforma de intermediación para servicios de salud mental',
 }
 
 export default function TerminosPage() {
@@ -98,7 +99,7 @@ export default function TerminosPage() {
                             </h1>
                             <div className="legal-metadata">
                                 <span className="legal-metadata-item">
-                                    <strong>Versión:</strong> 1.0
+                                    <strong>Versión:</strong> 1.1
                                 </span>
                                 <span className="legal-metadata-separator">•</span>
                                 <span className="legal-metadata-item">
@@ -116,13 +117,13 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-1" className="legal-section-title">1º Introducción y Aceptación.</h2>
                             <p className="legal-paragraph">
-                                Bienvenido/a a <strong className="text-gray-900">PsyConnect</strong> (en adelante, "la <strong>Plataforma</strong>", "nosotros", "nuestro" o "<strong>PsyConnect</strong>").
+                                Bienvenido/a a <strong className="text-gray-900">PsyDoctor</strong> (en adelante, "la <strong>Plataforma</strong>", "nosotros", "nuestro" o "<strong>PsyDoctor</strong>").
                             </p>
                             <p className="legal-paragraph">
-                                <strong className="text-gray-900">PsyConnect</strong> es una plataforma tecnológica operada por <strong>FTC Consultores Chile SpA</strong>, RUT <strong>76.048.028-8</strong>, con domicilio en <strong>Padre Alberto Hurtado 0131, Estación Central, Santiago, Región Metropolitana</strong>.
+                                <strong className="text-gray-900">PsyDoctor</strong> es una plataforma tecnológica operada por <strong>FTC Consultores Chile SpA</strong>, RUT <strong>76.048.028-8</strong>, con domicilio en <strong>Padre Alberto Hurtado 0131, Estación Central, Santiago, Región Metropolitana</strong>.
                             </p>
                             <p className="legal-paragraph">
-                                Al acceder, registrarse o utilizar cualquier funcionalidad de <strong className="text-gray-900">PsyConnect</strong>, usted (en adelante, "el <strong>Usuario</strong>", "usted" o "su") acepta expresamente estos Términos y Condiciones, así como nuestra <Link href="/privacidad" className="legal-link">Política de Privacidad</Link> y demás políticas complementarias.
+                                Al acceder, registrarse o utilizar cualquier funcionalidad de <strong className="text-gray-900">PsyDoctor</strong>, usted (en adelante, "el <strong>Usuario</strong>", "usted" o "su") acepta expresamente estos Términos y Condiciones, así como nuestra <Link href="/privacidad" className="legal-link">Política de Privacidad</Link> y demás políticas complementarias.
                             </p>
                             <p className="legal-paragraph text-semibold text-gray-900">
                                 Si no está de acuerdo con estos términos, no utilice la Plataforma.
@@ -130,31 +131,31 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-2" className="legal-section-title">2º Naturaleza del Servicio.</h2>
 
-                            <h3 className="legal-subsection-title">2.1 PsyConnect como Intermediario Tecnológico</h3>
+                            <h3 className="legal-subsection-title">2.1 PsyDoctor como Marketplace e Intermediario Tecnológico</h3>
                             <div className="legal-alert legal-alert-important">
-                                <p className="legal-alert-title">⚠️ IMPORTANTE</p>
+                                <p className="legal-alert-title">⚠️ IMPORTANTE: ROL DE INTERMEDIACIÓN</p>
                                 <p className="legal-alert-content">
-                                    <strong className="text-gray-900">PsyConnect</strong> <strong>NO es un proveedor de servicios de salud mental</strong> ni una institución clínica. Somos una <strong>plataforma de intermediación digital</strong> que:
+                                    <strong className="text-gray-900">PsyDoctor</strong> es un <strong>marketplace de servicios</strong> de salud mental. Actúa de manera exclusiva como un **canal de comunicación y herramientas de apoyo administrativo** entre profesionales independientes y pacientes. La Plataforma:
                                 </p>
                                 <ul className="legal-list mt-4">
-                                    <li className="legal-list-item">Conecta a pacientes con profesionales independientes de salud mental</li>
-                                    <li className="legal-list-item">Facilita la búsqueda, comparación y reserva de sesiones terapéuticas</li>
-                                    <li className="legal-list-item">Proporciona herramientas administrativas (agenda, pagos, notas clínicas cifradas)</li>
-                                    <li className="legal-list-item">Procesa pagos de forma segura entre pacientes y profesionales</li>
+                                    <li className="legal-list-item">Dispone de un directorio digital para conectar a pacientes con profesionales independientes de salud mental.</li>
+                                    <li className="legal-list-item">Facilita la búsqueda, comparación y reserva de sesiones.</li>
+                                    <li className="legal-list-item">Proporciona infraestructura tecnológica (videollamadas, agenda, procesamiento de pagos).</li>
+                                    <li className="legal-list-item"><strong>No es responsable de la experiencia final del cliente</strong>, ni del resultado clínico de las consultas.</li>
                                 </ul>
                             </div>
 
-                            <h3 className="legal-subsection-title">2.2 Responsabilidad Profesional Independiente</h3>
+                            <h3 className="legal-subsection-title">2.2 Responsabilidad Profesional Independiente y Ficha Clínica</h3>
                             <p className="legal-paragraph">
-                                Todos los servicios clínicos son provistos exclusivamente por <strong>profesionales independientes</strong> debidamente licenciados. <strong className="text-gray-900">PsyConnect</strong>:
+                                Todos los servicios profesionales de salud son provistos exclusivamente por <strong>profesionales independientes</strong> debidamente acreditados en la Superintendencia de Salud de Chile. En consecuencia:
                             </p>
                             <ul className="legal-list">
-                                <li className="legal-list-item">No emplea a los profesionales listados en la <strong>Plataforma</strong></li>
-                                <li className="legal-list-item">No supervisa la práctica clínica ni el contenido terapéutico de las sesiones</li>
-                                <li className="legal-list-item">No controla, garantiza ni asume responsabilidad por la calidad, seguridad, efectividad o legalidad de los servicios profesionales prestados</li>
+                                <li className="legal-list-item">PsyDoctor no emplea, contrata ni tiene relaciones de subordinación con los profesionales listados.</li>
+                                <li className="legal-list-item">La relación clínica y contractual se constituye de forma directa y exclusiva entre el profesional y el paciente.</li>
+                                <li className="legal-list-item">De acuerdo con la <strong>Ley N° 20.584</strong>, el profesional independiente es el único responsable y custodio legal de la <strong>Ficha Clínica</strong>. PsyDoctor actúa solo como un proveedor de software con cifrado punto-a-punto y no tiene acceso, control ni custodia de dicho historial clínico.</li>
                             </ul>
                             <p className="legal-paragraph text-semibold text-gray-900">
-                                Cada profesional es legalmente responsable de su práctica, diagnósticos, tratamientos y cumplimiento de normativas sanitarias aplicables.
+                                Cada profesional es legalmente responsable de su propia práctica, diagnósticos, tratamientos, indicaciones médicas y de la experiencia general del paciente durante la consulta.
                             </p>
 
                             <h2 id="seccion-3" className="legal-section-title">3º Registro y Cuentas de Usuario.</h2>
@@ -195,11 +196,11 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-5" className="legal-section-title">5º Pagos y Tarifas.</h2>
                             <p className="legal-paragraph">
-                                Los pagos son procesados por <strong>pasarelas de pago certificadas PCI-DSS</strong> (Flow.cl, Stripe). <strong className="text-gray-900">PsyConnect</strong> no almacena datos completos de tarjetas de crédito.
+                                Los pagos son procesados por <strong>pasarelas de pago certificadas PCI-DSS</strong> (Flow.cl, Stripe). <strong className="text-gray-900">PsyDoctor</strong> no almacena datos completos de tarjetas de crédito.
                             </p>
                             <ul className="legal-list">
                                 <li className="legal-list-item">Los precios son fijados libremente por cada profesional</li>
-                                <li className="legal-list-item"><strong className="text-gray-900">PsyConnect</strong> cobra una comisión de servicio sobre cada transacción</li>
+                                <li className="legal-list-item"><strong className="text-gray-900">PsyDoctor</strong> cobra una comisión de servicio sobre cada transacción</li>
                                 <li className="legal-list-item">Los reembolsos se procesan en 5-10 días hábiles</li>
                             </ul>
 
@@ -221,7 +222,7 @@ export default function TerminosPage() {
                                     </ul>
                                 </div>
                                 <p className="legal-alert-content mb-0">
-                                    <strong className="text-gray-900">PsyConnect</strong> no ofrece servicios de intervención en crisis ni atención de emergencia.
+                                    <strong className="text-gray-900">PsyDoctor</strong> no ofrece servicios de intervención en crisis ni atención de emergencia.
                                 </p>
                             </div>
 
@@ -230,38 +231,38 @@ export default function TerminosPage() {
                                 El tratamiento de sus datos personales se rige por nuestra <Link href="/privacidad" className="legal-link">Política de Privacidad</Link>, en cumplimiento de la <strong>Ley N° 19.628</strong> sobre Protección de la Vida Privada de Chile.
                             </p>
                             <p className="legal-paragraph">
-                                Las <strong>notas clínicas</strong> son responsabilidad exclusiva del profesional tratante y están protegidas con <strong>cifrado punto-a-punto AES-256</strong>. <strong className="text-gray-900">PsyConnect</strong> no accede, lee ni procesa el contenido clínico.
+                                Las <strong>notas clínicas</strong> son responsabilidad exclusiva del profesional tratante y están protegidas con <strong>cifrado punto-a-punto AES-256</strong>. <strong className="text-gray-900">PsyDoctor</strong> no accede, lee ni procesa el contenido clínico.
                             </p>
 
                             <h2 id="seccion-8" className="legal-section-title">8º Limitación de Responsabilidad.</h2>
 
                             <h3 className="legal-subsection-title">8.1 Exclusión de Garantías</h3>
                             <p className="legal-paragraph">
-                                PsyConnect proporciona la Plataforma <strong>"TAL CUAL"</strong> y <strong>"SEGÚN DISPONIBILIDAD"</strong>, sin garantías de ningún tipo respecto a:
+                                PsyDoctor proporciona la Plataforma y sus herramientas de comunicación <strong>"TAL CUAL"</strong> y <strong>"SEGÚN DISPONIBILIDAD"</strong>, sin garantías de ningún tipo respecto a:
                             </p>
                             <ul className="legal-list">
-                                <li className="legal-list-item">Disponibilidad continua o libre de errores</li>
-                                <li className="legal-list-item">Resultados terapéuticos específicos</li>
-                                <li className="legal-list-item">Compatibilidad total con todos los dispositivos</li>
+                                <li className="legal-list-item">Disponibilidad ininterrumpida o libre de errores de red o servidores.</li>
+                                <li className="legal-list-item">Resultados o efectividad terapéutica específicos de las atenciones.</li>
+                                <li className="legal-list-item">Compatibilidad total con el hardware del usuario.</li>
                             </ul>
 
-                            <h3 className="legal-subsection-title">8.2 No Responsabilidad por Servicios Profesionales</h3>
+                            <h3 className="legal-subsection-title">8.2 No Responsabilidad por Servicios Profesionales y Experiencia del Cliente</h3>
                             <p className="legal-paragraph text-bold text-gray-900">
-                                <strong className="text-gray-900">PsyConnect</strong> NO ES RESPONSABLE por:
+                                Dado que PsyDoctor es un marketplace y solo dispone de un canal de comunicación e intermediación tecnológica, <strong className="text-gray-900">PsyDoctor NO SE HACE RESPONSABLE</strong> bajo ninguna circunstancia por:
                             </p>
                             <ul className="legal-list">
-                                <li className="legal-list-item">La calidad, eficacia o resultados de los servicios clínicos prestados por profesionales</li>
-                                <li className="legal-list-item">Diagnósticos, tratamientos o consejos proporcionados por profesionales</li>
-                                <li className="legal-list-item">Daños derivados de la relación terapéutica entre el <strong>Usuario</strong> y el profesional</li>
-                                <li className="legal-list-item">Incumplimientos contractuales, negligencia o mala praxis del profesional</li>
+                                <li className="legal-list-item">La experiencia final del paciente o profesional durante o después del uso de los servicios de comunicación de la Plataforma.</li>
+                                <li className="legal-list-item">La calidad, veracidad, idoneidad o resultados de las consultas o terapias clínicas prestadas.</li>
+                                <li className="legal-list-item">Diagnósticos, recetas, tratamientos, opiniones o conductas del profesional.</li>
+                                <li className="legal-list-item">Cualquier perjuicio derivado de la relación clínica, negligencia, mala praxis o incumplimiento por parte del profesional independiente.</li>
                             </ul>
                             <p className="legal-paragraph">
-                                Cualquier reclamación relacionada con la práctica profesional debe dirigirse directamente al profesional tratante y, si corresponde, a los organismos reguladores competentes (Superintendencia de Salud, Colegios Profesionales).
+                                Cualquier reclamo respecto a la práctica clínica o la experiencia personal de la atención médica o psicológica debe gestionarse de forma directa con el profesional contratado, o bien acudiendo a los organismos sanitarios y fiscales competentes en Chile.
                             </p>
 
                             <h2 id="seccion-9" className="legal-section-title">9º Suspensión y Terminación.</h2>
                             <p className="legal-paragraph">
-                                <strong className="text-gray-900">PsyConnect</strong> puede suspender o deshabilitar cuentas en caso de:
+                                <strong className="text-gray-900">PsyDoctor</strong> puede suspender o deshabilitar cuentas en caso de:
                             </p>
                             <ul className="legal-list">
                                 <li className="legal-list-item">Violación de estos Términos o políticas complementarias</li>
@@ -278,22 +279,20 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-11" className="legal-section-title">11º Contacto.</h2>
                             <div className="legal-contact-box">
-                                <p><strong>Email:</strong> <a href="mailto:soporte@psyconnect.cl" className="legal-link">soporte@psyconnect.cl</a></p>
-                                <p><strong>Email Legal:</strong> <a href="mailto:legal@psyconnect.cl" className="legal-link">legal@psyconnect.cl</a></p>
+                                <p><strong>Email:</strong> <a href="mailto:soporte@psydoctor.cl" className="legal-link">soporte@psydoctor.cl</a></p>
+                                <p><strong>Email Legal:</strong> <a href="mailto:legal@psydoctor.cl" className="legal-link">legal@psydoctor.cl</a></p>
                                 <p><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00 hrs (Chile Continental)</p>
                             </div>
 
                             <div className="legal-footer">
                                 <p className="legal-footer-text text-bold">
-                                    Al hacer clic en "Acepto" o al utilizar cualquier funcionalidad de PsyConnect, usted reconoce haber leído, comprendido y aceptado estos Términos y Condiciones en su totalidad.
+                                    Al hacer clic en "Acepto" o al utilizar cualquier funcionalidad de PsyDoctor, usted reconoce haber leído, comprendido y aceptado estos Términos y Condiciones en su totalidad.
                                 </p>
                                 <div className="legal-footer-links">
                                     <Link href="/privacidad" className="legal-link">
                                         Ver Política de Privacidad
                                     </Link>
-                                    <Link href="/" className="legal-link">
-                                        Volver al inicio
-                                    </Link>
+                                    <BackButton variant="chevron" className="legal-link" />
                                 </div>
                             </div>
 

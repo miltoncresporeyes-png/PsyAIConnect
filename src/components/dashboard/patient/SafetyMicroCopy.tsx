@@ -10,7 +10,7 @@ export function SafetyMicroCopy() {
                 <span>Tu información es privada y está bajo tu control</span>
             </div>
             <p className="text-[10px] text-gray-400">
-                PsyConnect no comparte tus datos sensibles sin tu consentimiento explícito.
+                PsyDoctor no comparte tus datos sensibles sin tu consentimiento explícito.
             </p>
         </div>
     )

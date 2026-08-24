@@ -17,23 +17,23 @@ import {
 
 export default function SoyProfesionalPage() {
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-[linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_24%,_#ffffff_100%)]">
             {/* Hero Section */}
-            <section className="relative py-12 md:py-16 bg-gradient-to-br from-secondary-50 via-white to-primary-50/30 overflow-hidden">
+            <section className="relative py-10 md:py-14 bg-gradient-to-br from-secondary-50 via-white to-primary-50/30 overflow-hidden">
                 <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
                 <div className="container-wide relative">
                     <div className="max-w-4xl mx-auto text-center">
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-6">
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-5 shadow-sm">
                             <Shield className="w-4 h-4 text-primary-600" />
                             <span className="text-sm font-medium text-primary-700">Creado por expertos en gestión y finanzas</span>
                         </span>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-gray-900 mb-6 leading-tight">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-gray-900 mb-5 leading-tight">
                             Tu consulta merece la misma <span className="text-primary-700">estructura financiera</span> que una empresa profesional
                         </h1>
 
-                        <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+                        <p className="text-xl md:text-2xl text-gray-600 mb-7 leading-relaxed max-w-3xl mx-auto">
                             Deja de perder 6.5 horas al mes en administración. <strong className="text-gray-900">Convierte tu práctica en un negocio rentable</strong> con infraestructura tributaria automatizada.
                         </p>
 
@@ -54,7 +54,7 @@ export default function SoyProfesionalPage() {
                         </div>
 
                         {/* Trust Stats */}
-                        <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto pt-8 border-t border-gray-200">
+                        <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto pt-6 border-t border-gray-200/80">
                             <div>
                                 <div className="text-3xl font-bold text-primary-700">6.5h</div>
                                 <div className="text-sm text-gray-600">Ahorradas/mes</div>
@@ -73,10 +73,10 @@ export default function SoyProfesionalPage() {
             </section>
 
             {/* Pain Points Section */}
-            <section className="py-12 bg-gray-50">
+            <section className="py-10 md:py-12 bg-gray-50">
                 <div className="container-wide">
                     <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-10">
+                        <div className="text-center mb-8">
                             <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
                                 ¿Te identificas con esto?
                             </h2>
@@ -85,7 +85,7 @@ export default function SoyProfesionalPage() {
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid md:grid-cols-3 gap-5">
                             {/* Pain Point 1 */}
                             <div className="bg-white rounded-2xl p-6 border-l-4 border-red-500 shadow-sm">
                                 <div className="flex items-start gap-3 mb-4">
@@ -135,7 +135,7 @@ export default function SoyProfesionalPage() {
                             </div>
                         </div>
 
-                        <div className="mt-8 bg-primary-900 rounded-2xl p-8 text-white text-center">
+                        <div className="mt-7 bg-primary-900 rounded-[28px] p-7 text-white text-center shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
                             <p className="text-2xl font-bold mb-2">Total de tiempo perdido al mes:</p>
                             <p className="text-5xl font-bold text-primary-300 mb-3">6.5 horas</p>
                             <p className="text-lg opacity-90">
@@ -147,9 +147,9 @@ export default function SoyProfesionalPage() {
             </section>
 
             {/* Three Pillars Section */}
-            <section id="beneficios" className="py-16 bg-white">
+            <section id="beneficios" className="py-12 md:py-14 bg-white">
                 <div className="container-wide">
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-10">
                         <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
                             La solución: Tres pilares de eficiencia operativa
                         </h2>
@@ -159,7 +159,7 @@ export default function SoyProfesionalPage() {
                     </div>
 
                     {/* Pilar 1: Automatización Tributaria */}
-                    <div className="mb-12 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 md:p-12 border border-emerald-200">
+                    <div className="mb-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[30px] p-6 md:p-10 border border-emerald-200 shadow-[0_18px_50px_rgba(16,185,129,0.08)]">
                         <div className="grid lg:grid-cols-2 gap-8 items-center">
                             <div>
                                 <div className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full mb-4">
@@ -224,7 +224,7 @@ export default function SoyProfesionalPage() {
                     </div>
 
                     {/* Pilar 2: Gestión de Adherencia */}
-                    <div className="mb-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12 border border-blue-200">
+                    <div className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-[30px] p-6 md:p-10 border border-blue-200 shadow-[0_18px_50px_rgba(59,130,246,0.08)]">
                         <div className="grid lg:grid-cols-2 gap-8 items-center">
                             <div className="order-2 lg:order-1">
                                 <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-200">
@@ -289,7 +289,7 @@ export default function SoyProfesionalPage() {
                     </div>
 
                     {/* Pilar 3: Cero Fricción en Cobranza */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 md:p-12 border border-purple-200">
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-[30px] p-6 md:p-10 border border-purple-200 shadow-[0_18px_50px_rgba(168,85,247,0.08)]">
                         <div className="grid lg:grid-cols-2 gap-8 items-center">
                             <div>
                                 <div className="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-full mb-4">
@@ -386,7 +386,7 @@ export default function SoyProfesionalPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 text-white relative overflow-hidden">
+            <section className="py-12 md:py-14 bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-grid-pattern opacity-10" />
 
                 <div className="container-wide relative">
@@ -394,11 +394,11 @@ export default function SoyProfesionalPage() {
                         <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">
                             Profesionaliza tu consulta hoy
                         </h2>
-                        <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+                        <p className="text-xl md:text-2xl mb-7 opacity-90 leading-relaxed">
                             Únete a los <strong>500+ profesionales</strong> que recuperaron 6.5 horas al mes y <strong>$273.000 en costo de oportunidad</strong>
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
                             <Link
                                 href="/registro?type=professional"
                                 className="bg-white text-primary-900 hover:bg-gray-100 inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl"
@@ -414,7 +414,7 @@ export default function SoyProfesionalPage() {
                             </Link>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
+                        <div className="grid md:grid-cols-3 gap-4 pt-6 border-t border-white/20">
                             <div className="flex items-center gap-3 justify-center">
                                 <CheckCircle2 className="w-6 h-6 text-primary-300" />
                                 <span className="text-sm opacity-90">Sin compromiso de permanencia</span>

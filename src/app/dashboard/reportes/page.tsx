@@ -8,7 +8,7 @@ import { Header, Footer } from '@/components/layout'
 import MonthlyReportViewer from '@/components/dashboard/MonthlyReportViewer'
 
 export const metadata: Metadata = {
-    title: 'Reportes Mensuales | PsyConnect',
+    title: 'Reportes Mensuales | PsyDoctor',
     description: 'Reportes financieros y de gestión mensual',
 }
 

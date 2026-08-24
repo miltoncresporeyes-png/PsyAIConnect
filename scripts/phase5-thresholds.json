@@ -1,0 +1,22 @@
+{
+  "conversion_registro_a_reserva_pct": {
+    "direction": "higher_better",
+    "green": 20,
+    "yellow": 10
+  },
+  "conversion_reserva_a_pago_pct": {
+    "direction": "higher_better",
+    "green": 60,
+    "yellow": 40
+  },
+  "no_show_pct": {
+    "direction": "lower_better",
+    "green": 10,
+    "yellow": 20
+  },
+  "cancelaciones_pct": {
+    "direction": "lower_better",
+    "green": 15,
+    "yellow": 25
+  }
+}

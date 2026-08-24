@@ -1,135 +1,175 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Clock } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowRight, CheckCircle, Clock, Shield } from 'lucide-react'
+import { useBetaWaitlist } from '@/lib/hooks/useBetaWaitlist'
+import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
-  const [email, setEmail] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setMessage(null)
-
-    try {
-      const response = await fetch('/api/beta-waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setMessage({
-          type: 'success',
-          text: '¡Registro exitoso! Revisa tu correo.',
-        })
-        setEmail('')
-      } else {
-        setMessage({
-          type: 'error',
-          text: data.error || 'Error. Intenta de nuevo.',
-        })
-      }
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Error de conexión. Intenta de nuevo.',
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const { daysRemaining, message, handleSubmit, email, setEmail, isSubmitting } = useBetaWaitlist()
+  const t = useTranslations('hero')
+  const launchLabel = daysRemaining > 0 ? `${daysRemaining} ${daysRemaining === 1 ? t('launchDay') : t('launchDays')}` : t('launchAvailable')
 
   return (
-    <section className="relative w-full bg-gradient-to-b from-purple-50/30 via-white to-white overflow-hidden">
-      
-      {/* Contenedor Principal: Centrado y con márgenes */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* GRID: Aquí ocurre la magia. En móvil es 1 columna, en PC son 2 columnas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 py-16 md:py-28 items-center">
+    <section
+      className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.16),_transparent_32%),radial-gradient(circle_at_80%_20%,_rgba(34,211,238,0.18),_transparent_24%),linear-gradient(180deg,_#f8fffe_0%,_#ffffff_58%,_#f6fbfb_100%)] pb-12 lg:pb-20"
+      aria-labelledby="hero-heading"
+    >
+      <div className="pointer-events-none absolute inset-0 opacity-60" aria-hidden="true">
+        <div className="absolute left-[-8rem] top-[-5rem] h-64 w-64 rounded-full bg-teal-200/40 blur-3xl" />
+        <div className="absolute right-[-6rem] top-24 h-72 w-72 rounded-full bg-cyan-200/50 blur-3xl" />
+      </div>
 
-          {/* COLUMNA IZQUIERDA: Texto y Formulario */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-8 order-2 md:order-1">
-            
-            {/* 1. Contador (Estilo Badge suave) */}
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-full border border-purple-200/50 shadow-sm">
-               <Clock className="w-4 h-4 text-purple-600 animate-pulse" />
-               <span className="text-sm font-semibold text-gray-700">
-                 Lanzamiento Beta: <span className="text-purple-700 font-bold">10 Días</span>
-               </span>
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         <div className="grid grid-cols-1 items-center gap-10 pt-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:pt-16">
+          <div className="order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-teal-200/70 bg-white/80 px-4 py-2 shadow-sm shadow-teal-100/40 backdrop-blur-sm">
+              <Clock className="w-4 h-4 text-teal-600" aria-hidden="true" />
+              <span className="text-sm font-semibold text-slate-700">
+                Lanzamiento beta: <span className="font-bold text-teal-700">{launchLabel}</span>
+              </span>
             </div>
 
-            {/* 2. Titulares */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight">
-              El futuro de la gestión en{' '}
-              <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">salud mental</span>
+            <h1 id="hero-heading" className="mt-6 max-w-3xl text-balance text-4xl font-bold leading-[1.05] text-slate-900 sm:text-5xl lg:text-6xl">
+              {t('headline1')}
+              <span className="bg-gradient-to-r from-teal-700 via-teal-500 to-cyan-500 bg-clip-text text-transparent"> {t('headlineHighlight')}</span>
             </h1>
-            
-            <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed">
-              Únete a la versión Beta exclusiva. <span className="font-semibold text-gray-800">Orientación inteligente</span> para pacientes y <span className="font-semibold text-gray-800">autonomía administrativa total</span> para profesionales.
+
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl">
+              {t('description')}
             </p>
 
-            {/* 3. El Formulario (Versión Pro Corregida) */}
-            <form onSubmit={handleSubmit} className="w-full max-w-md flex flex-col sm:flex-row gap-3 mt-2">
-              <input 
-                type="email" 
-                placeholder="tu@correo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isSubmitting}
-                className="flex-1 w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all hover:border-gray-300 shadow-sm disabled:opacity-50"
-              />
-              <button 
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm">{t('chipVerified')}</span>
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm">{t('chipOnline')}</span>
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm">{t('chipPayments')}</span>
+            </div>
+
+             <div className="mt-7 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
+              <Link
+                href="/registro?tipo=paciente"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-4 text-base font-semibold text-white shadow-xl shadow-slate-900/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-800"
               >
-                {isSubmitting ? 'Enviando...' : 'Asegurar cupo'}
-              </button>
+                {t('ctaPatient')}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/registro?tipo=profesional"
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-4 text-base font-semibold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-200 hover:text-teal-700"
+              >
+                {t('ctaProfessional')}
+              </Link>
+            </div>
+
+             <form onSubmit={handleSubmit} className="mt-5 w-full max-w-2xl rounded-3xl border border-white/70 bg-white/80 p-3 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-semibold text-slate-900">{t('waitlistTitle')}</p>
+                  <p className="mt-1 text-sm text-slate-500">{t('waitlistDesc')}</p>
+                </div>
+                <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+                  <label className="sr-only" htmlFor="beta-email">{t('emailLabel')}</label>
+                  <input
+                    id="beta-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder={t('emailPlaceholder')}
+                    className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-300 focus:ring-4 focus:ring-teal-100"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="rounded-2xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSubmitting ? t('submitSending') : t('submitBtn')}
+                  </button>
+                </div>
+              </div>
+
+              {message && (
+                <div
+                  role="alert"
+                  className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${message.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800'}`}
+                >
+                  {message.text}
+                </div>
+              )}
             </form>
 
-            {/* Mensaje de respuesta */}
-            {message && (
-              <div className={`w-full max-w-md px-4 py-3 rounded-lg ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
-                {message.text}
-              </div>
-            )}
-
-            {/* Texto de seguridad pequeño */}
-            <p className="text-sm text-gray-500 flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-              Tus datos están protegidos. Sin spam.
-            </p>
-          </div>
-
-          {/* COLUMNA DERECHA: Imagen */}
-          <div className="relative order-1 md:order-2 flex justify-center">
-            {/* Círculos decorativos con gradientes sutiles */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full blur-3xl -z-10 opacity-40 animate-pulse"></div>
-            <div className="absolute top-1/3 left-1/3 w-[200px] h-[200px] bg-gradient-to-tr from-pink-100 to-purple-100 rounded-full blur-2xl -z-10 opacity-30"></div>
-            
-            {/* Imagen con mejor tratamiento visual */}
-            <div className="relative">
-              <img 
-                src="/images/hero-illustration.png" 
-                alt="Paciente utilizando PsyConnect" 
-                className="w-full max-w-md md:max-w-lg object-contain drop-shadow-2xl transform hover:scale-[1.02] transition-transform duration-700 ease-out"
-              />
-              {/* Sombra personalizada debajo de la imagen */}
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-gradient-to-t from-purple-200/30 to-transparent rounded-full blur-xl"></div>
+             <div className="mt-4 flex flex-wrap items-center justify-center gap-5 text-sm text-slate-500 lg:justify-start">
+              <Shield className="w-4 h-4 text-green-600" aria-hidden="true" />
+              <span>{t('trustProtected')}</span>
+              <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:block" aria-hidden="true" />
+              <span>{t('trustSchedule')}</span>
             </div>
           </div>
 
+          {/* ── Columna derecha: imagen limpia + stats bajo la foto ── */}
+          <div className="order-1 flex justify-center lg:order-2">
+            {/* Halo de fondo */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-teal-200 via-cyan-100 to-teal-300 opacity-50 blur-3xl sm:h-[440px] sm:w-[440px]" aria-hidden="true" />
+
+            <div className="relative w-full max-w-md">
+              {/* Tarjeta principal */}
+              <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-[0_32px_80px_rgba(15,23,42,0.12)]">
+
+                {/* Imagen — completamente libre de overlays */}
+                <div className="relative aspect-[4/3] w-full">
+                  <Image
+                    src="/images/hero-connection.jpg"
+                    alt="Profesional de salud mental sonriente, representando una conexión terapéutica de calidad"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    className="object-cover object-top"
+                    priority
+                    quality={90}
+                  />
+                </div>
+
+                {/* Strip de estado debajo de la imagen */}
+                <div className="flex items-center justify-between border-t border-slate-100 bg-white px-5 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
+                    <span className="text-xs font-semibold text-slate-700">{t('statsProfessionals')}</span>
+                  </div>
+                  <span className="rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700">{t('statsBeta')}</span>
+                </div>
+
+                {/* Métricas en fila */}
+                <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100 bg-slate-50/60">
+                  <div className="flex flex-col items-center py-3">
+                    <span className="text-base font-bold text-slate-900">24/7</span>
+                    <span className="text-[10px] text-slate-500">{t('statsAgenda')}</span>
+                  </div>
+                  <div className="flex flex-col items-center py-3">
+                    <span className="text-base font-bold text-slate-900">100%</span>
+                    <span className="text-[10px] text-slate-500">{t('statsConfidential')}</span>
+                  </div>
+                  <div className="flex flex-col items-center py-3">
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
+                      <span className="text-base font-bold text-slate-900">CLP</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500">{t('statsLocalPayment')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pill flotante — fuera de la tarjeta, esquina inferior derecha, sin pisar la imagen */}
+              <div className="absolute -bottom-4 -right-4 hidden rounded-2xl border border-white/70 bg-white px-4 py-3 shadow-xl shadow-slate-900/10 sm:block">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-teal-600" aria-hidden="true" />
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">{t('privacyTitle')}</p>
+                    <p className="text-[10px] text-slate-500">{t('privacyLaw')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

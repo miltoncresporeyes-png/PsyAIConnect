@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+>
+  <!-- Homepage ES (default) -->
+  <url>
+    <loc>https://psydoctor.cl</loc>
+    <xhtml:link rel="alternate" hreflang="es-CL" href="https://psydoctor.cl"/>
+    <xhtml:link rel="alternate" hreflang="en"    href="https://psydoctor.cl/en"/>
+    <xhtml:link rel="alternate" hreflang="fr"    href="https://psydoctor.cl/fr"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://psydoctor.cl/pt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://psydoctor.cl"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Homepage EN -->
+  <url>
+    <loc>https://psydoctor.cl/en</loc>
+    <xhtml:link rel="alternate" hreflang="es-CL" href="https://psydoctor.cl"/>
+    <xhtml:link rel="alternate" hreflang="en"    href="https://psydoctor.cl/en"/>
+    <xhtml:link rel="alternate" hreflang="fr"    href="https://psydoctor.cl/fr"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://psydoctor.cl/pt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://psydoctor.cl"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Homepage FR -->
+  <url>
+    <loc>https://psydoctor.cl/fr</loc>
+    <xhtml:link rel="alternate" hreflang="es-CL" href="https://psydoctor.cl"/>
+    <xhtml:link rel="alternate" hreflang="en"    href="https://psydoctor.cl/en"/>
+    <xhtml:link rel="alternate" hreflang="fr"    href="https://psydoctor.cl/fr"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://psydoctor.cl/pt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://psydoctor.cl"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Homepage PT -->
+  <url>
+    <loc>https://psydoctor.cl/pt</loc>
+    <xhtml:link rel="alternate" hreflang="es-CL" href="https://psydoctor.cl"/>
+    <xhtml:link rel="alternate" hreflang="en"    href="https://psydoctor.cl/en"/>
+    <xhtml:link rel="alternate" hreflang="fr"    href="https://psydoctor.cl/fr"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://psydoctor.cl/pt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://psydoctor.cl"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Buscador (alta prioridad - conversión) -->
+  <url>
+    <loc>https://psydoctor.cl/buscar</loc>
+    <xhtml:link rel="alternate" hreflang="es-CL" href="https://psydoctor.cl/buscar"/>
+    <xhtml:link rel="alternate" hreflang="en"    href="https://psydoctor.cl/en/buscar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://psydoctor.cl/buscar"/>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Orientador de bienestar -->
+  <url>
+    <loc>https://psydoctor.cl/orientador</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Profesionales -->
+  <url>
+    <loc>https://psydoctor.cl/profesionales</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Planes -->
+  <url>
+    <loc>https://psydoctor.cl/planes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- FAQ -->
+  <url>
+    <loc>https://psydoctor.cl/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <!-- Términos y privacidad -->
+  <url>
+    <loc>https://psydoctor.cl/terminos</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <url>
+    <loc>https://psydoctor.cl/privacidad</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+</urlset>

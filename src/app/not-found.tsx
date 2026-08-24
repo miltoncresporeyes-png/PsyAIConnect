@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { Header, Footer } from '@/components/layout'
 import { Home, Search, ArrowLeft } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-export default function NotFound() {
+export default async function NotFound() {
+    const t = await getTranslations('notFound')
+
     return (
         <>
             <Header />
@@ -20,11 +23,10 @@ export default function NotFound() {
                     </div>
 
                     <h1 className="text-3xl font-heading font-bold text-gray-900 mb-4">
-                        Página no encontrada
+                        {t('title')}
                     </h1>
                     <p className="text-gray-600 max-w-md mx-auto mb-8">
-                        Lo sentimos, la página que buscas no existe o ha sido movida.
-                        Pero no te preocupes, podemos ayudarte a encontrar lo que necesitas.
+                        {t('description')}
                     </p>
 
                     {/* Action buttons */}
@@ -34,22 +36,22 @@ export default function NotFound() {
                             className="btn-primary inline-flex items-center justify-center gap-2"
                         >
                             <Home className="w-5 h-5" />
-                            Volver al inicio
+                            {t('goHome')}
                         </Link>
                         <Link
                             href="/buscar"
                             className="btn-secondary inline-flex items-center justify-center gap-2"
                         >
                             <Search className="w-5 h-5" />
-                            Buscar profesional
+                            {t('findPro')}
                         </Link>
                     </div>
 
                     {/* Help text */}
                     <p className="mt-12 text-sm text-gray-500">
-                        ¿Necesitas ayuda? Contáctanos en{' '}
-                        <a href="mailto:soporte@psyconnect.cl" className="text-primary-600 hover:underline">
-                            soporte@psyconnect.cl
+                        {t('helpText')}{' '}
+                        <a href="mailto:soporte@psydoctor.cl" className="text-primary-600 hover:underline">
+                            soporte@psydoctor.cl
                         </a>
                     </p>
                 </div>

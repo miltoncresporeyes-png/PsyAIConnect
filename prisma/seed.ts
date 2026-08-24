@@ -23,7 +23,7 @@ import {
     ProfessionalGenderPreference,
     VerificationStatus,
     SubscriptionTier,
-} from '@prisma/client';
+} from '../src/generated/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -58,6 +58,11 @@ const PROFESSIONAL_BIOS = [
     'Trabajo principalmente con adultos jóvenes, ayudándoles a navegar transiciones de vida y encontrar su propósito.',
     'Experta en terapia de pareja y familia, con énfasis en comunicación efectiva y resolución de conflictos.',
     'Me especializo en trauma y EMDR, ofreciendo un espacio seguro para la sanación emocional.',
+    'Autor/a de múltiples publicaciones sobre salud mental y bienestar emocional.',
+    'Conferencista internacional en temas de psicología positiva y manejo del estrés.',
+    'Psicoterapeuta con experiencia en el tratamiento de trastornos de ansiedad y depresión.',
+    'Investigador/a en el campo de la neurociencia aplicada a la psicología clínica.',
+    'Consultor/a en desarrollo organizacional y liderazgo emocional.',
 ];
 
 const CONSULTATION_REASONS = [
@@ -219,7 +224,6 @@ async function createProfessional(
                         'Av. Pedro de Valdivia 100, Of. 610',
                     ]),
                     acceptedPaymentMethods: options?.paymentMethods || randomFromMany(PAYMENT_METHODS, Math.floor(Math.random() * 3) + 1),
-                    // UX Redesign: Human-centered fields
                     targetAudience: randomFrom([
                         'Acompaña a personas que se sienten desbordadas o estancadas.',
                         'Trabaja con personas que han pasado por otros tratamientos sin éxito.',
@@ -249,11 +253,15 @@ async function createProfessional(
                 },
             },
         },
+    });
+
+    const userWithProfessional = await prisma.user.findUnique({
+        where: { id: user.id },
         include: { professional: true },
     });
 
     console.log(`  ✓ Created professional: ${data.name}`);
-    return user;
+    return userWithProfessional as CreatedUser;
 }
 
 async function createPatient(
@@ -336,8 +344,14 @@ async function createAppointment(input: AppointmentInput): Promise<void> {
         case AppointmentStatus.CANCELLED:
             paymentStatus = PaymentStatus.REFUNDED;
             break;
-        default:
+        case AppointmentStatus.COMPLETED:
             paymentStatus = PaymentStatus.COMPLETED;
+            break;
+        case AppointmentStatus.NO_SHOW:
+            paymentStatus = PaymentStatus.FAILED;
+            break;
+        default:
+            paymentStatus = PaymentStatus.PENDING;
     }
 
     const isCancelled = input.status === AppointmentStatus.CANCELLED;
@@ -449,11 +463,15 @@ async function createDemoProfessional(hashedPassword: string): Promise<CreatedUs
                 },
             },
         },
+    });
+
+    const userWithProfessional = await prisma.user.findUnique({
+        where: { id: user.id },
         include: { professional: true },
     });
 
     console.log('  ✓ Created demo professional: profesional@demo.com');
-    return user;
+    return userWithProfessional as CreatedUser;
 }
 
 async function createComprehensiveTestData(
@@ -668,6 +686,48 @@ async function main(): Promise<void> {
     // Create professionals
     console.log('\n👨‍⚕️ Creating professionals...');
     const professionals: CreatedUser[] = [];
+    // Agregar profesional fijo para pruebas
+    // Crear profesional con id fijo '6' para sincronizar con el mock
+    const andresVasquez = await prisma.user.create({
+        data: {
+            id: '6',
+            email: 'andres.vasquez@test.com',
+            name: 'Dr. Andrés Vásquez Navarro',
+            password: hashedPassword,
+            role: UserRole.PROFESSIONAL,
+            emailVerified: new Date(),
+            profileCompleted: true,
+            phone: generatePhone(),
+            professional: {
+                create: {
+                    professionalType: ProfessionalType.PSYCHIATRIST,
+                    licenseNumber: generateLicenseNumber(),
+                    bio: 'Psiquiatra con amplia experiencia en el tratamiento de trastornos de ansiedad, depresión y trastornos del sueño. Ofrezco atención integral con enfoque biopsicosocial.',
+                    slug: 'dr-andres-vasquez-navarro',
+                    specialties: ['Psiquiatría Adulto', 'Ansiedad', 'Depresión'],
+                    modality: Modality.BOTH,
+                    sessionPrice: 40000,
+                    sessionDuration: 50,
+                    region: 'Valparaíso',
+                    comuna: 'Viña del Mar',
+                    officeAddress: 'Clínica Reñaca, Viña del Mar',
+                    acceptedPaymentMethods: ['PARTICULAR', 'ISAPRE', 'FONASA'],
+                    targetAudience: 'Adultos que buscan atención psiquiátrica integral.',
+                    approachDescription: 'Enfoque biopsicosocial y personalizado.',
+                    yearsExperience: 18,
+                    firstSessionInfo: 'Primera sesión de evaluación psiquiátrica.',
+                    verificationStatus: VerificationStatus.VERIFIED,
+                    verifiedAt: new Date(),
+                    subscriptionTier: SubscriptionTier.PRO,
+                    isActive: true,
+                    isPublic: true,
+                    availability: { create: getDefaultAvailability() },
+                },
+            },
+        },
+    });
+    professionals.push(andresVasquez);
+    // Resto de profesionales
     for (const profData of PROFESSIONAL_NAMES) {
         const prof = await createProfessional(profData, hashedPassword);
         professionals.push(prof);

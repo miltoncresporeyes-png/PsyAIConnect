@@ -56,7 +56,7 @@ async function seedReimbursementData() {
                     professionalId: professionalUser.professional.id,
                     scheduledAt: session.date,
                     duration: 50,
-                    modality: 'VIDEO',
+                    modality: 'ONLINE',
                     status: 'COMPLETED',
                     consultationReason: 'Sesión de psicoterapia individual'
                 }
@@ -69,7 +69,7 @@ async function seedReimbursementData() {
                 data: {
                     appointmentId: appointment.id,
                     amount: session.amount,
-                    status: 'PAID',
+                    status: 'COMPLETED',
                     method: 'FLOW',
                     flowToken: `test-token-${appointment.id}`,
                     paidAt: session.date

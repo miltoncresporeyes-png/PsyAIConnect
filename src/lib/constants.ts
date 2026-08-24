@@ -1,5 +1,5 @@
 /**
- * PsyConnect Global Constants
+ * PsyDoctor Global Constants
  * Single Source of Truth for application-wide configuration
  */
 
@@ -108,7 +108,7 @@ export const TIME_SAVINGS = {
     },
     totalSaved: {
         hoursPerMonth: 6.5,
-        description: 'Total recuperado con PsyConnect',
+        description: 'Total recuperado con PsyDoctor',
     },
 } as const
 
@@ -152,10 +152,10 @@ export const LEGAL = {
 // Contact Information
 // ============================================
 export const CONTACT = {
-    support: 'contacto@psyconnect.cl',
-    legal: 'legal@psyconnect.cl',
-    privacy: 'privacidad@psyconnect.cl',
-    phone: '+56 9 XXXX XXXX', // TODO: Actualizar con número real
+    support: 'contacto@psydoctor.cl',
+    legal: 'legal@psydoctor.cl',
+    privacy: 'privacidad@psydoctor.cl',
+    phone: '+56 9 8341 4730',
 } as const
 
 // ============================================
@@ -165,6 +165,12 @@ export const FEATURES = {
     clinicalConsent: true,
     emergencyButton: true,
     miCaminoTimeline: true,
-    automaticInvoicing: false, // TODO: Enable when SII integration is ready
-    isapreFonasaReimbursement: false, // TODO: Enable when integration is ready
+    automaticInvoicing: false,
+    isapreFonasaReimbursement: false,
 } as const
+
+// ============================================
+// Launch Dates
+// ============================================
+export const LAUNCH_DATE = new Date('2026-02-14T00:00:00')
+export const LAUNCH_DATE_END_OF_DAY = new Date('2026-02-14T23:59:59')

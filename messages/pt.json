@@ -1,0 +1,320 @@
+{
+  "nav": {
+    "patient": "Sou Paciente",
+    "professional": "Sou Profissional",
+    "howItWorks": "Como Funciona",
+    "trySearch": "Testar a Busca",
+    "trustBadge": "Confiança, agendamento e pagamento em uma só experiência",
+    "login": "Entrar",
+    "startNow": "Começar agora",
+    "dashboard": "Painel",
+    "myProfile": "Meu Perfil",
+    "logout": "Sair",
+    "mobileIntro": "Encontre e agende com profissionais verificados em minutos.",
+    "startFree": "Começar Grátis"
+  },
+  "languageSwitcher": {
+    "label": "Idioma"
+  },
+  "hero": {
+    "launchBadge": "Lançamento beta: {days}",
+    "launchDay": "dia",
+    "launchDays": "dias",
+    "launchAvailable": "Disponível agora",
+    "headline1": "Encontre apoio profissional com uma experiência",
+    "headlineHighlight": "clara, humana e confiável",
+    "description": "PsyDoctor conecta pacientes e profissionais sem fricção: perfis verificados, agendamento online, pagamentos seguros e privacidade desde o primeiro contato.",
+    "chipVerified": "Psicólogos e psiquiatras verificados",
+    "chipOnline": "Atendimento online e presencial",
+    "chipPayments": "Pagamentos seguros no Chile",
+    "ctaPatient": "Encontrar profissional",
+    "ctaProfessional": "Quero ser profissional",
+    "waitlistTitle": "Acesso antecipado e novidades do lançamento",
+    "waitlistDesc": "Receba disponibilidade beta, atualizações e recursos — sem spam.",
+    "emailLabel": "Endereço de e-mail",
+    "emailPlaceholder": "voce@email.com",
+    "submitSending": "Enviando...",
+    "submitBtn": "Quero acesso",
+    "trustProtected": "Seus dados estão protegidos. Sem spam.",
+    "trustSchedule": "Agende em minutos e sem custos ocultos.",
+    "statsProfessionals": "500+ profissionais verificados",
+    "statsBeta": "Beta Chile",
+    "stats24h": "24/7",
+    "statsAgenda": "agendamento online",
+    "stats100": "100%",
+    "statsConfidential": "confidencial",
+    "statsCLP": "CLP",
+    "statsLocalPayment": "pagamento local",
+    "privacyTitle": "Privacidade garantida",
+    "privacyLaw": "Lei 19.628 · LGPD"
+  },
+  "adminBanner": {
+    "title": "Projetado por especialistas em gestão e saúde",
+    "subtitle": "Infraestrutura que não falha",
+    "compliance": "Conformidade regulatória",
+    "activePros": "+500 profissionais ativos"
+  },
+  "differentiation": {
+    "sectionLabel": "Por que somos diferentes",
+    "heading": "Não somos um buscador médico",
+    "subheading": "Somos uma plataforma projetada para",
+    "subheadingBold": "respeitar a complexidade dos processos de saúde mental",
+    "items": [
+      {
+        "title": "Continuidade real",
+        "description": "Seu histórico viaja com você entre profissionais. Você nunca começa do zero."
+      },
+      {
+        "title": "Você decide",
+        "description": "Controle total sobre quais informações você compartilha e com quem."
+      },
+      {
+        "title": "Sem tentativa e erro",
+        "description": "Informações claras para tomar decisões fundamentadas, não suposições."
+      },
+      {
+        "title": "Seu ritmo",
+        "description": "Sem pressão. Avance quando estiver pronto."
+      }
+    ]
+  },
+  "howItWorks": {
+    "sectionLabel": "Para Pacientes",
+    "heading": "Como funciona",
+    "subheading": "Um processo pensado para respeitar seu tempo e sua jornada",
+    "steps": [
+      {
+        "title": "Encontre orientação",
+        "description": "Filtre por especialidade, modalidade e localização. Sem ligações, sem espera."
+      },
+      {
+        "title": "Agende quando quiser",
+        "description": "Escolha o horário, confirme online. Lembretes automáticos."
+      },
+      {
+        "title": "Seu espaço pessoal",
+        "description": "Histórico de sessões, notas compartilhadas — tudo em um só lugar."
+      },
+      {
+        "title": "Continuidade garantida",
+        "description": "Se você mudar de profissional, seu progresso não se perde."
+      }
+    ]
+  },
+  "forProfessionals": {
+    "sectionLabel": "Para profissionais",
+    "heading": "Uma ferramenta que respeita sua prática",
+    "subheading": "PsyDoctor não é apenas um diretório. É uma plataforma que facilita a gestão do seu consultório enquanto você mantém o controle total da relação com seus pacientes.",
+    "benefits": [
+      {
+        "title": "Gestão de agenda",
+        "description": "Disponibilidade sincronizada, confirmações automáticas."
+      },
+      {
+        "title": "Visibilidade profissional",
+        "description": "Perfil verificado visível para pacientes em busca de apoio."
+      },
+      {
+        "title": "Continuidade com pacientes",
+        "description": "Histórico compartilhado (com consentimento) para melhor acompanhamento."
+      }
+    ],
+    "features": [
+      "Perfil profissional verificado",
+      "Agenda online integrada",
+      "Pagamentos seguros e automáticos",
+      "Painel de gestão de pacientes"
+    ],
+    "profileTitle": "Tudo incluído no seu perfil",
+    "freePlan": "Plano gratuito disponível.",
+    "viewDetail": "Ver detalhes →",
+    "learnMoreBtn": "Quero saber mais",
+    "lessBtn": "Ver menos",
+    "learnMore": {
+      "intro": "Uma plataforma projetada sob a perspectiva do profissional de saúde mental, priorizando sua autonomia e a confidencialidade dos seus pacientes.",
+      "painTitle": "Quais problemas resolvemos para você?",
+      "pain": [
+        "Tempo perdido na gestão administrativa manual",
+        "Dificuldade para ser encontrado por pacientes que precisam da sua especialidade",
+        "Fragmentação de informações quando um paciente muda de profissional",
+        "Plataformas que priorizam volume em vez da qualidade do vínculo terapêutico"
+      ],
+      "supportTitle": "Como o PsyDoctor te apoia?",
+      "support": [
+        {
+          "title": "Redução da fricção operacional",
+          "description": "Agenda integrada, confirmações automáticas e pagamentos seguros. Mais tempo para o que importa: seus pacientes."
+        },
+        {
+          "title": "Autonomia profissional total",
+          "description": "Você define sua disponibilidade, honorários e modalidade de atendimento. Sem algoritmos priorizando por comissão."
+        },
+        {
+          "title": "Controle do vínculo terapêutico",
+          "description": "A comunicação com seus pacientes é direta. PsyDoctor facilita o encontro — não o intermedeia."
+        },
+        {
+          "title": "Continuidade clínica com consentimento",
+          "description": "Se um paciente muda de profissional, pode autorizar o compartilhamento do histórico para garantir a continuidade do processo."
+        },
+        {
+          "title": "Visibilidade ética",
+          "description": "Não somos um marketplace massivo. Conectamos pacientes com profissionais verificados que atendem às suas necessidades."
+        }
+      ],
+      "ctaProfile": "Criar perfil profissional →",
+      "ctaPlans": "Ver planos",
+      "noCommitment": "Sem compromisso. Cancele quando quiser.",
+      "ethicsTitle": "Nosso compromisso ético",
+      "ethics": [
+        {
+          "title": "Confidencialidade garantida",
+          "description": "Dados clínicos criptografados. Conformidade com as normas de proteção de dados de saúde."
+        },
+        {
+          "title": "Verificação profissional",
+          "description": "Apenas profissionais com credenciais verificáveis podem criar um perfil. Protegemos a confiança de todo o ecossistema."
+        },
+        {
+          "title": "Sem alegações clínicas",
+          "description": "Não prometemos resultados terapêuticos. Facilitamos o acesso a cuidados de qualidade, respeitando a complexidade de cada processo."
+        }
+      ]
+    }
+  },
+  "cta": {
+    "badge": "Projetado para conquistar confiança desde o primeiro clique",
+    "heading": "Transforme a intenção em uma reserva real, sem ruído nem fricção",
+    "subheading": "Uma experiência minimalista para pacientes e uma plataforma séria para profissionais. Menos fricção, mais confiança, mais conversão.",
+    "tag1": "Perfis verificados",
+    "tag2": "Checkout local",
+    "tag3": "Privacidade e confiança",
+    "ctaPatient": "Buscar apoio",
+    "ctaProfessional": "Sou profissional",
+    "card1Title": "Pacientes",
+    "card1Desc": "Descobrem os profissionais certos, entendem a disponibilidade e reservam sem etapas opacas.",
+    "card2Title": "Confiança",
+    "card2Desc": "A interface e o copy reforçam segurança, seriedade clínica e experiência premium.",
+    "card3Title": "Profissionais",
+    "card3Desc": "Ganham uma vitrine melhor apresentada, com uma marca que transmite ordem e legitimidade.",
+    "trust1": "Profissionais verificados",
+    "trust2": "Dados protegidos",
+    "trust3": "Sem custos ocultos"
+  },
+  "faq": {
+    "professionalTab": "Para profissionais",
+    "patientTab": "Para pacientes",
+    "sectionLabel": "Perguntas frequentes",
+    "heading": "Respondemos suas dúvidas",
+    "subheading": "Tudo que você precisa saber para começar",
+    "subheadingPro": "Informações importantes para profissionais de saúde mental",
+    "moreQuestions": "Tem mais perguntas?",
+    "contactEmail": "Escreva-nos em profissionais@psydoctor.cl",
+    "headingPatient": "Estamos aqui para ajudar você",
+    "subheadingPatient": "Sabemos que dar o primeiro passo pode gerar dúvidas. Aqui respondemos as mais comuns.",
+    "readyToSearch": "Pronto para encontrar seu profissional?",
+    "startSearch": "Iniciar sua busca →",
+    "joinPsyDoctor": "Quer se juntar ao PsyDoctor?",
+    "createProfile": "Criar meu perfil profissional →",
+    "tabPatients": "Para Pacientes",
+    "tabProfessionals": "Para Profissionais",
+    "professional": [
+      {
+        "question": "O que é o PsyDoctor e para quem é voltado?",
+        "answer": "PsyDoctor é uma plataforma digital projetada para profissionais de saúde mental que atuam de forma independente ou em consultório privado. Ela facilita a gestão operacional sem interferir no julgamento clínico nem na relação terapêutica."
+      },
+      {
+        "question": "O PsyDoctor substitui meu consultório ou minha forma de trabalho?",
+        "answer": "Não. O PsyDoctor complementa sua prática. Você decide como atender, a quem aceitar e quais informações compartilhar."
+      },
+      {
+        "question": "Como os pacientes chegam ao meu perfil?",
+        "answer": "Os pacientes passam por um processo de orientação prévio baseado em sintomas e contexto. Isso garante que as pessoas que acessam seu perfil estejam buscando sua especialidade e abordagem, reduzindo desajustes e abandonos precoces."
+      },
+      {
+        "question": "Posso recusar ou encaminhar pacientes?",
+        "answer": "Sim. Você mantém controle total sobre quem atende. O PsyDoctor não obriga você a aceitar pacientes nem condiciona sua prática clínica."
+      },
+      {
+        "question": "Quais informações clínicas são compartilhadas?",
+        "answer": "Apenas informações básicas e resumidas definidas pelo profissional e pelo paciente (ex.: motivo da consulta, tratamentos anteriores relevantes). Notas completas nunca são compartilhadas sem consentimento."
+      },
+      {
+        "question": "O que acontece se um paciente muda de profissional?",
+        "answer": "Se o paciente desejar, pode compartilhar um resumo do seu processo para evitar começar do zero. Isso favorece a continuidade terapêutica e o cuidado ético do paciente."
+      },
+      {
+        "question": "Como a confidencialidade do paciente é protegida?",
+        "answer": "O PsyDoctor cumpre os mais altos padrões de privacidade e confidencialidade. Todas as informações clínicas são geridas com consentimento informado e nunca são utilizadas para fins comerciais ou publicitários."
+      }
+    ],
+    "patient": [
+      {
+        "question": "O que é o PsyDoctor e como ele pode me ajudar?",
+        "answer": "PsyDoctor é uma plataforma que conecta você com psicólogos e psiquiatras verificados no Chile. Nosso objetivo é facilitar seu caminho para o bem-estar, ajudando você a encontrar o profissional certo no seu ritmo e sem pressão."
+      },
+      {
+        "question": "Como sei que os profissionais são confiáveis?",
+        "answer": "Todos os profissionais do PsyDoctor passam por um processo de verificação que inclui a validação do diploma universitário e do registro profissional. Apenas profissionais habilitados para exercer no Chile trabalham em nossa plataforma."
+      },
+      {
+        "question": "Minhas conversas são privadas?",
+        "answer": "Absolutamente. Sua privacidade é nossa prioridade. Todas as informações que você compartilha são protegidas por sigilo profissional e criptografia de dados. Nem o PsyDoctor nem terceiros têm acesso às suas conversas com seu profissional."
+      },
+      {
+        "question": "Quanto custa uma consulta?",
+        "answer": "Cada profissional define seus próprios honorários. Você pode ver o valor de cada sessão antes de agendar. Muitos profissionais oferecem uma primeira sessão com valor reduzido ou gratuita para que você possa conhecê-los."
+      },
+      {
+        "question": "E se eu sentir que meu profissional não é o indicado para mim?",
+        "answer": "É completamente normal. A conexão com seu profissional é importante para seu processo. No PsyDoctor, você pode trocar de profissional quando precisar, sem compromissos nem explicações. Seu bem-estar vem primeiro."
+      },
+      {
+        "question": "Posso ter sessões online?",
+        "answer": "Sim. Muitos profissionais oferecem sessões presenciais, online ou ambas as modalidades. Você escolhe o que for mais confortável para você. As sessões online são seguras e funcionam diretamente pela plataforma."
+      },
+      {
+        "question": "Preciso ter um diagnóstico para buscar ajuda?",
+        "answer": "Não. Você não precisa de diagnóstico nem saber exatamente o que está sentindo. Pode buscar apoio simplesmente porque sente que precisa, porque quer se entender melhor, ou porque está passando por um momento difícil. O profissional vai te ajudar a explorar o que precisar."
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "Conectamos pacientes com profissionais de saúde mental verificados no Chile.",
+    "rights": "Todos os direitos reservados.",
+    "product": "Produto",
+    "resources": "Recursos",
+    "legal": "Legal",
+    "findPro": "Encontrar Profissional",
+    "joinPro": "Sou Profissional",
+    "pricing": "Planos",
+    "faqLink": "Perguntas Frequentes",
+    "howItWorksLink": "Como Funciona",
+    "terms": "Termos de Uso",
+    "privacy": "Política de Privacidade",
+    "disclaimerPrefix": "A PsyDoctor SpA é uma plataforma de intermediação tecnológica, não um prestador de serviços de saúde. Os profissionais são independentes e responsáveis por sua prática. Em caso de emergência, ligue para",
+    "disclaimerSuffix": "ou procure atendimento de urgência."
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "Desculpe, a página que você procura não existe ou foi movida. Mas não se preocupe, podemos ajudar você a encontrar o que precisa.",
+    "goHome": "Voltar ao início",
+    "findPro": "Buscar profissional",
+    "helpText": "Precisa de ajuda? Entre em contato em"
+  },
+  "backButton": {
+    "home": "Voltar ao inicio",
+    "back": "Voltar"
+  },
+  "crisis": {
+    "emergency": "Emergencia?",
+    "call": "Ligue para",
+    "healthRespond": "(Saude Responde, 24/7) ou",
+    "ambulance": "(Ambulancia)"
+  },
+  "payment": {
+    "title": "Meios de Pagamento",
+    "subtitle": "Pagamentos seguros no Chile",
+    "secure": "Pagamentos 100% seguros"
+  }
+}

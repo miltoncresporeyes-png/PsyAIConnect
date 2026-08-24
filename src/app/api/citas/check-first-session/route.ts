@@ -35,12 +35,11 @@ export async function GET(request: Request) {
             }
         })
 
-        // Check if patient has already signed clinical consent with this professional
+        // Check if patient has already signed clinical consent
         const existingConsent = await prisma.consentLog.findFirst({
             where: {
                 userId: session.user.id,
-                professionalId: professionalId,
-                consentType: 'CLINICAL' as const
+                consentType: 'CLINICAL_CONSENT' as const
             }
         })
 

@@ -1,12 +1,12 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Header, Footer } from '@/components/layout'
 import { UnifiedFAQSection } from '@/components/landing/FAQSection'
+import { BackButton } from '@/components/ui/BackButton'
 
 export const metadata: Metadata = {
-    title: 'Preguntas Frecuentes | PsyConnect',
-    description: 'Resolvemos las dudas más comunes de pacientes y profesionales de salud mental sobre PsyConnect.',
+    title: 'Preguntas Frecuentes | PsyDoctor',
+    description: 'Resolvemos las dudas más comunes de pacientes y profesionales de salud mental sobre PsyDoctor.',
 }
 
 export default function FAQPage() {
@@ -14,33 +14,28 @@ export default function FAQPage() {
         <>
             <Header />
 
-            <main className="min-h-screen bg-gradient-to-b from-secondary-50 to-white">
-                <div className="container-wide py-12 md:py-16">
-                    {/* Back link */}
-                    <Link
-                        href="/"
-                        className="inline-flex items-center gap-2 text-gray-600 hover:text-primary-900 mb-8 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Volver al inicio
-                    </Link>
+            <main className="min-h-screen page-shell">
+                <div className="page-frame">
+                    <BackButton variant="chevron" className="mb-6" />
 
                     {/* Header */}
-                    <div className="max-w-3xl mx-auto text-center mb-12">
-                        <h1 className="text-3xl md:text-5xl font-heading font-bold text-gray-900 mb-4">
+                    <div className="page-intro">
+                        <h1 className="text-3xl md:text-5xl font-heading font-bold text-gray-900 mb-3">
                             Preguntas Frecuentes
                         </h1>
                         <p className="text-lg text-gray-600">
-                            Resolvemos tus dudas sobre PsyConnect
+                            Resolvemos tus dudas sobre PsyDoctor
                         </p>
                     </div>
 
                     {/* Unified FAQ with tabs */}
-                    <UnifiedFAQSection />
+                    <div className="page-panel px-5 py-6 md:px-8 md:py-8">
+                        <UnifiedFAQSection />
+                    </div>
 
                     {/* Contact Section */}
-                    <div className="max-w-3xl mx-auto mt-12">
-                        <div className="bg-primary-900 rounded-2xl p-8 md:p-10 text-center text-white">
+                    <div className="max-w-3xl mx-auto mt-10">
+                        <div className="bg-primary-900 rounded-[28px] p-7 md:p-8 text-center text-white shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
                             <h2 className="text-2xl font-heading font-bold mb-4">
                                 ¿Tienes más preguntas?
                             </h2>
@@ -49,7 +44,7 @@ export default function FAQPage() {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <a
-                                    href="mailto:hola@psyconnect.cl"
+                                    href="mailto:hola@psydoctor.cl"
                                     className="btn bg-white text-primary-900 hover:bg-gray-100 px-6 py-3"
                                 >
                                     Escríbenos

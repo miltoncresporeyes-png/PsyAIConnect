@@ -30,8 +30,8 @@ export default function ReimbursementCard() {
                 const data = await res.json()
                 setSummary(data.summary)
             }
-        } catch (error) {
-            console.error('Error loading eligible sessions:', error)
+        } catch {
+            console.error('Error loading eligible sessions')
         } finally {
             setLoading(false)
         }

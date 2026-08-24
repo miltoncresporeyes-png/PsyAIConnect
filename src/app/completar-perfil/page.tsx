@@ -235,8 +235,8 @@ export default function CompletarPerfilPage() {
             setTimeout(() => {
                 router.push('/dashboard')
             }, 2000)
-        } catch (error) {
-            console.error('Profile save error:', error)
+        } catch {
+            console.error('Profile save error')
             setIsSubmitting(false)
         }
     }
@@ -251,7 +251,7 @@ export default function CompletarPerfilPage() {
 
     if (showSuccess) {
         return (
-            <div className="min-h-screen bg-gradient-subtle flex items-center justify-center py-12 px-4">
+            <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(20,184,166,0.12),_transparent_28%),linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_100%)] flex items-center justify-center py-10 px-4">
                 <div className="text-center">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
                         <Sparkles className="w-10 h-10 text-green-600" />
@@ -272,16 +272,16 @@ export default function CompletarPerfilPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-subtle py-12 px-4">
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(20,184,166,0.12),_transparent_28%),linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_100%)] py-8 px-4 md:py-10">
             <div className="max-w-2xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
+                <div className="text-center mb-6">
+                    <Link href="/" className="inline-flex items-center gap-2 mb-5">
                         <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-heading font-semibold text-2xl text-gray-900">
-                            PsyConnect
+                            PsyDoctor
                         </span>
                     </Link>
 
@@ -294,7 +294,7 @@ export default function CompletarPerfilPage() {
                 </div>
 
                 {/* Progress Steps */}
-                <div className="mb-8">
+                <div className="mb-6">
                     <div className="flex items-center justify-between relative">
                         {/* Progress line */}
                         <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200">
@@ -342,11 +342,11 @@ export default function CompletarPerfilPage() {
                 </div>
 
                 {/* Form Card */}
-                <div className="card p-8">
+                <div className="card rounded-[28px] p-6 shadow-[0_24px_70px_rgba(15,23,42,0.08)] md:p-7">
                     {/* Step 1: Personal Data */}
                     {currentStep === 1 && (
-                        <div className="space-y-6">
-                            <div className="text-center mb-6">
+                        <div className="space-y-5">
+                            <div className="text-center mb-5">
                                 <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <User className="w-6 h-6 text-primary-600" />
                                 </div>
@@ -436,8 +436,8 @@ export default function CompletarPerfilPage() {
 
                     {/* Step 2: Context */}
                     {currentStep === 2 && (
-                        <div className="space-y-6">
-                            <div className="text-center mb-6">
+                        <div className="space-y-5">
+                            <div className="text-center mb-5">
                                 <div className="w-12 h-12 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Heart className="w-6 h-6 text-secondary-600" />
                                 </div>
@@ -566,8 +566,8 @@ export default function CompletarPerfilPage() {
 
                     {/* Step 3: Consultation Reason */}
                     {currentStep === 3 && (
-                        <div className="space-y-6">
-                            <div className="text-center mb-6">
+                        <div className="space-y-5">
+                            <div className="text-center mb-5">
                                 <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Brain className="w-6 h-6 text-accent-600" />
                                 </div>
@@ -659,8 +659,8 @@ export default function CompletarPerfilPage() {
 
                     {/* Step 4: Emergency Contact */}
                     {currentStep === 4 && (
-                        <div className="space-y-6">
-                            <div className="text-center mb-6">
+                        <div className="space-y-5">
+                            <div className="text-center mb-5">
                                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Shield className="w-6 h-6 text-red-600" />
                                 </div>
@@ -672,7 +672,7 @@ export default function CompletarPerfilPage() {
                                 </p>
                             </div>
 
-                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                            <div className="bg-amber-50 border border-amber-200 rounded-[20px] p-4 mb-4">
                                 <div className="flex items-start gap-3">
                                     <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                                     <p className="text-sm text-amber-800">
@@ -729,7 +729,7 @@ export default function CompletarPerfilPage() {
                     )}
 
                     {/* Navigation Buttons */}
-                    <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
+                    <div className="flex items-center justify-between mt-6 pt-5 border-t border-gray-100">
                         {currentStep > 1 ? (
                             <button
                                 type="button"
@@ -786,7 +786,7 @@ export default function CompletarPerfilPage() {
                 </div>
 
                 {/* Privacy note */}
-                <p className="text-xs text-gray-400 text-center mt-6">
+                <p className="text-xs text-gray-400 text-center mt-5">
                     🔒 Tu información está protegida y solo será compartida con los profesionales que elijas.
                     <br />
                     <Link href="/privacidad" className="underline hover:text-gray-600">

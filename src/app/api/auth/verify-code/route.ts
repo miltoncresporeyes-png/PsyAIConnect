@@ -2,6 +2,40 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateVerificationCode, sendVerificationCodeEmail } from '@/lib/email'
 import bcrypt from 'bcryptjs'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
+import { captureApiError, getRequestId } from '@/lib/observability'
+
+function createProfessionalSlug(name: string | null | undefined, userId: string) {
+    const base = (name || 'profesional')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+
+    return `${base || 'profesional'}-${userId.slice(0, 6)}`
+}
+
+async function ensureProfessionalProfile(userId: string, name: string | null | undefined) {
+    const existing = await prisma.professional.findUnique({
+        where: { userId },
+        select: { id: true },
+    })
+
+    if (existing) {
+        return
+    }
+
+    await prisma.professional.create({
+        data: {
+            userId,
+            professionalType: 'PSYCHOLOGIST',
+            slug: createProfessionalSlug(name, userId),
+            sessionPrice: 50000,
+        },
+    })
+}
 
 // Code expiration time: 15 minutes
 const CODE_EXPIRATION_MINUTES = 15
@@ -13,11 +47,37 @@ const DEV_TEST_CODE = process.env.NODE_ENV === 'development' ? '123456' : null
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
+    const requestId = getRequestId(request)
     try {
         const body = await request.json()
         const { action, email, name, code, password, userType } = body
+        const clientIp = getClientIp(request)
+
+        const globalLimit = checkRateLimit(`auth:verify-code:global:${clientIp}`, {
+            limit: 50,
+            windowMs: 15 * 60 * 1000,
+        })
+
+        if (!globalLimit.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiados intentos. Intenta nuevamente en unos minutos.' },
+                { status: 429, headers: createRateLimitHeaders(globalLimit) }
+            )
+        }
 
         if (action === 'send') {
+            const sendLimit = checkRateLimit(`auth:verify-code:send:${clientIp}:${email || 'unknown'}`, {
+                limit: 5,
+                windowMs: 15 * 60 * 1000,
+            })
+
+            if (!sendLimit.allowed) {
+                return NextResponse.json(
+                    { error: 'Has solicitado demasiados codigos. Espera unos minutos.' },
+                    { status: 429, headers: createRateLimitHeaders(sendLimit) }
+                )
+            }
+
             // Send verification code
             if (!email || !name) {
                 return NextResponse.json(
@@ -84,6 +144,18 @@ export async function POST(request: Request) {
         }
 
         if (action === 'verify') {
+            const verifyLimit = checkRateLimit(`auth:verify-code:verify:${clientIp}:${email || 'unknown'}`, {
+                limit: 20,
+                windowMs: 15 * 60 * 1000,
+            })
+
+            if (!verifyLimit.allowed) {
+                return NextResponse.json(
+                    { error: 'Demasiados intentos de verificacion. Intenta nuevamente mas tarde.' },
+                    { status: 429, headers: createRateLimitHeaders(verifyLimit) }
+                )
+            }
+
             // Verify code
             if (!email || !code) {
                 return NextResponse.json(
@@ -162,6 +234,18 @@ export async function POST(request: Request) {
         }
 
         if (action === 'complete') {
+            const completeLimit = checkRateLimit(`auth:verify-code:complete:${clientIp}:${email || 'unknown'}`, {
+                limit: 10,
+                windowMs: 15 * 60 * 1000,
+            })
+
+            if (!completeLimit.allowed) {
+                return NextResponse.json(
+                    { error: 'Demasiados intentos para completar registro. Intenta nuevamente mas tarde.' },
+                    { status: 429, headers: createRateLimitHeaders(completeLimit) }
+                )
+            }
+
             // Complete registration after verification
             if (!email || !name || !password) {
                 return NextResponse.json(
@@ -191,11 +275,23 @@ export async function POST(request: Request) {
             })
 
             if (existingUser) {
+                const updateData: { emailVerified: Date; password?: string } = {
+                    emailVerified: new Date(),
+                }
+
+                if (!existingUser.password) {
+                    updateData.password = await bcrypt.hash(password, 12)
+                }
+
                 // Update existing user with verified email
-                await prisma.user.update({
+                const updatedUser = await prisma.user.update({
                     where: { email },
-                    data: { emailVerified: new Date() },
+                    data: updateData,
                 })
+
+                if (updatedUser.role === 'PROFESSIONAL') {
+                    await ensureProfessionalProfile(updatedUser.id, updatedUser.name)
+                }
 
                 // Clean up verification codes
                 await prisma.emailVerificationCode.deleteMany({
@@ -223,6 +319,10 @@ export async function POST(request: Request) {
                 },
             })
 
+            if (role === 'PROFESSIONAL') {
+                await ensureProfessionalProfile(user.id, user.name)
+            }
+
             // Clean up verification codes
             await prisma.emailVerificationCode.deleteMany({
                 where: { email },
@@ -236,6 +336,18 @@ export async function POST(request: Request) {
         }
 
         if (action === 'resend') {
+            const resendLimit = checkRateLimit(`auth:verify-code:resend:${clientIp}:${email || 'unknown'}`, {
+                limit: 5,
+                windowMs: 15 * 60 * 1000,
+            })
+
+            if (!resendLimit.allowed) {
+                return NextResponse.json(
+                    { error: 'Demasiados reenvios de codigo. Espera unos minutos.' },
+                    { status: 429, headers: createRateLimitHeaders(resendLimit) }
+                )
+            }
+
             // Resend verification code
             if (!email || !name) {
                 return NextResponse.json(
@@ -285,10 +397,10 @@ export async function POST(request: Request) {
         )
 
     } catch (error) {
-        console.error('Email verification code error:', error)
+        await captureApiError('/api/auth/verify-code', error, requestId)
         return NextResponse.json(
-            { error: 'Error en el proceso de verificación' },
-            { status: 500 }
+            { error: 'Error en el proceso de verificación', requestId },
+            { status: 500, headers: { 'X-Request-Id': requestId } }
         )
     }
 }

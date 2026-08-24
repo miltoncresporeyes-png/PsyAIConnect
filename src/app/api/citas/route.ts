@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -22,6 +23,19 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 { error: 'Debes iniciar sesión para reservar' },
                 { status: 401 }
+            )
+        }
+
+        const clientIp = getClientIp(request)
+        const bookingLimit = checkRateLimit(`appointments:create:${session.user.id}:${clientIp}`, {
+            limit: 15,
+            windowMs: 15 * 60 * 1000,
+        })
+
+        if (!bookingLimit.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiados intentos de reserva. Intenta nuevamente mas tarde.' },
+                { status: 429, headers: createRateLimitHeaders(bookingLimit) }
             )
         }
 

@@ -57,19 +57,14 @@ export default function NewReimbursementPage() {
                 const data = await res.json()
                 setSessions(data.sessions)
             }
-        } catch (error) {
-            console.error('Error loading sessions:', error)
+        } catch {
+            console.error('Error loading sessions')
         }
     }
 
     const handleCreateRequest = async () => {
         setLoading(true)
         try {
-            console.log('Creating request with:', {
-                appointmentIds: selectedSessions,
-                hasMedicalReferral: hasMedicalReferral || false
-            })
-
             const res = await fetch('/api/reembolsos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -79,9 +74,7 @@ export default function NewReimbursementPage() {
                 })
             })
 
-            console.log('Response status:', res.status)
             const data = await res.json()
-            console.log('Response data:', data)
 
             if (res.ok) {
                 setRequestId(data.id)
@@ -98,12 +91,10 @@ export default function NewReimbursementPage() {
 
                 setStep(3)
             } else {
-                console.error('Error response:', data)
                 alert(`Error al crear solicitud: ${data.error || 'Error desconocido'}`)
             }
         } catch (error) {
-            console.error('Error creating request:', error)
-            alert('Error al crear solicitud. Por favor verifica la consola.')
+            alert('Error al crear solicitud. Por favor intenta de nuevo.')
         } finally {
             setLoading(false)
         }
@@ -163,11 +154,9 @@ export default function NewReimbursementPage() {
                 setStep(4)
             } else {
                 const errorData = await res.json()
-                console.error('Error generating kit:', errorData)
                 alert(`Error al generar kit: ${errorData.error || 'Error desconocido'}`)
             }
         } catch (error) {
-            console.error('Error generating kit:', error)
             alert('Error al generar kit de reembolso')
         } finally {
             setLoading(false)
@@ -185,8 +174,8 @@ export default function NewReimbursementPage() {
             })
 
             router.push('/dashboard/reembolsos')
-        } catch (error) {
-            console.error('Error updating status:', error)
+        } catch {
+            console.error('Failed to update status')
         }
     }
 
@@ -211,13 +200,11 @@ export default function NewReimbursementPage() {
                 <div className="flex items-center justify-between mb-4">
                     {[1, 2, 3, 4].map(i => (
                         <div key={i} className="flex items-center flex-1">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${i <= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
-                                }`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${i <= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
                                 {i < step ? <CheckCircle2 className="w-6 h-6" /> : i}
                             </div>
                             {i < 4 && (
-                                <div className={`flex-1 h-1 mx-2 ${i < step ? 'bg-indigo-600' : 'bg-gray-200'
-                                    }`} />
+                                <div className={`flex-1 h-1 mx-2 ${i < step ? 'bg-indigo-600' : 'bg-gray-200'}`} />
                             )}
                         </div>
                     ))}
@@ -325,7 +312,7 @@ export default function NewReimbursementPage() {
                         <div className="p-4 border-2 border-gray-200 rounded-lg">
                             <p className="font-medium text-gray-900 mb-3">¿Tienes una derivación o interconsulta médica?</p>
                             <p className="text-sm text-gray-600 mb-4">
-                                Es una orden médica que indica "Evaluación Psicológica" o "Psicoterapia". Algunas Isapres la requieren.
+                                Es una orden médica que indica &quot;Evaluación Psicológica&quot; o &quot;Psicoterapia&quot;. Algunas Isapres la requieren.
                             </p>
                             <div className="space-y-2">
                                 <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300">

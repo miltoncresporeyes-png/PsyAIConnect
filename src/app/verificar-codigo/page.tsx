@@ -6,14 +6,23 @@ import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { Mail, ArrowLeft, Loader2, CheckCircle2, RefreshCw, AlertCircle } from 'lucide-react'
 
+const PENDING_REGISTRATION_KEY = 'pendingRegistrationContext'
+
+interface PendingRegistrationContext {
+    email: string
+    name: string
+    password: string
+    userType: 'patient' | 'professional'
+    preReservationToken?: string
+}
+
 function VerifyCodeContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const email = searchParams.get('email') || ''
-    const name = searchParams.get('name') || ''
-    const password = searchParams.get('p') || '' // Encoded password
-    const userType = searchParams.get('type') || 'patient'
+    const emailFromUrl = searchParams?.get('email') || ''
+
+    const [pendingRegistration, setPendingRegistration] = useState<PendingRegistrationContext | null>(null)
 
     const [code, setCode] = useState(['', '', '', '', '', ''])
     const [isLoading, setIsLoading] = useState(false)
@@ -37,6 +46,33 @@ function VerifyCodeContent() {
     useEffect(() => {
         inputRefs.current[0]?.focus()
     }, [])
+
+    useEffect(() => {
+        const stored = sessionStorage.getItem(PENDING_REGISTRATION_KEY)
+
+        if (!stored) {
+            return
+        }
+
+        try {
+            const parsed = JSON.parse(stored) as PendingRegistrationContext
+            if (!parsed.email || !parsed.password || !parsed.name || !parsed.userType) {
+                return
+            }
+
+            if (emailFromUrl && parsed.email !== emailFromUrl) {
+                return
+            }
+
+            setPendingRegistration(parsed)
+        } catch {
+            // Ignore malformed context and keep invalid-link behavior
+        }
+    }, [emailFromUrl])
+
+    const email = pendingRegistration?.email || emailFromUrl
+    const userType = pendingRegistration?.userType || 'patient'
+    const preReservationToken = pendingRegistration?.preReservationToken || ''
 
     const handleInputChange = (index: number, value: string) => {
         // Only allow digits
@@ -80,6 +116,11 @@ function VerifyCodeContent() {
     }
 
     const verifyCode = async (codeToVerify: string) => {
+        if (!pendingRegistration) {
+            setError('Sesion de registro expirada. Inicia el proceso nuevamente.')
+            return
+        }
+
         setIsLoading(true)
         setError('')
 
@@ -112,8 +153,8 @@ function VerifyCodeContent() {
                 body: JSON.stringify({
                     action: 'complete',
                     email,
-                    name,
-                    password: atob(password), // Decode password
+                    name: pendingRegistration.name,
+                    password: pendingRegistration.password,
                     userType,
                 }),
             })
@@ -129,14 +170,35 @@ function VerifyCodeContent() {
 
             // Auto sign in
             setTimeout(async () => {
-                await signIn('credentials', {
+                const signInResult = await signIn('credentials', {
                     email,
-                    password: atob(password),
-                    redirect: true,
-                    callbackUrl: userType === 'professional'
-                        ? '/profesional/completar-perfil'
-                        : '/completar-perfil',
+                    password: pendingRegistration.password,
+                    redirect: false,
                 })
+
+                if (signInResult?.error) {
+                    setError('Cuenta creada, pero no se pudo iniciar sesion automaticamente.')
+                    return
+                }
+
+                if (preReservationToken) {
+                    try {
+                        await fetch('/api/pre-reservation/confirm', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token: preReservationToken }),
+                        })
+                    } catch {
+                        console.warn('Failed to confirm pre-reservation')
+                    }
+                }
+
+                sessionStorage.removeItem(PENDING_REGISTRATION_KEY)
+                router.push(
+                    userType === 'professional'
+                        ? '/profesional/completar-perfil'
+                        : '/completar-perfil'
+                )
             }, 1500)
 
         } catch (err) {
@@ -147,6 +209,11 @@ function VerifyCodeContent() {
     }
 
     const resendCode = async () => {
+        if (!pendingRegistration) {
+            setError('Sesion de registro expirada. Inicia el proceso nuevamente.')
+            return
+        }
+
         setIsResending(true)
         setError('')
 
@@ -157,7 +224,7 @@ function VerifyCodeContent() {
                 body: JSON.stringify({
                     action: 'resend',
                     email,
-                    name,
+                    name: pendingRegistration.name,
                 }),
             })
 
@@ -179,7 +246,7 @@ function VerifyCodeContent() {
         }
     }
 
-    if (!email) {
+    if (!email || !pendingRegistration) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="card max-w-md w-full p-8 text-center">
@@ -188,7 +255,7 @@ function VerifyCodeContent() {
                         Enlace Inválido
                     </h1>
                     <p className="text-gray-600 mb-6">
-                        Este enlace de verificación no es válido. Por favor inicia el proceso de registro nuevamente.
+                        Este enlace de verificación no es valido o expiro. Por favor inicia el proceso de registro nuevamente.
                     </p>
                     <Link href="/registro" className="btn-primary">
                         Ir a Registro

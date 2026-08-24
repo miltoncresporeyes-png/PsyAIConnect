@@ -1,12 +1,28 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Loader2, ArrowRight, CheckCircle } from 'lucide-react'
+import { LAUNCH_DATE_END_OF_DAY } from '@/lib/constants'
 
-export function BetaLaunchBanner() {
-    const [email, setEmail] = useState('')
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+interface BetaLaunchBannerProps {
+    variant?: 'default' | 'compact'
+}
+
+function CountdownUnit({ value, label }: { value: number; label: string }) {
+    return (
+        <div className="bg-white/14 backdrop-blur-sm border border-white/22 rounded-xl p-2.5 text-center shadow-inner w-full max-w-[130px] transition-transform duration-250 hover:bg-white/22 hover:-translate-y-1">
+            <div className="text-3.6 font-black text-white leading-none text-shadow-sm">
+                {String(value).padStart(2, '0')}
+            </div>
+            <div className="text-[0.625rem] text-white/95 uppercase tracking-[0.75px] font-bold mt-1">
+                {label}
+            </div>
+        </div>
+    )
+}
+
+export function BetaLaunchBanner({ variant = 'default' }: BetaLaunchBannerProps) {
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
         hours: 0,
@@ -14,15 +30,10 @@ export function BetaLaunchBanner() {
         seconds: 0,
     })
 
-    // Calcular cuenta regresiva (7 días desde hoy)
     useEffect(() => {
-        const targetDate = new Date()
-        targetDate.setDate(targetDate.getDate() + 10)
-        targetDate.setHours(23, 59, 59, 999)
-
         const calculateTimeLeft = () => {
             const now = new Date().getTime()
-            const distance = targetDate.getTime() - now
+            const distance = LAUNCH_DATE_END_OF_DAY.getTime() - now
 
             if (distance < 0) {
                 return { days: 0, hours: 0, minutes: 0, seconds: 0 }
@@ -45,6 +56,10 @@ export function BetaLaunchBanner() {
         return () => clearInterval(timer)
     }, [])
 
+    const [email, setEmail] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
@@ -53,9 +68,7 @@ export function BetaLaunchBanner() {
         try {
             const response = await fetch('/api/beta-waitlist', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             })
 
@@ -73,7 +86,7 @@ export function BetaLaunchBanner() {
                     text: data.error || 'Hubo un error. Por favor, intenta de nuevo.',
                 })
             }
-        } catch (error) {
+        } catch {
             setMessage({
                 type: 'error',
                 text: 'Error de conexión. Por favor, intenta de nuevo.',
@@ -83,44 +96,24 @@ export function BetaLaunchBanner() {
         }
     }
 
-    return (
-        <section className="beta-launch-banner">
-            <div className="beta-container">
-                {/* Contador regresivo */}
-                <div className="countdown-wrapper">
-                    <div className="countdown-grid">
-                        <CountdownUnit value={timeLeft.days} label="Días" />
-                        <CountdownUnit value={timeLeft.hours} label="Horas" />
-                        <CountdownUnit value={timeLeft.minutes} label="Min" />
-                        <CountdownUnit value={timeLeft.seconds} label="Seg" />
-                    </div>
+    if (variant === 'compact') {
+        return (
+            <section className="bg-gradient-to-r from-indigo-600 to-violet-600 py-6 relative overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/2 left-[20%] -translate-y-1/2 w-[300px] h-[300px] bg-white/10 rounded-full blur-3xl" />
+                    <div className="absolute top-1/2 left-[80%] -translate-y-1/2 w-[200px] h-[200px] bg-white/5 rounded-full blur-3xl" />
                 </div>
-
-                {/* Contenido principal - envuelto en contenedor Tailwind */}
-                <div className="w-full max-w-3xl mx-auto px-4 text-center beta-content">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="beta-text"
-                    >
-                        <h1 className="beta-title">
-                            El futuro de la gestión en salud mental llega en 10 días.
-                        </h1>
-                        <p className="beta-description">
-                            Únete a la versión Beta exclusiva. Orientación inteligente para pacientes y autonomía administrativa total para profesionales.
-                        </p>
-                    </motion.div>
-
-                    {/* Formulario */}
-                    <motion.form
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        onSubmit={handleSubmit}
-                        className="beta-form"
-                    >
-                        <div className="form-group">
+                <div className="max-w-4xl mx-auto px-4 relative z-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="text-white text-center sm:text-left">
+                            <p className="font-bold text-lg">
+                                {timeLeft.days > 0
+                                    ? `Lanzamiento en ${timeLeft.days} ${timeLeft.days === 1 ? 'día' : 'días'}`
+                                    : '¡El futuro está aquí!'}
+                            </p>
+                            <p className="text-sm text-white/80">Únete a la versión Beta exclusiva</p>
+                        </div>
+                        <form onSubmit={handleSubmit} className="flex w-full sm:w-auto gap-2">
                             <input
                                 type="email"
                                 placeholder="tu@correo.com"
@@ -128,330 +121,124 @@ export function BetaLaunchBanner() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 disabled={isSubmitting}
-                                className="email-input"
-                                aria-label="Correo electrónico"
+                                className="flex-1 sm:w-64 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20 text-sm"
                             />
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="cta-button"
+                                className="px-4 py-2 bg-white text-indigo-600 rounded-lg font-medium text-sm hover:bg-gray-100 transition-colors disabled:opacity-70 whitespace-nowrap"
                             >
-                                {isSubmitting ? (
-                                    <span className="loading-dots">Enviando...</span>
-                                ) : (
-                                    'Asegurar mi cupo'
-                                )}
+                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Asegurar mi cabo'}
                             </button>
-                        </div>
-
-                        {/* Mensajes de estado */}
-                        {message && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className={`message message-${message.type}`}
-                            >
-                                {message.text}
-                            </motion.div>
-                        )}
-
-                        {/* Nota de privacidad */}
-                        <p className="privacy-note">
-                            🔒 Tus datos están protegidos. No compartimos información personal.
-                        </p>
-                    </motion.form>
+                        </form>
+                    </div>
+                    {message && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`mt-3 text-center text-sm ${
+                                message.type === 'success' ? 'text-green-300' : 'text-red-300'
+                            }`}
+                        >
+                            {message.text}
+                        </motion.div>
+                    )}
                 </div>
+            </section>
+        )
+    }
+
+    return (
+        <section className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 py-12 relative overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-[20%] -translate-y-1/2 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-[80%] -translate-y-1/2 w-[300px] h-[300px] bg-white/5 rounded-full blur-3xl" />
             </div>
 
-            <style jsx>{`
-                .beta-launch-banner {
-                    background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 100%);
-                    padding: 3rem 1.5rem;
-                    position: relative;
-                    overflow: hidden;
-                }
+            <div className="max-w-5xl mx-auto px-4 relative z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-8"
+                >
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight">
+                        {timeLeft.days > 0
+                            ? `El futuro de la salud mental llega en ${timeLeft.days} ${timeLeft.days === 1 ? 'día' : 'días'}.`
+                            : 'El futuro de la salud mental está aquí.'}
+                    </h1>
+                    <p className="text-lg text-white/90 max-w-2xl mx-auto">
+                        Únete a la versión Beta exclusiva. Orientación inteligente para pacientes y autonomía administrativa total para profesionales.
+                    </p>
+                </motion.div>
 
-                .beta-launch-banner::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: 
-                        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-                    pointer-events: none;
-                }
+                {timeLeft.days > 0 && (
+                    <div className="flex justify-center mb-8">
+                        <div className="grid grid-cols-4 gap-3.5 max-w-[540px] w-full">
+                            <CountdownUnit value={timeLeft.days} label="Días" />
+                            <CountdownUnit value={timeLeft.hours} label="Horas" />
+                            <CountdownUnit value={timeLeft.minutes} label="Min" />
+                            <CountdownUnit value={timeLeft.seconds} label="Seg" />
+                        </div>
+                    </div>
+                )}
 
-                .beta-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    position: relative;
-                    z-index: 1;
-                }
+                <motion.form
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    onSubmit={handleSubmit}
+                    className="max-w-lg mx-auto"
+                >
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                            type="email"
+                            placeholder="tu@correo.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={isSubmitting}
+                            className="flex-1 px-5 py-3.5 rounded-xl bg-white border border-gray-200/10 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 shadow-lg text-base"
+                            aria-label="Correo electrónico"
+                        />
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-7 py-3.5 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-gray-50 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 whitespace-nowrap"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Enviando...
+                                </>
+                            ) : (
+                                <>
+                                    Asegurar mi cabo
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </button>
+                    </div>
 
-                /* Contador regresivo */
-                .countdown-wrapper {
-                    margin-bottom: 2rem;
-                    display: flex;
-                    justify-content: center;
-                }
+                    {message && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`mt-4 px-4 py-3 rounded-lg text-sm font-medium ${
+                                message.type === 'success'
+                                    ? 'bg-green-500/90 text-white'
+                                    : 'bg-red-500/90 text-white'
+                            }`}
+                        >
+                            {message.text}
+                        </motion.div>
+                    )}
 
-                .countdown-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, minmax(85px, 1fr));
-                    gap: 0.875rem;
-                    max-width: 540px;
-                    width: 100%;
-                    justify-items: center;
-                }
-
-                /* Contenido principal */
-                .beta-content {
-                    text-align: center;
-                }
-
-                .beta-text {
-                    margin-bottom: 2rem;
-                }
-
-                .beta-title {
-                    font-size: 2.25rem;
-                    font-weight: 800;
-                    color: white;
-                    line-height: 1.15;
-                    margin: 0 0 1.25rem 0;
-                    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-                    letter-spacing: -0.02em;
-                }
-
-                .beta-description {
-                    font-size: 1.125rem;
-                    color: rgba(255, 255, 255, 0.92);
-                    line-height: 1.65;
-                    margin: 0;
-                    max-width: 680px;
-                    margin-left: auto;
-                    margin-right: auto;
-                    font-weight: 400;
-                }
-
-                /* Formulario */
-                .beta-form {
-                    max-width: 600px;
-                    margin: 0 auto;
-                }
-
-
-                .form-group {
-                    display: flex;
-                    gap: 0.75rem;
-                    margin-bottom: 1rem;
-                    align-items: center;
-                }
-
-                .email-input {
-                    flex: 1;
-                    padding: 0.9rem 1.25rem;
-                    border: 1px solid rgba(34, 37, 56, 0.06);
-                    border-radius: 12px;
-                    background: rgba(255, 255, 255, 1);
-                    font-size: 1.05rem;
-                    height: 56px;
-                    transition: box-shadow 0.2s ease, transform 0.12s ease;
-                    outline: none;
-                    box-shadow: 0 6px 18px rgba(100, 95, 255, 0.06);
-                    color: #222;
-                }
-
-                .email-input::placeholder {
-                    color: rgba(34,34,34,0.35);
-                }
-
-                .email-input:focus {
-                    border-color: rgba(102,126,234,0.9);
-                    box-shadow: 0 6px 30px rgba(102,126,234,0.12);
-                    transform: translateY(-1px);
-                    background: #fff;
-                }
-
-                .email-input:disabled {
-                    opacity: 0.7;
-                    cursor: not-allowed;
-                }
-
-
-                .cta-button {
-                    padding: 0 1.75rem;
-                    background: linear-gradient(90deg, #ffffff 0%, #f7f9ff 100%);
-                    color: #4f46e5;
-                    border: 0;
-                    border-radius: 12px;
-                    font-size: 1.05rem;
-                    font-weight: 800;
-                    cursor: pointer;
-                    transition: transform 0.18s ease, box-shadow 0.2s ease;
-                    white-space: nowrap;
-                    box-shadow: 0 8px 30px rgba(79,70,229,0.12);
-                    height: 56px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding-left: 28px;
-                    padding-right: 28px;
-                }
-
-                .cta-button:hover:not(:disabled) {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-                    background: #f8f9ff;
-                }
-
-                .cta-button:active:not(:disabled) {
-                    transform: translateY(0);
-                }
-
-                .cta-button:disabled {
-                    opacity: 0.7;
-                    cursor: not-allowed;
-                }
-
-                .loading-dots::after {
-                    content: '...';
-                    animation: dots 1.5s steps(3, end) infinite;
-                }
-
-                @keyframes dots {
-                    0%, 20% { content: '.'; }
-                    40% { content: '..'; }
-                    60%, 100% { content: '...'; }
-                }
-
-                /* Mensajes */
-                .message {
-                    padding: 0.875rem 1.25rem;
-                    border-radius: 10px;
-                    font-size: 0.9375rem;
-                    font-weight: 500;
-                    margin-bottom: 1rem;
-                }
-
-                .message-success {
-                    background: rgba(16, 185, 129, 0.95);
-                    color: white;
-                }
-
-                .message-error {
-                    background: rgba(239, 68, 68, 0.95);
-                    color: white;
-                }
-
-                .privacy-note {
-                    font-size: 0.875rem;
-                    color: rgba(255, 255, 255, 0.9);
-                    margin: 0;
-                    text-align: center;
-                }
-
-                /* Responsive */
-                @media (max-width: 768px) {
-                    .beta-launch-banner {
-                        padding: 1.5rem 1rem;
-                    }
-
-                    .countdown-grid {
-                        gap: 0.6rem;
-                        max-width: 100%;
-                        grid-template-columns: repeat(4, minmax(60px, 1fr));
-                    }
-
-                    .beta-title {
-                        font-size: 1.5rem;
-                    }
-
-                    .beta-description {
-                        font-size: 1rem;
-                    }
-
-                    .form-group {
-                        flex-direction: column;
-                        align-items: stretch;
-                    }
-
-                    .cta-button {
-                        width: 100%;
-                    }
-                }
-
-                @media (max-width: 480px) {
-                    .countdown-grid {
-                        grid-template-columns: repeat(2, 1fr);
-                        gap: 0.75rem;
-                    }
-
-                    .beta-title {
-                        font-size: 1.25rem;
-                    }
-                }
-            `}</style>
+                    <p className="mt-4 text-sm text-white/90 text-center">
+                        Tus datos están protegidos. No compartimos información personal.
+                    </p>
+                </motion.form>
+            </div>
         </section>
-    )
-}
-
-// Componente individual de contador
-function CountdownUnit({ value, label }: { value: number; label: string }) {
-    return (
-        <div className="countdown-unit">
-            <div className="countdown-value">{String(value).padStart(2, '0')}</div>
-            <div className="countdown-label">{label}</div>
-
-            <style jsx>{`
-                .countdown-unit {
-                    background: rgba(255, 255, 255, 0.14);
-                    backdrop-filter: blur(8px);
-                    border: 1px solid rgba(255, 255, 255, 0.22);
-                    border-radius: 14px;
-                    padding: 0.6rem 0.5rem;
-                    text-align: center;
-                    transition: transform 0.25s ease, background 0.25s ease;
-                    width: 100%;
-                    max-width: 130px;
-                    box-shadow: 0 6px 18px rgba(0,0,0,0.12) inset;
-                }
-
-                .countdown-unit:hover {
-                    background: rgba(255, 255, 255, 0.22);
-                    transform: translateY(-4px);
-                }
-
-                .countdown-value {
-                    font-size: 2.25rem;
-                    font-weight: 900;
-                    color: white;
-                    line-height: 1;
-                    text-shadow: 0 3px 18px rgba(0, 0, 0, 0.28);
-                }
-
-                .countdown-label {
-                    font-size: 0.7rem;
-                    color: rgba(255, 255, 255, 0.95);
-                    margin-top: 0.25rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.75px;
-                    font-weight: 700;
-                }
-
-                @media (max-width: 768px) {
-                    .countdown-value {
-                        font-size: 1.5rem;
-                    }
-
-                    .countdown-label {
-                        font-size: 0.625rem;
-                    }
-                }
-            `}</style>
-        </div>
     )
 }

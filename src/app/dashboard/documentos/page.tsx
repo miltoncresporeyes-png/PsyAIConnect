@@ -27,8 +27,8 @@ export default function DocumentsPage() {
                 if (!res.ok) throw new Error('Error fetching requests')
                 const data = await res.json()
                 setRequests(data)
-            } catch (error) {
-                console.error('Error loading documents:', error)
+            } catch {
+                console.error('Error loading documents')
             } finally {
                 setLoading(false)
             }
@@ -68,17 +68,17 @@ export default function DocumentsPage() {
 
                     document.body.removeChild(link)
                     window.URL.revokeObjectURL(url)
-                } catch (e) {
-                    console.error('Error downloading blob:', e)
+                } catch {
+                    console.error('Error downloading blob')
                     alert('Error al procesar el archivo PDF')
                 }
             } else {
                 alert('Error al descargar el kit')
             }
-        } catch (error) {
-            console.error('Error downloading kit:', error)
-            alert('Error de conexión')
-        } finally {
+            } catch {
+                console.error('Error downloading kit')
+                alert('Error de conexión')
+            } finally {
             setDownloading(null)
         }
     }
