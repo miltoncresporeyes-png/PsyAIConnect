@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -224,6 +225,9 @@ model Appointment {
   @@index([attendanceStatus])
   @@index([pacienteOnline])
   @@index([profesionalOnline])
+  @@index([patientId, scheduledAt])
+  @@index([professionalId, scheduledAt])
+  @@unique([professionalId, scheduledAt])
 }
 
 model Payment {
@@ -904,4 +908,82 @@ enum WaitingRoomStatus {
   IN_SESSION    // En la sesión
   COMPLETED     // Sesión finalizada
 }
+
+// =============================================
+// LISTA DE ESPERA (Waitlist pre-lanzamiento)
+// =============================================
+
+enum WaitlistMotivoCategoria {
+  ANSIEDAD
+  ANIMO
+  PAREJA
+  ESTRES_LABORAL
+  OTRO
+}
+
+enum WaitlistPrevision {
+  FONASA
+  ISAPRE
+  PARTICULAR
+}
+
+enum WaitlistProfesion {
+  PSICOLOGO
+  PSIQUIATRA
+}
+
+enum WaitlistProfessionalStatus {
+  NEW
+  CONTACTED
+  DEMO
+  VERIFIED
+  REJECTED
+}
+
+model WaitlistPatient {
+  id             String                   @id @default(cuid())
+  email          String                   @unique
+  name           String
+  whatsapp       String?
+  comuna         String
+  motivoCategoria WaitlistMotivoCategoria?
+  prevision      WaitlistPrevision
+  consentAt      DateTime
+  consentVersion String
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  referrer       String?
+  createdAt      DateTime                 @default(now())
+
+  @@index([createdAt])
+  @@index([comuna])
+}
+
+model WaitlistProfessional {
+  id                       String                     @id @default(cuid())
+  email                    String                     @unique
+  name                     String
+  whatsapp                 String
+  profesion                WaitlistProfesion
+  registroSuperintendencia String
+  especialidades           String[]
+  aniosExperiencia         Int
+  ciudad                   String
+  atiendeOnline            Boolean
+  status                   WaitlistProfessionalStatus @default(NEW)
+  notasInternas            String?
+  consentAt                DateTime
+  consentVersion           String
+  utmSource                String?
+  utmMedium                String?
+  utmCampaign              String?
+  referrer                 String?
+  createdAt                DateTime                   @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([profesion])
+}
+
 

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -16,6 +17,9 @@ const appointmentSchema = z.object({
 })
 
 export async function POST(request: Request) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -119,6 +123,7 @@ export async function POST(request: Request) {
             )
         }
 
+        if ((error as any)?.code === 'P2002') { return NextResponse.json({ error: 'El horario seleccionado acaba de ser reservado por otro usuario. Por favor selecciona otro horario.' }, { status: 409 }) }
         console.error('Appointment create error:', error)
         return NextResponse.json(
             { error: 'Error al crear la reserva' },
@@ -128,6 +133,9 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 

@@ -101,4 +101,30 @@ describe('encryption', () => {
       expect(timestamp.getTime()).toBeLessThanOrEqual(new Date(after).getTime() + 1000)
     })
   })
+
+  describe('Key rotation & versioning (Envelope v1 with kid)', () => {
+    it('supports rotating keys via ENCRYPTION_KEYS without losing previous records', () => {
+      const key1 = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+      const key2 = 'fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210'
+
+      process.env.ENCRYPTION_KEY = key1
+      process.env.ENCRYPTION_KID = 'k1'
+      process.env.ENCRYPTION_KEYS = JSON.stringify({ k1: key1, k2: key2 })
+
+      const text = 'Nota clínica confidencial cifrada con clave antigua k1'
+      const encryptedV1 = encrypt(text, 'k1')
+
+      // Ahora rotamos la clave activa a k2
+      process.env.ENCRYPTION_KEY = key2
+      process.env.ENCRYPTION_KID = 'k2'
+
+      // La nota antigua aún se descifra automáticamente buscando su kid "k1" en el keyring
+      const decrypted = decrypt(encryptedV1)
+      expect(decrypted).toBe(text)
+
+      // Se puede re-cifrar para actualizarla a k2
+      const reEncrypted = encrypt(decrypted)
+      expect(decrypt(reEncrypted)).toBe(text)
+    })
+  })
 })
