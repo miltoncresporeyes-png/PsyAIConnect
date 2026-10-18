@@ -8,18 +8,13 @@ import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal
 const FOUNDER_BENEFITS = [
     {
         icon: Award,
-        title: 'Plan gratuito de por vida',
-        description: 'Beneficio exclusivo y vitalicio para los primeros 20 profesionales fundadores.',
+        title: '12 meses sin costo de suscripción',
+        description: 'Exención del costo de suscripción para los primeros 20 profesionales fundadores.',
     },
     {
         icon: Sparkles,
-        title: 'Perfil destacado en lanzamiento',
-        description: 'Máxima visibilidad ante pacientes que busquen tu especialidad en las primeras semanas.',
-    },
-    {
-        icon: UserCheck,
-        title: 'Sin comisión por tus pacientes',
-        description: 'Cero comisión por las citas de pacientes que tú mismo traigas a la plataforma.',
+        title: 'Insignia de Profesional Fundador',
+        description: 'Insignia distintiva y perfil destacado en la plataforma durante el lanzamiento.',
     },
     {
         icon: MessageSquare,
@@ -42,7 +37,7 @@ export function FoundersSection() {
                 <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
                     <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50/90 px-3.5 py-1 text-xs font-semibold text-teal-800 shadow-2xs mb-4">
                         <Sparkles className="h-3.5 w-3.5 text-teal-700" aria-hidden="true" />
-                        <span>Convocatoria inicial</span>
+                        <span>Convocatoria inicial · Cupos limitados: 20</span>
                     </div>
 
                     <h2
@@ -57,8 +52,8 @@ export function FoundersSection() {
                     </p>
                 </div>
 
-                {/* Grid of 4 Founder Benefits */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+                {/* Grid of 3 Founder Benefits */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6 max-w-4xl mx-auto">
                     {FOUNDER_BENEFITS.map((benefit, index) => {
                         const Icon = benefit.icon
                         return (
@@ -83,33 +78,46 @@ export function FoundersSection() {
                     })}
                 </div>
 
+                {/* Third-party fees disclaimer & terms link */}
+                <div className="max-w-4xl mx-auto mb-12 text-center">
+                    <p className="text-xs text-slate-500">
+                        Los costos de procesamiento de pagos de terceros pueden aplicar. Más detalles en{' '}
+                        <Link href="/planes" className="text-teal-700 font-medium underline hover:text-teal-800">/planes</Link>
+                        {' '}y en los{' '}
+                        <Link href="/fundadores" className="text-teal-700 font-medium underline hover:text-teal-800">Términos del Programa Fundadores</Link>.
+                    </p>
+                </div>
+
                 {/* Primary Founder CTA & Secondary Patient Card */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 items-stretch max-w-5xl mx-auto">
                     {/* Primary Founder Card */}
                     <div className="rounded-3xl border border-teal-900/10 bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 p-7 sm:p-9 text-white shadow-xl flex flex-col justify-between">
                         <div>
                             <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-teal-200 mb-3">
-                                Red de Fundadores
+                                Red de Fundadores · Cupos limitados: 20
                             </span>
                             <h3 className="text-xl sm:text-2xl font-bold mb-3 text-white">
                                 ¿Quieres liderar el cambio en salud mental en Chile?
                             </h3>
                             <p className="text-sm text-teal-100/85 leading-relaxed">
-                                Participa en la fase cero con condiciones preferenciales permanentes. Solo necesitas tu inscripción oficial en la Superintendencia de Salud.
+                                Participa en la fase inicial con 12 meses sin costo de suscripción. Solo necesitas tu inscripción oficial en la Superintendencia de Salud.
                             </p>
                         </div>
 
                         <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center gap-4">
                             <Link
-                                href="/registro?tipo=profesional"
+                                href="/registro?tipo=profesional&programa=fundador"
                                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-teal-50"
                             >
                                 <UserPlus className="h-4 w-4 text-teal-800" aria-hidden="true" />
                                 <span>Quiero ser Profesional Fundador</span>
                             </Link>
-                            <span className="text-xs text-teal-200/80">
-                                Sin costo de incorporación.
-                            </span>
+                            <Link
+                                href="/fundadores"
+                                className="text-xs text-teal-200/90 underline hover:text-white"
+                            >
+                                Ver términos del programa (/fundadores)
+                            </Link>
                         </div>
                     </div>
 

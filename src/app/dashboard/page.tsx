@@ -4,11 +4,13 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Header, Footer } from '@/components/layout'
-import { PageContainer, PageHeader, KPIGrid, CardGrid } from '@/components/layout/shell'
 import {
     Loader2, Calendar, Clock, DollarSign, Users,
-    Settings, LogOut, ExternalLink, BarChart3, FileText
+    Settings, LogOut, ExternalLink, BarChart3, FileText,
+    Sparkles, ArrowRight, CheckCircle2, ShieldCheck, HeartPulse,
+    HelpCircle, ChevronRight, AlertCircle, Compass, Zap
 } from 'lucide-react'
 
 // Componentes del dashboard clínico del paciente
@@ -21,6 +23,7 @@ import { SafetyMicroCopy } from '@/components/dashboard/patient/SafetyMicroCopy'
 import { DiagnosisSection, PatientDiagnosis } from '@/components/dashboard/patient/DiagnosisSection'
 import FeeCalculator from '@/components/dashboard/FeeCalculator'
 import ReimbursementCard from '@/components/dashboard/ReimbursementCard'
+import { MobileDashboardNav } from '@/components/dashboard/MobileDashboardNav'
 
 interface PatientSummary {
     totalSessions: number
@@ -38,6 +41,7 @@ interface ProfessionalStats {
     totalPatients: number
     monthlyIncome: number
     pendingCount: number
+    isSuspended?: boolean
 }
 
 export default function DashboardPage() {
@@ -58,6 +62,7 @@ export default function DashboardPage() {
         totalPatients: 0,
         monthlyIncome: 0,
         pendingCount: 0,
+        isSuspended: false,
     })
 
     const [loading, setLoading] = useState(true)
@@ -73,15 +78,26 @@ export default function DashboardPage() {
         if (session?.user?.role === 'PROFESSIONAL') {
             const fetchProfessionalStats = async () => {
                 try {
-                    const res = await fetch('/api/profesional/stats')
-                    if (res.ok) {
-                        const data = await res.json()
+                    const [statsRes, accountRes] = await Promise.all([
+                        fetch('/api/profesional/stats'),
+                        fetch('/api/usuario/eliminar-cuenta')
+                    ])
+
+                    let isSuspended = false
+                    if (accountRes.ok) {
+                        const accData = await accountRes.json()
+                        isSuspended = accData.isSuspended || false
+                    }
+
+                    if (statsRes.ok) {
+                        const data = await statsRes.json()
                         setProfessionalStats({
                             todayAppointments: data.todayAppointments || 0,
                             weekAppointments: data.weekAppointments || 0,
                             totalPatients: data.totalPatients || 0,
                             monthlyIncome: data.monthlyIncome || 0,
                             pendingCount: data.pendingCount || 0,
+                            isSuspended,
                         })
                     }
                 } catch {
@@ -180,8 +196,8 @@ export default function DashboardPage() {
 
     if (status === 'loading') {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Loader2 className="w-8 h-8 animate-spin text-teal-700" />
             </div>
         )
     }
@@ -191,7 +207,6 @@ export default function DashboardPage() {
     const isProfessional = session.user.role === 'PROFESSIONAL'
     const userName = session.user.name?.split(' ')[0] || 'Usuario'
 
-    // Format currency
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -204,189 +219,355 @@ export default function DashboardPage() {
         <>
             <Header />
 
-            <PageContainer variant="dashboard" size="wide">
-                {/* =========================================================
-                    VISTA PROFESIONAL
-                   ========================================================= */}
-                {isProfessional && (
-                    <>
-                        <PageHeader
-                            title={`Hola, ${userName} 👋`}
-                            description="Gestiona tu práctica profesional"
-                        />
+            <div className="min-h-screen bg-slate-50/70 pb-24 md:pb-16 pt-4 sm:pt-6">
+                <div className="container-wide max-w-6xl mx-auto px-4 sm:px-6">
 
-                        <KPIGrid count={4}>
-                            <StatCard
-                                icon={Calendar}
-                                label="Citas hoy"
-                                value={loading ? '-' : professionalStats.todayAppointments.toString()}
-                                color="primary"
-                            />
-                            <StatCard
-                                icon={Clock}
-                                label="Esta semana"
-                                value={loading ? '-' : professionalStats.weekAppointments.toString()}
-                                color="secondary"
-                            />
-                            <StatCard
-                                icon={Users}
-                                label="Pacientes"
-                                value={loading ? '-' : professionalStats.totalPatients.toString()}
-                                color="accent"
-                            />
-                            <StatCard
-                                icon={DollarSign}
-                                label="Ingresos mes"
-                                value={loading ? '-' : formatCurrency(professionalStats.monthlyIncome)}
-                                color="green"
-                            />
-                        </KPIGrid>
-
-                        {/* Pending notification */}
-                        {professionalStats.pendingCount > 0 && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-[22px] p-4 mb-5 shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                                        <Clock className="w-5 h-5 text-yellow-600" />
+                    {/* =========================================================
+                        HERO HEADER MÓVIL ENRIQUECIDO
+                       ========================================================= */}
+                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 p-6 sm:p-8 text-white shadow-xl mb-6">
+                        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-48 w-48 rounded-full bg-teal-500/10 blur-2xl pointer-events-none" />
+                        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-1 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-inner">
+                                    {session.user.image ? (
+                                        <Image
+                                            src={session.user.image}
+                                            alt={userName}
+                                            width={60}
+                                            height={60}
+                                            className="rounded-xl object-cover h-full w-full"
+                                        />
+                                    ) : (
+                                        <span className="text-xl sm:text-2xl font-extrabold text-teal-200">
+                                            {userName.charAt(0)}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-teal-400/20 border border-teal-300/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-200">
+                                            <Sparkles className="h-3 w-3" />
+                                            {isProfessional ? 'Portal Profesional' : 'Espacio de Bienestar'}
+                                        </span>
+                                        {isProfessional && professionalStats.isSuspended && (
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-300/40 px-2 py-0.5 text-[10px] font-bold text-amber-200">
+                                                Agenda en pausa
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="min-w-0">
-                                        <p className="font-medium text-yellow-800">
-                                            {professionalStats.pendingCount} cita{professionalStats.pendingCount > 1 ? 's' : ''} pendiente{professionalStats.pendingCount > 1 ? 's' : ''} de confirmación
+                                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white mt-1">
+                                        Hola, {userName}
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-teal-100/80 truncate">
+                                        {isProfessional
+                                            ? 'Supervisión clínica, agenda y pacientes en un solo lugar'
+                                            : 'Tu registro de acompañamiento, citas y bienestar emocional'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 self-start sm:self-center">
+                                <Link
+                                    href="/dashboard/cuenta"
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-2 text-xs font-semibold text-white transition backdrop-blur-xs"
+                                >
+                                    <Settings className="h-3.5 w-3.5 text-teal-200" />
+                                    <span>Mi cuenta</span>
+                                </Link>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: '/' })}
+                                    className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-teal-200 transition"
+                                    title="Cerrar sesión"
+                                    aria-label="Cerrar sesión"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* =========================================================
+                        VISTA PROFESIONAL
+                       ========================================================= */}
+                    {isProfessional && (
+                        <div className="space-y-6">
+                            {/* Alerta de Citas Pendientes */}
+                            {professionalStats.pendingCount > 0 && (
+                                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm flex items-center justify-between gap-3 animate-fade-in">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center flex-shrink-0">
+                                            <Clock className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs sm:text-sm font-bold text-amber-950">
+                                                {professionalStats.pendingCount} cita(s) pendiente(s) de confirmación
+                                            </p>
+                                            <p className="text-xs text-amber-800">
+                                                Revisa las solicitudes para confirmar los horarios con tus pacientes.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href="/dashboard/citas"
+                                        className="rounded-xl bg-amber-700 hover:bg-amber-800 text-white px-3 py-2 text-xs font-semibold shadow-xs flex-shrink-0 transition"
+                                    >
+                                        Confirmar
+                                    </Link>
+                                </div>
+                            )}
+
+                            {/* Alerta de Suspensión Activa */}
+                            {professionalStats.isSuspended && (
+                                <div className="rounded-2xl border border-amber-300 bg-amber-50/90 p-4 shadow-xs flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <AlertCircle className="h-5 w-5 text-amber-700 flex-shrink-0" />
+                                        <p className="text-xs text-amber-900">
+                                            Tu perfil público y agenda están <strong>pausados temporalmente</strong>. No recibirás nuevos pacientes hasta que los reactives.
                                         </p>
-                                        <Link href="/dashboard/citas" className="text-sm text-yellow-700 underline hover:no-underline">
-                                            Ver y confirmar
-                                        </Link>
                                     </div>
+                                    <Link
+                                        href="/dashboard/cuenta"
+                                        className="rounded-xl bg-teal-800 hover:bg-teal-900 text-white px-3 py-1.5 text-xs font-semibold flex-shrink-0 transition"
+                                    >
+                                        Reactivar
+                                    </Link>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Fee Calculator */}
-                        <div className="mb-6">
-                            <FeeCalculator />
-                        </div>
-
-                        <CardGrid count={3}>
-                            <DashboardCard icon={Calendar} title="Mis citas" description="Revisa y gestiona tus próximas citas" href="/dashboard/citas" />
-                            <DashboardCard icon={Users} title="Mis pacientes" description="Ver historial y notas de pacientes" href="/dashboard/pacientes" />
-                            <DashboardCard icon={Clock} title="Disponibilidad" description="Configura tu horario de atención" href="/dashboard/disponibilidad" />
-                            <DashboardCard icon={BarChart3} title="Estadísticas" description="Revisa tus métricas e ingresos" href="/dashboard/estadisticas" />
-                            <DashboardCard icon={FileText} title="Reportes" description="Reportes mensuales financieros" href="/dashboard/reportes" />
-                            <DashboardCard icon={Settings} title="Mi perfil" description="Edita tu información profesional" href="/profesional/completar-perfil" />
-                            <DashboardCard icon={ExternalLink} title="Ver mi página" description="Mira cómo te ven los pacientes" href="/profesional/ps-demo-profesional" target="_blank" />
-                        </CardGrid>
-                    </>
-                )}
-
-                {/* =========================================================
-                    VISTA PACIENTE (Dashboard Clínico)
-                   ========================================================= */}
-                {!isProfessional && (
-                    <>
-                        <PageHeader
-                            title="Tu panel de salud mental"
-                            description={`Bienvenido/a, ${userName}`}
-                            titleClassName="text-xl"
-                        />
-
-                        {/* ZONA 1: Métricas operativas */}
-                        <MetricsCards
-                            totalSessions={patientData.totalSessions}
-                            lastSessionDate={patientData.lastSessionDaysAgo}
-                            nextSessionDate={patientData.nextSession}
-                            professionalName={patientData.professionalName}
-                            professionalType={patientData.professionalType}
-                        />
-
-                        {/* ZONA 2: Acción principal */}
-                        <PrimaryAction
-                            hasProfessional={!!patientData.professionalName}
-                            professionalName={patientData.professionalName}
-                        />
-
-                        {/* ZONA 3, 4, 5: Layout de dos columnas */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-                            {/* Columna Principal */}
-                            <div className="lg:col-span-7 space-y-5 min-w-0">
-                                {/* ZONA Diagnósticos y Tratamiento Clínico (Potenciado) */}
-                                <div id="diagnosticos-clinicos" className="scroll-mt-6">
-                                    <DiagnosisSection
-                                        diagnoses={diagnoses}
-                                        loading={diagnosesLoading}
-                                    />
+                            {/* Métricas Principales (KPIs móviles con tarjetas suaves) */}
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                                <div className="rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-teal-300 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                            Citas hoy
+                                        </span>
+                                        <div className="h-8 w-8 rounded-lg bg-teal-50 text-teal-800 flex items-center justify-center">
+                                            <Calendar className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl font-extrabold text-slate-900">
+                                        {loading ? '-' : professionalStats.todayAppointments}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">sesiones programadas</p>
                                 </div>
 
-                                {/* ZONA 3: Historial y accesos */}
-                                <HistorySection hasHistory={patientData.hasHistory} />
+                                <div className="rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-teal-300 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                            Esta semana
+                                        </span>
+                                        <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                                            <Clock className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl font-extrabold text-slate-900">
+                                        {loading ? '-' : professionalStats.weekAppointments}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">atenciones agendadas</p>
+                                </div>
+
+                                <div className="rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-teal-300 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                            Pacientes
+                                        </span>
+                                        <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                                            <Users className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl font-extrabold text-slate-900">
+                                        {loading ? '-' : professionalStats.totalPatients}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">fichas activas</p>
+                                </div>
+
+                                <div className="rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-teal-300 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                            Ingresos mes
+                                        </span>
+                                        <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                                            <DollarSign className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl font-extrabold text-slate-900">
+                                        {loading ? '-' : formatCurrency(professionalStats.monthlyIncome)}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">bruto estimado</p>
+                                </div>
                             </div>
 
-                            {/* Columna Lateral */}
-                            <div className="lg:col-span-5 space-y-4 min-w-0">
-                                {/* ZONA 4: Check-in emocional (reducido) */}
-                                <EmotionalCheckIn />
+                            {/* Accesos Rápidos de Acción Clínica (Grid interactivo optimizado para touch) */}
+                            <div>
+                                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 px-1">
+                                    Herramientas de consulta
+                                </h2>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    <Link
+                                        href="/dashboard/citas"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-teal-50 text-teal-800 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <Calendar className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Agenda de Citas
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Revisa y gestiona próximas sesiones
+                                            </p>
+                                        </div>
+                                    </Link>
 
-                                {/* Reembolsos */}
-                                <ReimbursementCard />
+                                    <Link
+                                        href="/dashboard/pacientes"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <Users className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Fichas de Pacientes
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Historial protegido Ley N° 20.584
+                                            </p>
+                                        </div>
+                                    </Link>
 
-                                {/* ZONA 5: Recursos (terciario) */}
-                                <BreathingResource />
+                                    <Link
+                                        href="/dashboard/disponibilidad"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <Clock className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Horarios de Atención
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Configura días y bloques online/presencial
+                                            </p>
+                                        </div>
+                                    </Link>
 
-                                {/* Privacidad */}
-                                <SafetyMicroCopy />
+                                    <Link
+                                        href="/dashboard/estadisticas"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <BarChart3 className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Estadísticas e Ingresos
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Métricas de retención y consulta
+                                            </p>
+                                        </div>
+                                    </Link>
+
+                                    <Link
+                                        href="/dashboard/reportes"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <FileText className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Reportes Mensuales
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Comprobantes e integración SII
+                                            </p>
+                                        </div>
+                                    </Link>
+
+                                    <Link
+                                        href="/profesional/completar-perfil"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <Settings className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Editar Perfil
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Bio, especialidades y foto
+                                            </p>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Calculadora de Honorarios y Retención SII */}
+                            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs">
+                                <FeeCalculator />
                             </div>
                         </div>
-                    </>
-                )}
+                    )}
 
-                {/* Sign Out (Común) */}
-                <div className="mt-10 text-center">
-                    <button
-                        onClick={() => signOut({ callbackUrl: '/' })}
-                        className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Cerrar sesión
-                    </button>
+                    {/* =========================================================
+                        VISTA PACIENTE (Dashboard Clínico y de Bienestar)
+                       ========================================================= */}
+                    {!isProfessional && (
+                        <div className="space-y-6">
+                            {/* ZONA 1: Métricas de Consulta */}
+                            <MetricsCards
+                                totalSessions={patientData.totalSessions}
+                                lastSessionDate={patientData.lastSessionDaysAgo}
+                                nextSessionDate={patientData.nextSession}
+                                professionalName={patientData.professionalName}
+                                professionalType={patientData.professionalType}
+                            />
+
+                            {/* ZONA 2: Acción principal (agendar / continuar) */}
+                            <PrimaryAction
+                                hasProfessional={!!patientData.professionalName}
+                                professionalName={patientData.professionalName}
+                            />
+
+                            {/* ZONA 3: Grid de Acompañamiento y Ficha */}
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                                {/* Columna Principal */}
+                                <div className="lg:col-span-7 space-y-5 min-w-0">
+                                    <div id="diagnosticos-clinicos" className="scroll-mt-6">
+                                        <DiagnosisSection
+                                            diagnoses={diagnoses}
+                                            loading={diagnosesLoading}
+                                        />
+                                    </div>
+                                    <HistorySection hasHistory={patientData.hasHistory} />
+                                </div>
+
+                                {/* Columna Lateral */}
+                                <div className="lg:col-span-5 space-y-4 min-w-0">
+                                    <EmotionalCheckIn />
+                                    <ReimbursementCard />
+                                    <BreathingResource />
+                                    <SafetyMicroCopy />
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            </PageContainer>
+            </div>
+
+            {/* Barra de navegación inferior en dispositivos móviles */}
+            <MobileDashboardNav
+                isProfessional={isProfessional}
+                hasPendingAppointments={professionalStats.pendingCount > 0}
+            />
 
             <Footer />
         </>
-    )
-}
-
-// Componentes Auxiliares para Profesional
-function StatCard({ icon: Icon, label, value, color }: { icon: any, label: string, value: string, color: string }) {
-    const colorClasses: any = {
-        primary: 'bg-primary-50 text-primary-600',
-        secondary: 'bg-secondary-100 text-secondary-700',
-        accent: 'bg-accent-50 text-accent-600',
-        green: 'bg-green-50 text-green-600',
-    }
-    return (
-        <div className="dashboard-panel p-4">
-            <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[color]} flex-shrink-0`}>
-                    <Icon className="w-5 h-5" />
-                </div>
-                <div className="min-w-0">
-                    <p className="text-2xl font-bold text-gray-900 truncate">{value}</p>
-                    <p className="text-sm text-gray-500 truncate">{label}</p>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function DashboardCard({ icon: Icon, title, description, href, target }: { icon: any, title: string, description: string, href: string, target?: string }) {
-    return (
-        <Link href={href} target={target} className="dashboard-panel p-5 hover:border-primary-300 transition-colors group hover:-translate-y-0.5">
-            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors flex-shrink-0">
-                <Icon className="w-6 h-6 text-primary-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors truncate">{title}</h3>
-            <p className="text-sm text-gray-600 truncate">{description}</p>
-        </Link>
     )
 }

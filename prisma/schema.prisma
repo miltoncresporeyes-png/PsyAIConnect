@@ -149,6 +149,10 @@ model Professional {
   approachDescription    String?   // "Cómo acompaña"
   yearsExperience        Int?      // Años de experiencia
   firstSessionInfo       String?   // Info sobre primera sesión
+  // Suspensión voluntaria temporal
+  suspendedAt            DateTime?
+  suspendedUntil         DateTime? // Fecha hasta la cual la agenda permanece pausada
+  suspensionReason       String?   // Motivo (ej. vacaciones, capacitación, descanso)
   appointments           Appointment[]                   @relation("ProfessionalAppointments")
   availability           Availability[]
   clinicalNotes          ClinicalNote[]
@@ -1019,6 +1023,35 @@ model WaitlistProfessional {
   @@index([status])
   @@index([createdAt])
   @@index([profesion])
+}
+
+model FounderApplication {
+  id                       String    @id @default(cuid())
+  nombreCompleto           String
+  rut                      String
+  profesion                String    // 'psicologo' o 'psiquiatra'
+  registroSuperintendencia String    // Nº de inscripción en el Registro Nacional de Prestadores Individuales
+  email                    String    @unique
+  telefono                 String
+  modalidadAtencion        String    // 'online' | 'presencial' | 'ambas'
+  comunaRegion             String
+  declaracionVigente       Boolean   @default(true)
+  fechaAceptacion          DateTime  @default(now())
+  versionTerminos          String    @default("1.0")
+  estado                   String    @default("pendiente") // 'pendiente' | 'aprobado' | 'rechazado'
+  motivoRechazo            String?
+  verificadoEnRegistro     Boolean   @default(false)
+  fechaVerificadoRegistro  DateTime?
+  numeroCupo               Int?      @unique // 1 a 20 asignado correlativamente al aprobar
+  fechaInicioBeneficio     DateTime?
+  fechaFinBeneficio        DateTime? // fechaInicioBeneficio + 12 meses
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@index([estado])
+  @@index([numeroCupo])
+  @@index([createdAt])
+  @@map("postulaciones_fundadores")
 }
 
 

@@ -15,20 +15,20 @@ export const metadata: Metadata = {
 
 const plans = [
     {
-        name: 'FREE',
+        name: 'PROGRAMA FUNDADORES',
         price: '$0',
-        period: ' gratis para siempre',
-        description: 'Ideal para comenzar a digitalizar tu consulta independiente.',
+        period: ' por 12 meses',
+        description: 'Programa Fundadores: 12 meses sin costo de suscripción. Luego se aplica el plan vigente, con aviso previo de 60 días.',
         icon: Zap,
         featured: false,
         features: [
+            '12 meses de suscripción sin costo para los primeros 20 fundadores',
+            'Insignia de Profesional Fundador y perfil destacado durante el lanzamiento',
             'Perfil profesional en el directorio',
-            'Agenda médica online básica',
-            'Hasta 5 reservas de citas al mes',
-            'Notificaciones de confirmación por email',
-            'Soporte estándar por correo',
+            'Agenda médica online y fichas clínicas protegidas (Ley N° 20.584)',
+            'Contacto directo con el equipo para pedir mejoras',
         ],
-        cta: 'Comenzar Gratis',
+        cta: 'Postular como Fundador',
     },
     {
         name: 'PRO',
@@ -38,7 +38,7 @@ const plans = [
         icon: Sparkles,
         featured: true,
         features: [
-            'Todo lo de FREE, más:',
+            'Todo lo del plan inicial, más:',
             'Citas y agenda online ilimitadas',
             'Recordatorios automáticos por WhatsApp y Email (Evita no-shows)',
             'Ficha clínica digital protegida (Ley N° 20.584)',
@@ -168,7 +168,7 @@ export default function PlanesPage() {
 
                             {/* CTA Button */}
                             <Link
-                                href="/registro?tipo=profesional"
+                                href={index === 0 ? "/registro?tipo=profesional&programa=fundador" : "/registro?tipo=profesional"}
                                 className={`w-full py-3.5 px-6 rounded-2xl font-semibold transition-all duration-200 text-center block text-sm active:scale-[0.98] ${
                                     plan.featured
                                         ? 'bg-teal-400 text-teal-950 hover:bg-teal-300 shadow-md shadow-teal-400/10'
@@ -180,6 +180,20 @@ export default function PlanesPage() {
                         </div>
                     ))}
                 </CardGrid>
+
+                {/* Third-party fees disclaimer */}
+                <div className="max-w-4xl mx-auto -mt-8 mb-16 text-center">
+                    <p className="text-xs text-gray-500">
+                        Los costos de procesamiento de pagos de terceros pueden aplicar. Más detalles en los{' '}
+                        <Link href="/fundadores" className="text-teal-700 font-medium underline hover:text-teal-800">
+                            Términos del Programa Fundadores
+                        </Link>
+                        {' '}y en los{' '}
+                        <Link href="/terminos" className="text-teal-700 font-medium underline hover:text-teal-800">
+                            Términos de Uso
+                        </Link>.
+                    </p>
+                </div>
 
                 {/* Trust Banner */}
                 <div className="mt-16 text-center max-w-4xl mx-auto">

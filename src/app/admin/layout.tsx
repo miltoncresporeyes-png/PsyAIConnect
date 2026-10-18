@@ -13,11 +13,13 @@ import {
     Menu,
     X,
     Bell,
-    AlertCircle
+    AlertCircle,
+    Sparkles,
 } from 'lucide-react'
 
 const menuItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/fundadores', label: 'Postulaciones Fundadores', icon: Sparkles, alert: true },
     { href: '/admin/validacion-medicos', label: 'Validación Médicos', icon: Stethoscope, alert: true },
     { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
     { href: '/admin/finanzas', label: 'Finanzas', icon: DollarSign },
@@ -25,6 +27,7 @@ const menuItems = [
 
 interface PendingCount {
     pendingProfessionals: number
+    pendingFounders?: number
 }
 
 export default function AdminLayout({
@@ -94,7 +97,11 @@ export default function AdminLayout({
                         {menuItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href
-                            const showAlert = item.alert && pendingCount.pendingProfessionals > 0
+                            const isFoundersItem = item.href === '/admin/fundadores'
+                            const badgeCount = isFoundersItem
+                                ? (pendingCount.pendingFounders || 0)
+                                : (pendingCount.pendingProfessionals || 0)
+                            const showAlert = item.alert && badgeCount > 0
 
                             return (
                                 <Link
@@ -112,7 +119,7 @@ export default function AdminLayout({
                                     </div>
                                     {showAlert && (
                                         <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse flex-shrink-0 ml-2">
-                                            {pendingCount.pendingProfessionals}
+                                            {badgeCount}
                                         </span>
                                     )}
                                 </Link>

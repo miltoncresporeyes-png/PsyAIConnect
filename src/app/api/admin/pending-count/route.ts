@@ -27,12 +27,18 @@ export async function GET() {
             )
         }
 
-        const pendingProfessionals = await prisma.professional.count({
-            where: { verificationStatus: 'PENDING' },
-        })
+        const [pendingProfessionals, pendingFounders] = await Promise.all([
+            prisma.professional.count({
+                where: { verificationStatus: 'PENDING' },
+            }),
+            prisma.founderApplication.count({
+                where: { estado: 'pendiente' },
+            }),
+        ])
 
         return NextResponse.json({
             pendingProfessionals,
+            pendingFounders,
         })
     } catch (error) {
         console.error('Pending count error:', error)

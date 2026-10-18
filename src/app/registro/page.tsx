@@ -5,8 +5,9 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
-import { Loader2, Mail, Lock, Eye, EyeOff, User, UserCog, ArrowLeft } from 'lucide-react'
+import { Loader2, Mail, Lock, Eye, EyeOff, User, UserCog, ArrowLeft, Sparkles } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
+import { FounderRegistrationForm } from '@/components/forms/FounderRegistrationForm'
 
 type UserType = 'patient' | 'professional'
 const PENDING_REGISTRATION_KEY = 'pendingRegistrationContext'
@@ -180,10 +181,13 @@ function RegistroContent() {
   const searchParams = useSearchParams()
 
   const tipoParam = searchParams?.get('tipo')
+  const programaParam = searchParams?.get('programa')
   const preReservationToken = searchParams?.get('preReservation')
 
   const [step, setStep] = useState<'select' | 'form'>('select')
   const [userType, setUserType] = useState<UserType | null>(null)
+
+  const isFounderFlow = programaParam === 'fundador' || (userType === 'professional' && programaParam === 'fundador')
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -197,14 +201,14 @@ function RegistroContent() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (tipoParam === 'profesional' || tipoParam === 'professional') {
+    if (tipoParam === 'profesional' || tipoParam === 'professional' || programaParam === 'fundador') {
       setUserType('professional')
       setStep('form')
     } else if (tipoParam === 'paciente' || tipoParam === 'patient') {
       setUserType('patient')
       setStep('form')
     }
-  }, [tipoParam])
+  }, [tipoParam, programaParam])
 
   const handleTypeSelect = (type: UserType) => {
     setUserType(type)
@@ -371,23 +375,35 @@ function RegistroContent() {
               {tipoParam ? t.backHome : t.switchType}
             </button>
 
-            {CurrentIcon && (
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className={`w-10 h-10 rounded-xl ${currentContent.iconBgClass} flex items-center justify-center`}>
-                  <CurrentIcon className={`w-5 h-5 ${currentContent.iconColorClass}`} />
-                </div>
-                <span className="text-sm font-medium text-gray-600">
-                  {userType === 'professional' ? t.professionalAccount : t.patientAccount}
-                </span>
+            {isFounderFlow ? (
+              <div>
+                <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-2">
+                  Registro de Profesionales Fundadores
+                </h1>
+                <p className="text-sm text-gray-600 text-center mb-6">
+                  Convocatoria inicial · Primeros 20 cupos con 12 meses sin costo de suscripción.
+                </p>
+                <FounderRegistrationForm />
               </div>
-            )}
+            ) : (
+              <>
+                {CurrentIcon && (
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <div className={`w-10 h-10 rounded-xl ${currentContent.iconBgClass} flex items-center justify-center`}>
+                      <CurrentIcon className={`w-5 h-5 ${currentContent.iconColorClass}`} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">
+                      {userType === 'professional' ? t.professionalAccount : t.patientAccount}
+                    </span>
+                  </div>
+                )}
 
-            <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-2">{currentContent.title}</h1>
-            <p className="text-gray-600 text-center mb-8">{currentContent.subtitle}</p>
+                <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-2">{currentContent.title}</h1>
+                <p className="text-gray-600 text-center mb-8">{currentContent.subtitle}</p>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">{error}</div>
-            )}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">{error}</div>
+                )}
 
             <button
               onClick={handleGoogleSignIn}
@@ -499,6 +515,8 @@ function RegistroContent() {
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : currentContent.buttonText}
               </button>
             </form>
+              </>
+            )}
           </>
         )}
 

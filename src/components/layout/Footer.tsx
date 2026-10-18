@@ -24,6 +24,7 @@ export function Footer() {
         legal: [
             { name: 'Términos de Uso', href: '/terminos' },
             { name: 'Política de Privacidad', href: '/privacidad' },
+            { name: 'Programa Fundadores', href: '/fundadores' },
         ],
     }
 
