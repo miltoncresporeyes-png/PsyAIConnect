@@ -215,7 +215,7 @@ export function ChatInterface({ variant = 'button', className = '' }: ChatInterf
   return (
     <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end ${className}`}>
       {isOpen && (
-        <div className="mb-4 w-[380px] max-w-[calc(100vw-2rem)]">
+        <div className="mb-3 w-[380px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-5.5rem)] flex flex-col">
           <ChatWindow
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
@@ -287,21 +287,21 @@ function ChatWindow({
   inputRef,
 }: ChatWindowProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden transform transition-all duration-300 origin-bottom-right">
+    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden max-h-[calc(100dvh-5.5rem)] w-full transform transition-all duration-300 origin-bottom-right">
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 p-4 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 p-3.5 sm:p-4 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-white text-sm">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-full flex items-center justify-center font-bold text-white text-xs sm:text-sm">
               AI
             </div>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
           </div>
           <div>
-            <h4 className="font-semibold text-white text-sm leading-none">PsyAI</h4>
+            <h4 className="font-semibold text-white text-xs sm:text-sm leading-none">PsyAI</h4>
             <div className="flex items-center gap-1.5 mt-0.5">
               <ShieldCheck className="w-3 h-3 text-teal-200" />
-              <span className="text-xs text-teal-100">Asistente de PsyDoctor · 24/7</span>
+              <span className="text-[11px] text-teal-100">Asistente de PsyDoctor · 24/7</span>
             </div>
           </div>
         </div>
@@ -326,16 +326,16 @@ function ChatWindow({
       </div>
 
       {/* Crisis alert banner */}
-      <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center gap-2">
+      <div className="bg-amber-50 border-b border-amber-100 px-3.5 py-1.5 flex items-center gap-2 flex-shrink-0">
         <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-        <span className="text-xs text-amber-800">
+        <span className="text-[11px] text-amber-800 leading-tight">
           En emergencias, llama a{' '}
           <strong className="font-semibold">600 360 7777</strong> (Salud Responde, 24/7)
         </span>
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50 min-h-[300px] max-h-[420px] flex flex-col gap-3">
+      <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 bg-gray-50/50 min-h-[160px] max-h-[50vh] flex flex-col gap-2.5 overscroll-contain">
         {!hasMessages && !isLoading && <WelcomeScreen onSendMessage={onSend} />}
 
         {messages.map((msg) => (

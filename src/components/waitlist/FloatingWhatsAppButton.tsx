@@ -217,20 +217,20 @@ export function FloatingWhatsAppButton() {
     >
       {/* Ventana de Asistente Conversacional */}
       {isOpen && (
-        <div className="mb-3 w-[360px] max-w-[calc(100vw-2rem)] rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="mb-3 w-[360px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-5.5rem)] rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Header Superior del Chat */}
-          <div className="bg-gradient-to-r from-teal-900 to-slate-900 p-4 text-white">
+          <div className="bg-gradient-to-r from-teal-900 to-slate-900 p-3.5 sm:p-4 text-white flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="relative">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xs">
-                    <MessageCircle className="h-5 w-5 fill-current" />
+                  <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xs">
+                    <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 fill-current" />
                   </div>
                   <span className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-slate-900 ${isWithinHours ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white leading-tight">Asistente WhatsApp · PsyDoctor</h3>
-                  <p className="text-[11px] text-teal-200 flex items-center gap-1 mt-0.5">
+                  <h3 className="text-xs sm:text-sm font-semibold text-white leading-tight">Asistente WhatsApp · PsyDoctor</h3>
+                  <p className="text-[10px] sm:text-[11px] text-teal-200 flex items-center gap-1 mt-0.5">
                     <Clock className="w-3 h-3 inline-block" />
                     {isWithinHours ? 'Conectado ahora · Respuestas en minutos' : 'Fuera de horario · Atención 09:00 - 19:00'}
                   </p>
@@ -246,14 +246,14 @@ export function FloatingWhatsAppButton() {
             </div>
 
             {/* Aviso de atención humana / disponibilidad */}
-            <div className="mt-3 rounded-xl bg-white/10 px-3 py-2 text-[11px] text-teal-100 flex items-start gap-2">
+            <div className="mt-2.5 rounded-xl bg-white/10 px-2.5 py-1.5 text-[10px] sm:text-[11px] text-teal-100 flex items-start gap-1.5">
               <span className="font-medium text-white shrink-0">🕒 Horario:</span>
-              <span>Lunes a Viernes de 09:00 a 19:00 hrs. {isWithinHours ? 'Equipo clínico y técnico activo.' : 'Deja tu consulta y la responderemos prioritariamente.'}</span>
+              <span>Lunes a Viernes de 09:00 a 19:00 hrs. {isWithinHours ? 'Equipo activo.' : 'Deja tu consulta y la responderemos prioritariamente.'}</span>
             </div>
           </div>
 
           {/* Cuerpo del Asistente */}
-          <div className="p-4 bg-slate-50/70 max-h-[420px] overflow-y-auto flex flex-col gap-3 text-xs sm:text-sm">
+          <div className="p-3.5 sm:p-4 bg-slate-50/70 flex-1 overflow-y-auto overscroll-contain flex flex-col gap-2.5 text-xs sm:text-sm">
             {/* Mensaje de bienvenida inicial */}
             <div className="rounded-2xl rounded-tl-none bg-white p-3.5 shadow-xs border border-slate-100 text-slate-800 leading-relaxed">
               <p className="font-semibold text-slate-900 mb-1">¡Hola! Qué gusto saludarte 👋</p>
