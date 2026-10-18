@@ -77,7 +77,7 @@ export function WaitlistFAQSection() {
                                 {isOpen && (
                                     <div
                                         id={`faq-answer-${index}`}
-                                        className="px-5 pb-5 pt-0 text-sm text-tinta/75 leading-relaxed border-t border-bruma/30 pt-3"
+                                        className="px-5 pb-5 pt-3 text-sm text-tinta/75 leading-relaxed border-t border-bruma/30"
                                     >
                                         {faq.answer}
                                     </div>
