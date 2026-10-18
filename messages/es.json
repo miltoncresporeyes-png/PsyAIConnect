@@ -11,23 +11,23 @@
     "dashboard": "Dashboard",
     "myProfile": "Mi Perfil",
     "logout": "Cerrar sesión",
-    "mobileIntro": "Encuentra y agenda con profesionales verificados en minutos.",
+    "mobileIntro": "Encuentra y agenda con psicólogos y psiquiatras inscritos en el Registro.",
     "startFree": "Comenzar Gratis"
   },
   "languageSwitcher": {
     "label": "Idioma"
   },
   "hero": {
-    "launchBadge": "Salud mental a tu alcance",
+    "launchBadge": "Salud mental online",
     "launchDay": "día",
     "launchDays": "días",
     "launchAvailable": "Disponible ahora",
-    "headline1": "Tu salud mental en manos profesionales",
-    "headlineHighlight": "atención online personalizada y transparente",
-    "description": "Conectamos pacientes con psicólogos y psiquiatras habilitados en el Registro Nacional de Prestadores Individuales de Chile. Reserva tu sesión online con aranceles transparentes, boleta para reembolso y confidencialidad protegida por ley.",
-    "chipVerified": "Registro Superintendencia de Salud",
+    "headline1": "Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud.",
+    "headlineHighlight": "Atención online en todo Chile.",
+    "description": "Reserva con precios claros y recibe boleta para solicitar reembolso a tu Isapre o seguro complementario, según tu plan.",
+    "chipVerified": "Inscritos en Superintendencia de Salud",
     "chipOnline": "Terapia online en todo Chile",
-    "chipPayments": "Pagos seguros en CLP",
+    "chipPayments": "Pagos en CLP",
     "ctaPatient": "Buscar profesional",
     "ctaProfessional": "Unirme como profesional",
     "waitlistTitle": "Novedades y recursos de bienestar",
@@ -37,23 +37,23 @@
     "submitSending": "Enviando...",
     "submitBtn": "Quiero acceso",
     "trustProtected": "Tus datos están protegidos. Sin spam.",
-    "trustSchedule": "Reserva online sin costos ocultos.",
-    "statsProfessionals": "Superintendencia de Salud",
-    "statsBeta": "Habilitados",
+    "trustSchedule": "Reserva online sin cobros sorpresa.",
+    "statsProfessionals": "Registro de Prestadores",
+    "statsBeta": "Inscritos",
     "stats24h": "Online",
     "statsAgenda": "atención por videollamada",
     "stats100": "100%",
     "statsConfidential": "confidencial",
     "statsCLP": "CLP",
     "statsLocalPayment": "pago local",
-    "privacyTitle": "Privacidad garantizada",
-    "privacyLaw": "Leyes 19.628, 21.719, 20.584 y 21.668"
+    "privacyTitle": "Privacidad y confidencialidad",
+    "privacyLaw": "Ley 19.628 (adaptada a Ley 21.719)"
   },
   "adminBanner": {
     "title": "Compromiso ético, legal y tecnológico en salud mental",
-    "subtitle": "Cumplimiento de la Ley 20.584 de Derechos del Paciente y Ley 21.668 de Ficha Clínica Electrónica",
-    "compliance": "Leyes 19.628 y 21.719 (Datos Personales)",
-    "activePros": "Prestadores Acreditados en Chile"
+    "subtitle": "Diseñado en concordancia con los principios de derechos del paciente y confidencialidad clínica",
+    "compliance": "Ley 19.628 (adaptada a Ley 21.719)",
+    "activePros": "Inscritos en el Registro de Prestadores Individuales"
   },
   "differentiation": {
     "sectionLabel": "Por qué somos diferentes",
@@ -75,7 +75,7 @@
       },
       {
         "title": "Sin presión, sin juicio",
-        "description": "Avanzas a tu ritmo. Sin listas de espera, sin compromisos forzosos."
+        "description": "Avanzas a tu propio ritmo, eligiendo cuándo y con quién iniciar tu proceso, sin compromisos forzosos."
       }
     ]
   },
@@ -89,8 +89,8 @@
         "description": "Nuestro orientador te ayuda a identificar qué tipo de atención necesitas según tu situación."
       },
       {
-        "title": "Agenda en minutos",
-        "description": "Verifica disponibilidad real, elige horario y confirma online. Sin llamadas, sin esperas."
+        "title": "Coordina tu hora online",
+        "description": "Revisa los horarios publicados por cada profesional y solicita tu sesión directamente desde la plataforma."
       },
       {
         "title": "Tu espacio seguro",
@@ -105,7 +105,7 @@
   "forProfessionals": {
     "sectionLabel": "Para profesionales",
     "heading": "Una plataforma diseñada para potenciar tu práctica independiente",
-    "subheading": "PsyDoctor te ayuda a gestionar tu consulta sin perder el control sobre la relación terapéutica. Sin algoritmos que te asignen pacientes, sin comisiones ocultas.",
+    "subheading": "PsyDoctor te ayuda a gestionar tu consulta sin perder el control sobre la relación terapéutica. Sin algoritmos que te asignen pacientes y sin comisiones por captar pacientes.",
     "benefits": [
       {
         "title": "Agenda inteligente",
@@ -113,7 +113,7 @@
       },
       {
         "title": "Presencia profesional",
-        "description": "Perfil verificado visible para pacientes que buscan específicamente tu especialidad."
+        "description": "Perfil visible para pacientes que buscan específicamente tu especialidad y enfoque."
       },
       {
         "title": "Continuidad clínica",
@@ -121,7 +121,7 @@
       }
     ],
     "features": [
-      "Perfil profesional verificado",
+      "Perfil en el Registro de Prestadores",
       "Agenda online integrada",
       "Pagos seguros y automáticos",
       "Panel de gestión de pacientes"
@@ -160,7 +160,7 @@
         },
         {
           "title": "Visibilidad ética",
-          "description": "No somos un marketplace masivo. Conectamos pacientes con profesionales verificados que se ajustan a sus necesidades."
+          "description": "No somos un marketplace masivo. Conectamos pacientes con profesionales inscritos en el Registro que se ajustan a sus necesidades."
         }
       ],
       "ctaProfile": "Crear perfil profesional →",
@@ -170,11 +170,11 @@
       "ethics": [
         {
           "title": "Confidencialidad garantizada",
-          "description": "Datos clínicos encriptados. Cumplimiento con normativas de protección de datos de salud."
+          "description": "Datos clínicos encriptados. Respaldo de privacidad para datos sensibles de salud."
         },
         {
-          "title": "Verificación profesional",
-          "description": "Solo profesionales con credenciales verificables pueden crear perfil. Protegemos la confianza del ecosistema."
+          "title": "Validación de credenciales",
+          "description": "Solo profesionales con inscripción comprobable en el Registro de Prestadores Individuales pueden crear perfil. Protegemos la confianza del ecosistema."
         },
         {
           "title": "Sin claims clínicos",
@@ -186,7 +186,7 @@
   "cta": {
     "badge": "Plataforma de salud mental creada para Chile",
     "heading": "Da el primer paso hacia tu bienestar, con certeza y transparencia",
-    "subheading": "acceso a psicólogos y psiquiatras habilitados en la Superintendencia de Salud, aranceles claros y la tranquilidad de saber que tu privacidad clínica está protegida por ley.",
+    "subheading": "Acceso a psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud, aranceles claros y boleta para reembolso según tu plan de Isapre o seguro.",
     "tag1": "Registro Superintendencia de Salud",
     "tag2": "Boleta para reembolso",
     "tag3": "Privacidad garantizada",
@@ -195,12 +195,12 @@
     "card1Title": "Para pacientes",
     "card1Desc": "Encuentra al profesional indicado según tu motivo de consulta, reserva online y mantén el control ético de tu ficha.",
     "card2Title": "Privacidad",
-    "card2Desc": "Tus datos de salud están protegidos bajo las Leyes 19.628, 21.719 y 20.584. Cifrado en tránsito (TLS) y en reposo (AES-256).",
+    "card2Desc": "Tus datos de salud están protegidos bajo la Ley 19.628 (adaptada a la Ley 21.719). Cifrado en tránsito (TLS) y en reposo (AES-256).",
     "card3Title": "Para profesionales",
     "card3Desc": "Gestiona tu agenda, recibe pagos automáticos y enfócate en lo que importa: tus pacientes.",
     "trust1": "Registro Superintendencia de Salud",
     "trust2": "Datos protegidos por ley",
-    "trust3": "Sin costos ocultos"
+    "trust3": "Sin cobros sorpresa"
   },
   "faq": {
     "professionalTab": "Para profesionales",
@@ -252,7 +252,7 @@
     "patient": [
       {
         "question": "¿Qué es PsyDoctor y cómo me puede ayudar?",
-        "answer": "PsyDoctor es una plataforma que te conecta con psicólogos y psiquiatras verificados en Chile. Nuestro objetivo es facilitar tu camino hacia el bienestar, ayudándote a encontrar al profesional adecuado para ti, a tu ritmo y sin presiones."
+        "answer": "PsyDoctor es una plataforma que te conecta con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Nuestro objetivo es facilitar tu camino hacia el bienestar, ayudándote a encontrar al profesional adecuado para ti, a tu ritmo y sin presiones."
       },
       {
         "question": "¿Cómo sé que los profesionales son confiables?",
@@ -281,7 +281,7 @@
     ]
   },
   "footer": {
-    "tagline": "Conectamos pacientes con profesionales de salud mental verificados en Chile.",
+    "tagline": "Conectamos pacientes con psicólogos y psiquiatras inscritos en el Registro de Prestadores de Chile.",
     "rights": "Todos los derechos reservados.",
     "product": "Producto",
     "resources": "Recursos",

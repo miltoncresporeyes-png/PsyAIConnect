@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'Profesionales Verificados en Chile',
+    title: 'Profesionales de la Salud Mental en Chile',
     description:
-        'Directorio de psicólogos y psiquiatras verificados en Chile. Compara precios, modalidad, especialidades y cobertura previsional antes de agendar tu sesión.',
+        'Directorio de psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud en Chile. Conoce aranceles claros y boleta para reembolso.',
     alternates: {
         canonical: '/profesionales',
     },

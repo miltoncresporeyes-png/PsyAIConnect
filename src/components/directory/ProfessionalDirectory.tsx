@@ -73,10 +73,10 @@ export async function ProfessionalDirectory({ limit = 12 }: Props) {
             <div className="container-wide">
                 <div className="max-w-3xl mx-auto text-center mb-10">
                     <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
-                        Profesionales verificados en PsyDoctor
+                        Profesionales en PsyDoctor
                     </h2>
                     <p className="text-lg text-gray-600">
-                        Perfiles con identidad y título verificados, especialidad, comuna y precio de
+                        Inscritos en el Registro de la Superintendencia de Salud, con especialidad y precio de
                         sesión visible antes de agendar.
                     </p>
                 </div>
@@ -150,7 +150,7 @@ export async function ProfessionalDirectory({ limit = 12 }: Props) {
                                     {professional.verificationStatus === 'VERIFIED' && (
                                         <p className="mt-2 inline-flex items-center gap-1 text-xs text-green-700">
                                             <Shield className="w-3.5 h-3.5" aria-hidden="true" />
-                                            Identidad y título verificados
+                                            Inscrito en el Registro
                                         </p>
                                     )}
                                 </Link>

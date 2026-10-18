@@ -30,9 +30,11 @@ export function HeroSection() {
               </span>
             </div>
 
-            <h1 id="hero-heading" className="mt-6 max-w-3xl text-balance text-4xl font-bold leading-[1.05] text-slate-900 sm:text-5xl lg:text-6xl">
-              {t('headline1')}
-              <span className="bg-gradient-to-r from-teal-700 via-teal-500 to-cyan-500 bg-clip-text text-transparent"> {t('headlineHighlight')}</span>
+            <h1 id="hero-heading" className="mt-6 max-w-3xl text-balance text-4xl font-bold leading-[1.12] text-slate-900 sm:text-5xl lg:text-[52px]">
+              {t('headline1')}{' '}
+              <span className="bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                {t('headlineHighlight')}
+              </span>
             </h1>
 
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl">

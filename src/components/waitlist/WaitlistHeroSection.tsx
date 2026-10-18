@@ -62,8 +62,8 @@ export function WaitlistHeroSection() {
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-xs font-semibold text-tinta tracking-normal">Prestadores Verificados</h2>
-                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Validación rigurosa ante la Superintendencia de Salud (SIS).</p>
+                            <h2 className="text-xs font-semibold text-tinta tracking-normal">Prestadores Inscritos</h2>
+                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Inscripción en el Registro de la Superintendencia de Salud (SIS).</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 rounded-xl transition-colors">

@@ -17,17 +17,17 @@ interface Props {
 const localeMeta: Record<string, { title: string; description: string; canonical: string }> = {
     en: {
         title: 'PsyDoctor | Find a Psychologist in Chile | Online Therapy',
-        description: 'Connect with verified psychologists and psychiatrists in Chile. Book online therapy sessions in minutes. Transparent pricing, no waiting list.',
+        description: 'Connect with psychologists and psychiatrists registered with the Superintendencia de Salud in Chile. Clear pricing and receipts for insurance reimbursement.',
         canonical: 'https://psydoctor.cl/en',
     },
     fr: {
         title: 'PsyDoctor | Trouver un Psychologue au Chili | Thérapie en Ligne',
-        description: 'Trouvez des psychologues et psychiatres vérifiés au Chili. Réservez des séances de thérapie en ligne en quelques minutes. Prix transparents.',
+        description: 'Trouvez des psychologues et psychiatres inscrits au Registre de la Superintendencia de Salud au Chili. Tarifs clairs et reçus pour remboursement.',
         canonical: 'https://psydoctor.cl/fr',
     },
     pt: {
         title: 'PsyDoctor | Encontre um Psicólogo no Chile | Terapia Online',
-        description: 'Conecte-se com psicólogos e psiquiatras verificados no Chile. Agende sessões de terapia online em minutos. Preços transparentes, sem lista de espera.',
+        description: 'Conecte-se com psicólogos e psiquiatras inscritos no Registro da Superintendencia de Salud no Chile. Preços claros e recibo para reembolso.',
         canonical: 'https://psydoctor.cl/pt',
     },
 }

@@ -19,7 +19,7 @@ export const ASSISTANT_CONFIG = {
  * Este es el corazón de la configuración de IA del asistente
  */
 export function buildSystemPrompt(): string {
-  return `Eres ${ASSISTANT_CONFIG.name}, el asistente virtual de PsyDoctor (https://psydoctor.cl), una plataforma chilena de salud mental que conecta pacientes con psicólogos y psiquiatras verificados en todo Chile.
+  return `Eres ${ASSISTANT_CONFIG.name}, el asistente virtual de PsyDoctor (https://psydoctor.cl), una plataforma chilena de salud mental que conecta pacientes con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud en todo Chile.
 
 ## TU IDENTIDAD
 - Nombre: ${ASSISTANT_CONFIG.name}

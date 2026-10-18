@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         default: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras',
         template: '%s | PsyDoctor',
     },
-    description: 'Conecta con psicólogos y psiquiatras habilitados en Chile. Reserva online según disponibilidad, boleta para reembolso en Isapre y seguros, y datos protegidos conforme a la Ley 20.584.',
+    description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online en todo Chile con precios claros y boleta para reembolso según tu plan.',
     keywords: [
         // Búsquedas principales
         'psicólogo Chile',
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         'reservar hora psicólogo',
         'agenda online psicólogo',
         'directorio psicólogos Chile',
-        'psicólogos verificados Superintendencia de Salud',
+        'psicólogos Registro Superintendencia de Salud',
         'plataforma salud mental Chile',
         'precios transparentes psicólogo',
         // Tipos de terapia
@@ -84,8 +84,8 @@ export const metadata: Metadata = {
     },
     metadataBase: new URL('https://psydoctor.cl'),
     openGraph: {
-        title: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras Habilitados',
-        description: 'Encuentra psicólogos y psiquiatras habilitados en el Registro Nacional de Prestadores. Boleta para reembolso en Isapre y seguros complementarios.',
+        title: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras',
+        description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online en todo Chile, boleta para reembolso según tu plan.',
         url: 'https://psydoctor.cl',
         siteName: 'PsyDoctor',
         locale: 'es_CL',
@@ -95,14 +95,14 @@ export const metadata: Metadata = {
                 url: '/images/og-homepage.png',
                 width: 1200,
                 height: 630,
-                alt: 'PsyDoctor: psicólogos y psiquiatras habilitados en Chile',
+                alt: 'PsyDoctor: psicólogos y psiquiatras inscritos en el Registro',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'PsyDoctor | Psicólogos y Psiquiatras en Chile | Boleta para Reembolso',
-        description: 'Psicólogos y psiquiatras habilitados en la Superintendencia de Salud. Agenda online según disponibilidad, precios transparentes y boleta para reembolso.',
+        description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Precios claros y boleta para reembolso según tu plan.',
         images: ['/images/og-homepage.png'],
         site: '@psydoctor_cl',
         creator: '@psydoctor_cl',

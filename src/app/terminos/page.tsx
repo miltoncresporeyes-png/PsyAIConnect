@@ -150,7 +150,7 @@ export default function TerminosPage() {
 
                             <h3 className="legal-subsection-title">2.2 Responsabilidad Profesional Independiente y Ficha Clínica</h3>
                             <p className="legal-paragraph">
-                                Todos los servicios profesionales de salud son provistos exclusivamente por <strong>profesionales independientes</strong> debidamente acreditados en la Superintendencia de Salud de Chile. En consecuencia:
+                                Todos los servicios profesionales de salud son provistos exclusivamente por <strong>profesionales independientes</strong> debidamente inscritos en el Registro Nacional de Prestadores Individuales de la Superintendencia de Salud de Chile. En consecuencia:
                             </p>
                             <ul className="legal-list">
                                 <li className="legal-list-item">PsyDoctor no emplea, contrata ni tiene relaciones de subordinación con los profesionales listados.</li>

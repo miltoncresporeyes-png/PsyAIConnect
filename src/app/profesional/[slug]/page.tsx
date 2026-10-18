@@ -277,7 +277,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                                         {professional.verificationStatus === 'VERIFIED' && (
                                             <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-md flex-shrink-0">
                                                 <Shield className="w-3.5 h-3.5" />
-                                                <span>Identidad y título verificados</span>
+                                                <span>Inscrito en el Registro</span>
                                             </div>
                                         )}
                                     </div>
