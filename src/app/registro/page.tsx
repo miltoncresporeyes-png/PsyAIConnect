@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { Loader2, Mail, Lock, Eye, EyeOff, User, UserCog, ArrowLeft } from 'lucide-react'
+import { Logo } from '@/components/layout/Logo'
 
 type UserType = 'patient' | 'professional'
 const PENDING_REGISTRATION_KEY = 'pendingRegistrationContext'
@@ -310,12 +311,16 @@ function RegistroContent() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="text-center mb-6">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-xl">P</span>
-          </div>
-          <span className="font-heading font-semibold text-2xl text-gray-900">PsyDoctor</span>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/" className="inline-flex items-center gap-2 group">
+          <Logo variant="full" size={38} />
+        </Link>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-teal-700 bg-white/80 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 px-3 py-1.5 rounded-full transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Volver al inicio
         </Link>
       </div>
 

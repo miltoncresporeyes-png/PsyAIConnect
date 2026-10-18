@@ -14,10 +14,13 @@ import {
     Users,
     AlertCircle
 } from 'lucide-react'
+import { Header, Footer } from '@/components/layout'
 
 export default function SoyProfesionalPage() {
     return (
-        <div className="min-h-screen bg-[linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_24%,_#ffffff_100%)]">
+        <div className="min-h-screen bg-[linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_24%,_#ffffff_100%)] flex flex-col">
+            <Header />
+            <main className="flex-1">
             {/* Hero Section */}
             <section className="relative py-10 md:py-14 bg-gradient-to-br from-secondary-50 via-white to-primary-50/30 overflow-hidden">
                 <div className="absolute inset-0 bg-grid-pattern opacity-5" />
@@ -433,6 +436,8 @@ export default function SoyProfesionalPage() {
                     </div>
                 </div>
             </section>
+            </main>
+            <Footer />
         </div>
     )
 }
