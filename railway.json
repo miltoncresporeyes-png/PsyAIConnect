@@ -4,8 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "next start -H 0.0.0.0 -p ${PORT:-3000}",
-    "preDeployCommand": "npx prisma db push --accept-data-loss",
+    "startCommand": "npx prisma db push --accept-data-loss && next start -H 0.0.0.0 -p ${PORT:-3000}",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",
