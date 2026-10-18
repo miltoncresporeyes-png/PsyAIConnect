@@ -145,7 +145,7 @@ export function FAQSection() {
                             {t('moreQuestions')}
                         </p>
                         <a
-                            href="mailto:profesionales@psydoctor.cl"
+                            href="mailto:contacto@psydoctor.cl"
                             className="text-primary-700 font-medium hover:text-primary-800 hover:underline transition-colors"
                         >
                             {t('contactEmail')}
