@@ -236,13 +236,15 @@ const EMAIL_TEMPLATES = {
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     const { to, subject, html, text } = options
 
-    // In development without API key, log to console
-    if (!process.env.RESEND_API_KEY) {
-        console.log('📧 [EMAIL SERVICE - DEV MODE]')
-        console.log('To:', to)
+    const apiKey = process.env.RESEND_API_KEY
+    const isPlaceholder = !apiKey || apiKey.startsWith('re_...') || apiKey.trim() === ''
+
+    // In development or when API key is a dummy placeholder, log to console
+    if (isPlaceholder) {
+        console.warn('📧 [EMAIL SERVICE] RESEND_API_KEY no está configurada o es un placeholder. Simulando envío para:', to)
         console.log('Subject:', subject)
         console.log('---')
-        return { success: true, messageId: 'dev-mode-' + Date.now() }
+        return { success: true, messageId: 'simulated-' + Date.now() }
     }
 
     try {
@@ -250,7 +252,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
                 from: process.env.EMAIL_FROM || 'PsyDoctor <contacto@psydoctor.cl>',

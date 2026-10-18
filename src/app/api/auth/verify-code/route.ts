@@ -129,8 +129,12 @@ export async function POST(request: Request) {
             const result = await sendVerificationCodeEmail(email, name, verificationCode)
 
             if (!result.success) {
+                console.error('[/api/auth/verify-code] Email sending failed:', result.error)
                 return NextResponse.json(
-                    { error: 'Error al enviar el código de verificación' },
+                    { 
+                        error: result.error || 'Error al enviar el código de verificación',
+                        message: 'Error en servicio de correo',
+                    },
                     { status: 500 }
                 )
             }
@@ -405,9 +409,11 @@ export async function POST(request: Request) {
         )
 
     } catch (error) {
+        console.error('[/api/auth/verify-code] Error:', error)
         await captureApiError('/api/auth/verify-code', error, requestId)
+        const errorMessage = error instanceof Error ? error.message : 'Error en el proceso de verificación'
         return NextResponse.json(
-            { error: 'Error en el proceso de verificación', requestId },
+            { error: 'Error en el proceso de verificación', details: process.env.NODE_ENV !== 'production' ? errorMessage : undefined, requestId },
             { status: 500, headers: { 'X-Request-Id': requestId } }
         )
     }
