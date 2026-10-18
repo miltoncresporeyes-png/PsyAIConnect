@@ -27,8 +27,8 @@ export function Header() {
               { name: 'Preguntas frecuentes', href: '/#faq' },
           ]
         : [
-              { name: t('patient'),      href: '/registro?tipo=paciente' },
-              { name: t('professional'), href: '/registro?tipo=profesional' },
+              { name: 'Buscar Profesional', href: '/buscar' },
+              { name: 'Soy Profesional (Fundadores)', href: '/profesionales' },
               { name: t('planes'),       href: '/planes' },
               { name: t('howItWorks'),   href: '/#como-funciona' },
           ]
