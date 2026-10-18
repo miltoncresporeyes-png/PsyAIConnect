@@ -315,7 +315,7 @@ export default function OrientadorInteligentePage() {
                                         className={`
                                             group relative w-full text-left p-5 rounded-2xl border-2 transition-all duration-200
                                             hover:scale-[1.02] hover:shadow-lg
-                                            animate-in fade-in slide-in-from-bottom-2 duration-500
+                                            animate-in fade-in slide-in-from-bottom-2
                                             ${isSelected
                                                 ? 'bg-primary-50 border-primary-500 shadow-md'
                                                 : 'bg-white border-gray-200 hover:border-primary-300'
