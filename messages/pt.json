@@ -38,16 +38,16 @@
     "submitBtn": "Quero acesso",
     "trustProtected": "Seus dados estão protegidos. Sem spam.",
     "trustSchedule": "Agende em minutos e sem custos ocultos.",
-    "statsProfessionals": "Profissionais verificados",
-    "statsBeta": "Beta Chile",
-    "stats24h": "24/7",
-    "statsAgenda": "agendamento online",
+    "statsProfessionals": "Superintendencia de Salud",
+    "statsBeta": "Habilitados",
+    "stats24h": "Online",
+    "statsAgenda": "consulta por vídeo",
     "stats100": "100%",
     "statsConfidential": "confidencial",
     "statsCLP": "CLP",
     "statsLocalPayment": "pagamento local",
     "privacyTitle": "Privacidade garantida",
-    "privacyLaw": "Lei 19.628 · LGPD"
+    "privacyLaw": "Leis 19.628, 21.719 e 20.584"
   },
   "adminBanner": {
     "title": "Projetado por especialistas em gestão e saúde",

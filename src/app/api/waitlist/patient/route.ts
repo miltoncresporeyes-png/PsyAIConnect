@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
                 <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
                     <h2 style="color: #0f766e;">¡Hola ${data.name}!</h2>
                     <p>Confirmamos que te has sumado con éxito a la lista de espera de <strong>PsyDoctor</strong>.</p>
-                    <p>Estamos validando a los primeros psicólogos y psiquiatras para garantizar atención de máxima calidad y con cobertura Fonasa e Isapre.</p>
+                    <p>Estamos validando a psicólogos y psiquiatras habilitados en la Superintendencia de Salud para garantizar atención segura, con boleta para reembolso y aranceles claros.</p>
                     <p>Apenas tengamos profesionales disponibles en tu área o modalidad, serás de los primeros en acceder.</p>
                     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
                     <p style="font-size: 12px; color: #64748b;">

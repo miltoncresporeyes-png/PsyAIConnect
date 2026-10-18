@@ -6,7 +6,7 @@
 export const ASSISTANT_CONFIG = {
   name: 'PsyAI',
   title: 'Asistente PsyDoctor',
-  subtitle: 'En línea · Respuesta instantánea',
+  subtitle: 'Orientación automatizada',
   model: 'gpt-4o-mini',
   maxTokens: 600,
   temperature: 0.7,

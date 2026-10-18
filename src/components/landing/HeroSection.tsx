@@ -26,7 +26,7 @@ export function HeroSection() {
             <div className="inline-flex items-center gap-2.5 rounded-full border border-teal-200/70 bg-white/80 px-4 py-2 shadow-sm shadow-teal-100/40 backdrop-blur-sm">
               <Clock className="w-4 h-4 text-teal-600" aria-hidden="true" />
               <span className="text-sm font-semibold text-slate-700">
-                PsyDoctor ya está en línea
+                {t('launchBadge')}
               </span>
             </div>
 
@@ -140,7 +140,7 @@ export function HeroSection() {
                 {/* Métricas en fila */}
                 <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100 bg-slate-50/60">
                   <div className="flex flex-col items-center py-3">
-                    <span className="text-base font-bold text-slate-900">24/7</span>
+                    <span className="text-base font-bold text-slate-900">{t('stats24h')}</span>
                     <span className="text-[10px] text-slate-500">{t('statsAgenda')}</span>
                   </div>
                   <div className="flex flex-col items-center py-3">

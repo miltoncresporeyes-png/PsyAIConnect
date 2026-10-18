@@ -27,7 +27,7 @@ export function WaitlistHeroSection() {
 
                 {/* Bajada con longitud de línea óptima (< 75 caracteres) */}
                 <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-700 max-w-2xl mx-auto leading-relaxed font-sansClean">
-                    Estamos reuniendo a los mejores psicólogos y psiquiatras acreditados en el país para ofrecer atención online transparente, con cobertura Fonasa e Isapre y sin barreras.
+                    Estamos reuniendo a psicólogos y psiquiatras habilitados en la Superintendencia de Salud para ofrecer atención online transparente, con boleta para reembolso y sin barreras.
                 </p>
 
                 {/* CTAs con Ámbar solo en principal y foco visible */}
@@ -71,8 +71,8 @@ export function WaitlistHeroSection() {
                             <HeartPulse className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-xs font-semibold text-tinta tracking-normal">Fonasa e Isapre</h2>
-                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Generación automática de boletas y kits para reembolso.</p>
+                            <h2 className="text-xs font-semibold text-tinta tracking-normal">Boleta para Reembolso</h2>
+                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Boleta de honorarios para reembolso en Isapres y seguros complementarios.</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 rounded-xl transition-colors">

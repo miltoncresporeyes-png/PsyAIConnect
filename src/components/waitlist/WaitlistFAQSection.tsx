@@ -15,8 +15,8 @@ const FAQS: FAQItem[] = [
         answer: 'Estamos actualmente en proceso de validación y acreditación de los primeros profesionales fundadores. Quienes se inscriban en esta lista de espera recibirán acceso anticipado prioritario y notificaciones escalonadas antes del lanzamiento abierto.',
     },
     {
-        question: '¿Las sesiones tendrán cobertura Fonasa e Isapre?',
-        answer: 'Sí. PsyDoctor está diseñado con integración de aranceles Fonasa (tramos B, C y D) y generación automatizada de kits de reembolso médico para todas las Isapres de Chile.',
+        question: '¿Cómo funciona la cobertura y reembolso (Isapres, seguros y Fonasa)?',
+        answer: 'Los profesionales emiten boleta electrónica de honorarios para que reembolses en tu Isapre o seguro de salud complementario. En Fonasa, la cobertura aplica mediante bono según los profesionales inscritos en Modalidad Libre Elección (MLE) o arancel institucional.',
     },
     {
         question: '¿Tiene algún costo inscribirse en la lista de espera?',

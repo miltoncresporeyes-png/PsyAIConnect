@@ -8,7 +8,7 @@ import { DifferentiationSection } from '@/components/landing/DifferentiationSect
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
 import { ForProfessionalsSection } from '@/components/landing/ForProfessionalsSection'
 import { CTASection } from '@/components/landing/CTASection'
-import { FAQSection } from '@/components/landing/FAQSection'
+import { UnifiedFAQSection } from '@/components/landing/FAQSection'
 
 interface Props {
     params: { locale: string }
@@ -74,7 +74,11 @@ export default async function LocalePage({ params: { locale } }: Props) {
             <DifferentiationSection />
             <HowItWorksSection />
             <ForProfessionalsSection />
-            <FAQSection />
+            <section id="faq" className="py-16 md:py-20 bg-slate-50">
+                <div className="container-wide">
+                    <UnifiedFAQSection />
+                </div>
+            </section>
             <CTASection />
             <Footer />
         </>

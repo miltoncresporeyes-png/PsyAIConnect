@@ -11,7 +11,7 @@ import { FloatingWhatsAppButton } from '@/components/waitlist/FloatingWhatsAppBu
 
 export const metadata: Metadata = {
     title: { absolute: 'PsyDoctor | Lista de Espera · Salud Mental Accesible en Chile' },
-    description: 'Únete a la lista de espera de PsyDoctor. Conecta con psicólogos y psiquiatras verificados en Chile con cobertura Fonasa e Isapre.',
+    description: 'Únete a la lista de espera de PsyDoctor. Conecta con psicólogos y psiquiatras habilitados en Chile con boleta para reembolso y aranceles transparentes.',
     alternates: {
         canonical: 'https://psydoctor.cl',
     },

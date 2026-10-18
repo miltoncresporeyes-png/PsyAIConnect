@@ -101,8 +101,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'PsyDoctor | Psicólogo Online Chile | Fonasa e Isapre',
-        description: 'Psicólogos y psiquiatras verificados en Chile. Agenda online, cobertura Fonasa/Isapre, precios transparentes. ¡Primera sesión hoy!',
+        title: 'PsyDoctor | Psicólogos y Psiquiatras en Chile | Boleta para Reembolso',
+        description: 'Psicólogos y psiquiatras habilitados en la Superintendencia de Salud. Agenda online según disponibilidad, precios transparentes y boleta para reembolso.',
         images: ['/images/og-homepage.png'],
         site: '@psydoctor_cl',
         creator: '@psydoctor_cl',
@@ -177,7 +177,7 @@ export default async function RootLayout({
                                     name: 'PsyDoctor',
                                     legalName: 'PsyDoctor SpA',
                                     description:
-                                        'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras verificados con cobertura Fonasa e Isapre.',
+                                        'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras habilitados en la Superintendencia de Salud, con boleta para reembolso.',
                                     url: 'https://psydoctor.cl',
                                     logo: 'https://psydoctor.cl/icon.svg',
                                     image: 'https://psydoctor.cl/images/hero-illustration.png',

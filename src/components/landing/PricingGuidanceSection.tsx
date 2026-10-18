@@ -11,11 +11,11 @@ const PREVISIONS = [
     bg: 'bg-blue-50',
     border: 'border-blue-200',
     icon: '🏥',
-    how: 'Con Fonasa puedes bonificar sesiones con profesionales en la red de Prestadores Ges. El monto bonificado depende de tu tramo (B, C o D) y el valor de la sesión.',
+    how: 'En Fonasa la bonificación aplica mediante compra de bono MLE con profesionales en convenio, o según el arancel institucional. En consulta particular, el profesional emite boleta para eventuales seguros complementarios.',
     example: {
-      sessionPrice: '$40.000',
-      bonificacion: 'Hasta 50%',
-      tuPago: '$20.000 aprox.',
+      sessionPrice: '$35.000',
+      bonificacion: 'Bono MLE según convenio',
+      tuPago: 'Arancel Fonasa o copago',
     },
   },
   {

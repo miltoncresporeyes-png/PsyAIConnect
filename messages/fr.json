@@ -38,16 +38,16 @@
     "submitBtn": "Demander l'accès",
     "trustProtected": "Vos données sont protégées. Pas de spam.",
     "trustSchedule": "Réservez en quelques minutes, sans frais cachés.",
-    "statsProfessionals": "Professionnels v\u00e9rifi\u00e9s",
-    "statsBeta": "Bêta Chili",
-    "stats24h": "24h/7",
-    "statsAgenda": "réservation en ligne",
+    "statsProfessionals": "Superintendencia de Salud",
+    "statsBeta": "Agréés",
+    "stats24h": "En ligne",
+    "statsAgenda": "consultation vidéo",
     "stats100": "100%",
     "statsConfidential": "confidentiel",
     "statsCLP": "CLP",
     "statsLocalPayment": "paiement local",
     "privacyTitle": "Confidentialité garantie",
-    "privacyLaw": "Loi 19 628 · RGPD"
+    "privacyLaw": "Lois 19.628, 21.719 & 20.584"
   },
   "adminBanner": {
     "title": "Conçu par des experts en gestion et en santé",

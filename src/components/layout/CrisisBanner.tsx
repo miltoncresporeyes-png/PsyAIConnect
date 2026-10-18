@@ -67,7 +67,7 @@ export function CrisisBanner() {
             className="inline-flex items-center min-h-[44px] px-2 py-1 text-teal-700 font-semibold hover:text-teal-800 transition-colors sm:ml-auto"
           >
             <MessageCircle className="w-4 h-4 mr-1" aria-hidden="true" />
-            <span>Orientador 24/7</span>
+            <span>Orientador de bienestar</span>
             <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
           </Link>
         </div>

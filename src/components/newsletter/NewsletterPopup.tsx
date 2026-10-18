@@ -16,7 +16,7 @@ const STORAGE_KEY_REGISTERED = 'newsletter_popup_registered'
 
 export function NewsletterPopup({
   title = 'Acceso anticipado y novedades de PsyDoctor',
-  description = 'Únete a nuestra comunidad. Sé de los primeros en acceder a psicólogos y psiquiatras verificados, con cobertura Fonasa e Isapre.',
+  description = 'Únete a nuestra comunidad. Sé de los primeros en acceder a psicólogos y psiquiatras habilitados en la Superintendencia de Salud, con boleta para reembolso.',
   buttonText = 'Quiero acceso anticipado',
   placeholder = 'tu@email.com',
 }: NewsletterPopupProps) {

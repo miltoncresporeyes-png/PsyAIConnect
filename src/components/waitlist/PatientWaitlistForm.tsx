@@ -91,7 +91,7 @@ export function PatientWaitlistForm() {
 
     const handleShareWhatsapp = () => {
         const text = encodeURIComponent(
-            '¡Me acabo de anotar en la lista de espera de PsyDoctor! Una nueva forma de atenderse con psicólogos y psiquiatras verificados en Chile con cobertura Fonasa e Isapre: https://psydoctor.cl'
+            '¡Me acabo de anotar en la lista de espera de PsyDoctor! Una nueva forma de atenderse con psicólogos y psiquiatras habilitados en la Superintendencia de Salud con boleta para reembolso: https://psydoctor.cl'
         )
         track('click_whatsapp', { source: 'share_waitlist_success' })
         window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
