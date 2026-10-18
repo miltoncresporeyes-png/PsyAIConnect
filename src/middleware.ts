@@ -18,16 +18,21 @@ function applySecurityHeaders(response: NextResponse) {
     response.headers.set('Cross-Origin-Resource-Policy', 'same-origin')
     response.headers.set(
         'Permissions-Policy',
-        'camera=(self), microphone=(self), geolocation=()'
+        'camera=(self), microphone=(self), geolocation=(), payment=(self "https://www.flow.cl" "https://sandbox.flow.cl")'
     )
 
     if (process.env.NODE_ENV === 'production') {
+        // HSTS (2 years, include subdomains, preload)
+        response.headers.set(
+            'Strict-Transport-Security',
+            'max-age=63072000; includeSubDomains; preload'
+        )
         response.headers.set(
             'Content-Security-Policy',
             "default-src 'self'; " +
             "script-src 'self' 'unsafe-inline'; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-            "font-src 'self' https://fonts.gstatic.com; " +
+            "font-src 'self' https://fonts.gstatic.com data:; " +
             "img-src 'self' data: https: blob:; " +
             "connect-src 'self' https: wss:; " +
             "frame-src 'self' https://www.flow.cl https://sandbox.flow.cl; " +

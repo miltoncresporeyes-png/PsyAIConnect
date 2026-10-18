@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
 
 interface PaymentMethodsProps {
     showSecondary?: boolean
@@ -13,9 +14,11 @@ export function PaymentMethods({ showSecondary = true }: PaymentMethodsProps) {
             <p className="mb-2.5 text-xs text-gray-400">{t('subtitle')}</p>
 
             <div className="mx-auto w-full max-w-[200px] rounded-xl bg-white p-2 shadow-[0_8px_20px_rgba(15,23,42,0.08)]">
-                <img 
-                    src="/images/payment-methods.png" 
+                <Image
+                    src="/images/payment-methods.png"
                     alt="Transbank, Redcompra, Visa, Mastercard, Magna, Amex, Diners"
+                    width={200}
+                    height={64}
                     className="w-full h-auto object-contain"
                 />
             </div>

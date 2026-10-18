@@ -4,6 +4,8 @@
  * Fallback to console logging in development
  */
 
+import crypto from 'crypto'
+
 interface EmailOptions {
     to: string
     subject: string
@@ -15,6 +17,18 @@ interface EmailResult {
     success: boolean
     messageId?: string
     error?: string
+}
+
+/**
+ * Escapes HTML special characters to prevent XSS/HTML injection in emails
+ */
+function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
 }
 
 // Email templates
@@ -34,7 +48,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Plataforma de Salud Mental</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${name}! 👋</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${escapeHtml(name)}! 👋</h2>
         <p style="color: #4b5563;">Gracias por registrarte en PsyDoctor. Para completar tu registro y empezar a usar la plataforma, por favor verifica tu correo electrónico.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="${verificationUrl}" 
@@ -77,7 +91,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Plataforma de Salud Mental</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">Hola ${name} 👋</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(name)} 👋</h2>
         <p style="color: #4b5563;">Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si fuiste tú, haz clic en el botón de abajo:</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="${resetUrl}" 
@@ -128,14 +142,14 @@ const EMAIL_TEMPLATES = {
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">¡Cita confirmada!</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">Hola ${patientName} 👋</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(patientName)} 👋</h2>
         <p style="color: #4b5563;">Tu cita ha sido confirmada exitosamente. Aquí están los detalles:</p>
         
         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; margin: 20px 0;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px 0; color: #6b7280;">👨‍⚕️ Profesional:</td>
-                    <td style="padding: 8px 0; color: #1f2937; font-weight: 600;">${professionalName}</td>
+                    <td style="padding: 8px 0; color: #1f2937; font-weight: 600;">${escapeHtml(professionalName)}</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; color: #6b7280;">📅 Fecha:</td>
@@ -193,7 +207,7 @@ const EMAIL_TEMPLATES = {
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">⏰ Recordatorio de cita</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">Hola ${patientName} 👋</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(patientName)} 👋</h2>
         <p style="color: #4b5563;">Te recordamos que tienes una cita programada:</p>
         
         <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
@@ -201,7 +215,7 @@ const EMAIL_TEMPLATES = {
                 📅 ${date} a las ${time}
             </p>
             <p style="margin: 10px 0 0 0; color: #78716c;">
-                con ${professionalName}
+                con ${escapeHtml(professionalName)}
             </p>
         </div>
 
@@ -349,10 +363,10 @@ export async function sendAppointmentReminderEmail(
 }
 
 /**
- * Generate a 6-digit verification code
+ * Generate a 6-digit verification code using cryptographically secure random
  */
 export function generateVerificationCode(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString()
+    return crypto.randomInt(100000, 999999).toString()
 }
 
 /**
@@ -376,7 +390,7 @@ export async function sendVerificationCodeEmail(
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Tu bienestar mental, nuestra prioridad</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${name}! 👋</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${escapeHtml(name)}! 👋</h2>
         <p style="color: #4b5563;">Gracias por registrarte en PsyDoctor. Para completar tu registro, ingresa el siguiente código de verificación:</p>
         
         <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border: 2px solid #14b8a6; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">

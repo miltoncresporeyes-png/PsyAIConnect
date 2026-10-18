@@ -12,7 +12,28 @@ export async function GET(
                 isPublic: true,
                 isActive: true,
             },
-            include: {
+            // select explícito: nunca exponer rut, licensePdfUrl, userId,
+            // subscriptionTier ni linkedinUrl desde un endpoint público.
+            select: {
+                id: true,
+                professionalType: true,
+                licenseNumber: true,
+                bio: true,
+                slug: true,
+                specialties: true,
+                modality: true,
+                sessionPrice: true,
+                sessionDuration: true,
+                profileImageUrl: true,
+                verificationStatus: true,
+                comuna: true,
+                officeAddress: true,
+                region: true,
+                acceptedPaymentMethods: true,
+                targetAudience: true,
+                approachDescription: true,
+                yearsExperience: true,
+                firstSessionInfo: true,
                 user: {
                     select: {
                         name: true,

@@ -45,6 +45,7 @@ export function useAppointmentRealtime({
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const connectionCheckRef = useRef<NodeJS.Timeout | null>(null)
   const wasConnectedRef = useRef<boolean>(false)
+  const isOtherPartyPresentRef = useRef(false)
 
   const setMyPresence = useCallback(async (isReady: boolean) => {
     if (!appointmentId || !supabase) return
@@ -131,10 +132,11 @@ export function useAppointmentRealtime({
 
           // Detectar presencia de la contraparte
           if (role === 'patient') {
-            const wasPresent = isOtherPartyPresent
+            const wasPresent = isOtherPartyPresentRef.current
             const nowPresent = newData.profesionalOnline || false
             
             setIsOtherPartyPresent(nowPresent)
+            isOtherPartyPresentRef.current = nowPresent
             setAmIPresent(newData.pacienteOnline || false)
             
             // Detectar reconexión/desconexión
@@ -151,10 +153,11 @@ export function useAppointmentRealtime({
               onOtherPartyDisconnected?.()
             }
           } else {
-            const wasPresent = isOtherPartyPresent
+            const wasPresent = isOtherPartyPresentRef.current
             const nowPresent = newData.pacienteOnline || false
             
             setIsOtherPartyPresent(nowPresent)
+            isOtherPartyPresentRef.current = nowPresent
             setAmIPresent(newData.profesionalOnline || false)
             
             if (nowPresent && !wasPresent) {

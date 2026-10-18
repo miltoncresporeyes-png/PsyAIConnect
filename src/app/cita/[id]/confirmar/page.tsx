@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Header, Footer } from '@/components/layout'
 import { formatPrice } from '@/lib/utils'
-import { Loader2, Check, Calendar, Clock, Video, MapPin, CreditCard } from 'lucide-react'
+import { Loader2, Check, Calendar, Clock, Video, MapPin, CreditCard, ShieldCheck } from 'lucide-react'
 
 interface Props {
     params: { id: string }
@@ -32,9 +32,55 @@ interface Appointment {
     }
 }
 
+type ProviderType = 'TRANSBANK' | 'MERCADOPAGO' | 'PAYPAL' | 'FLOW'
+
+interface ProviderOption {
+    id: ProviderType
+    name: string
+    subtitle: string
+    badge?: string
+    iconBg: string
+    description: string
+}
+
+const PROVIDERS: ProviderOption[] = [
+    {
+        id: 'TRANSBANK',
+        name: 'Webpay Plus / Transbank',
+        subtitle: 'Débito, Crédito y Redcompra',
+        badge: 'Más usado en Chile',
+        iconBg: 'bg-red-50 text-red-600 border-red-200',
+        description: 'Paga con tus tarjetas bancarias chilenas sin comisión adicional.',
+    },
+    {
+        id: 'MERCADOPAGO',
+        name: 'Mercado Pago',
+        subtitle: 'Dinero en cuenta, tarjetas o cuotas',
+        badge: 'Rápido',
+        iconBg: 'bg-sky-50 text-sky-600 border-sky-200',
+        description: 'Usa tu saldo de Mercado Pago o tarjetas de débito/crédito.',
+    },
+    {
+        id: 'PAYPAL',
+        name: 'PayPal',
+        subtitle: 'Tarjetas internacionales y saldo PayPal',
+        badge: 'Internacional',
+        iconBg: 'bg-blue-50 text-blue-700 border-blue-200',
+        description: 'Ideal para tarjetas extranjeras o cuentas internacionales.',
+    },
+    {
+        id: 'FLOW',
+        name: 'Flow.cl',
+        subtitle: 'Servipag, Multicaja y Webpay',
+        iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+        description: 'Paga con transferencias, casas comerciales y comercios asociados.',
+    },
+]
+
 export default function ConfirmarCitaPage({ params }: Props) {
     const router = useRouter()
     const [appointment, setAppointment] = useState<Appointment | null>(null)
+    const [selectedProvider, setSelectedProvider] = useState<ProviderType>('TRANSBANK')
     const [isLoading, setIsLoading] = useState(true)
     const [isProcessing, setIsProcessing] = useState(false)
     const [error, setError] = useState('')
@@ -64,17 +110,26 @@ export default function ConfirmarCitaPage({ params }: Props) {
         try {
             const response = await fetch(`/api/citas/${params.id}/pagar`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    provider: selectedProvider,
+                }),
             })
 
+            const data = await response.json()
+
             if (!response.ok) {
-                const data = await response.json()
                 throw new Error(data.error || 'Error al procesar pago')
             }
 
-            const { paymentUrl } = await response.json()
+            if (!data.paymentUrl) {
+                throw new Error('No se recibió la URL de pago de la pasarela.')
+            }
 
-            // Redirect to Flow payment page
-            window.location.href = paymentUrl
+            // Redirect to the chosen payment provider gateway
+            window.location.href = data.paymentUrl
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Error al procesar pago')
             setIsProcessing(false)
@@ -126,7 +181,7 @@ export default function ConfirmarCitaPage({ params }: Props) {
                                 ¡Reserva creada!
                             </h1>
                             <p className="text-gray-600">
-                                Completa el pago para confirmar tu cita
+                                Selecciona tu medio de pago preferido para confirmar tu cita
                             </p>
                         </div>
 
@@ -213,31 +268,92 @@ export default function ConfirmarCitaPage({ params }: Props) {
                             </div>
                         </div>
 
-                        {/* Error */}
+                        {/* Payment Provider Selector */}
+                        <div className="card p-8 mb-6">
+                            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <CreditCard className="w-5 h-5 text-primary-600" />
+                                Elige tu medio de pago
+                            </h2>
+                            <p className="text-sm text-gray-600 mb-6">
+                                Tu transacción está 100% cifrada y protegida.
+                            </p>
+
+                            <div className="space-y-3">
+                                {PROVIDERS.map((provider) => {
+                                    const isSelected = selectedProvider === provider.id
+                                    return (
+                                        <div
+                                            key={provider.id}
+                                            onClick={() => setSelectedProvider(provider.id)}
+                                            className={`relative flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                isSelected
+                                                    ? 'border-primary-600 bg-primary-50/40 shadow-sm'
+                                                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                                            }`}
+                                        >
+                                            <div className="mt-1">
+                                                <input
+                                                    type="radio"
+                                                    name="paymentProvider"
+                                                    checked={isSelected}
+                                                    onChange={() => setSelectedProvider(provider.id)}
+                                                    className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                                />
+                                            </div>
+
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                                    <span className="font-semibold text-gray-900">
+                                                        {provider.name}
+                                                    </span>
+                                                    {provider.badge && (
+                                                        <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-primary-100 text-primary-700">
+                                                            {provider.badge}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-xs text-gray-500 font-medium mb-0.5">
+                                                    {provider.subtitle}
+                                                </p>
+                                                <p className="text-xs text-gray-400">
+                                                    {provider.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Error Alert */}
                         {error && (
                             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
                                 {error}
                             </div>
                         )}
 
-                        {/* Payment Button */}
+                        {/* Action Button */}
                         <button
                             onClick={handlePayment}
                             disabled={isProcessing}
-                            className="btn-primary w-full flex items-center justify-center gap-2 mb-4"
+                            className="btn-primary w-full flex items-center justify-center gap-2 mb-4 text-base py-3"
                         >
                             {isProcessing ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Conectando pasarela de pago...
+                                </>
                             ) : (
                                 <>
-                                    <CreditCard className="w-5 h-5" />
-                                    Pagar con Flow.cl
+                                    <ShieldCheck className="w-5 h-5" />
+                                    Continuar al pago con {PROVIDERS.find(p => p.id === selectedProvider)?.name}
                                 </>
                             )}
                         </button>
 
-                        <p className="text-xs text-gray-500 text-center">
-                            Pago seguro procesado por Flow.cl. Puedes cancelar hasta 24h antes sin costo.
+                        <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
+                            <ShieldCheck className="w-4 h-4 text-gray-400" />
+                            Pago seguro garantizado. Puedes reprogramar o cancelar hasta 24h antes sin costo.
                         </p>
                     </div>
                 </div>

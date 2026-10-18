@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader2, DollarSign, TrendingUp, Calendar } from 'lucide-react'
+import { PageContainer, PageHeader, KPIGrid, Grid } from '@/components/layout/shell'
 
 interface FinanceStats {
     totalRevenue: number
@@ -68,58 +69,41 @@ export default function FinanzasPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Finanzas</h1>
-                <p className="text-gray-500">Resumen financiero de la plataforma</p>
-            </div>
+        <PageContainer size="full" padding="md">
+            <PageHeader
+                title="Finanzas"
+                description="Resumen financiero de la plataforma"
+            />
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-green-600" />
-                        </div>
-                        <span className="text-gray-600">Ingresos Totales</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900">
-                        {formatCurrency(stats?.totalRevenue || 0)}
-                    </p>
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                            <TrendingUp className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <span className="text-gray-600">Ingresos del Mes</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900">
-                        {formatCurrency(stats?.monthlyRevenue || 0)}
-                    </p>
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <span className="text-gray-600">Ticket Promedio</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900">
-                        {formatCurrency(stats?.averageTicket || 0)}
-                    </p>
-                </div>
-            </div>
+            <KPIGrid count={3}>
+                <FinanceStatCard
+                    icon={DollarSign}
+                    label="Ingresos Totales"
+                    value={formatCurrency(stats?.totalRevenue || 0)}
+                    iconColor="green"
+                />
+                <FinanceStatCard
+                    icon={TrendingUp}
+                    label="Ingresos del Mes"
+                    value={formatCurrency(stats?.monthlyRevenue || 0)}
+                    iconColor="blue"
+                />
+                <FinanceStatCard
+                    icon={Calendar}
+                    label="Ticket Promedio"
+                    value={formatCurrency(stats?.averageTicket || 0)}
+                    iconColor="purple"
+                />
+            </KPIGrid>
 
             <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Ingresos por Mes</h2>
                 <div className="space-y-3">
                     {stats?.revenueByMonth?.map((item) => (
-                        <div key={item.month} className="flex items-center justify-between">
-                            <span className="text-gray-600">{item.month}</span>
-                            <div className="flex items-center gap-3">
-                                <div className="w-48 bg-gray-100 rounded-full h-2">
+                        <div key={item.month} className="flex items-center justify-between gap-4 flex-wrap">
+                            <span className="text-gray-600 shrink-0">{item.month}</span>
+                            <div className="flex-1 min-w-[200px] flex items-center gap-3">
+                                <div className="flex-1 bg-gray-100 rounded-full h-2 min-w-0">
                                     <div
                                         className="bg-blue-600 h-2 rounded-full"
                                         style={{
@@ -127,7 +111,7 @@ export default function FinanzasPage() {
                                         }}
                                     />
                                 </div>
-                                <span className="font-medium text-gray-900 w-24 text-right">
+                                <span className="font-medium text-gray-900 w-24 text-right shrink-0">
                                     {formatCurrency(item.revenue)}
                                 </span>
                             </div>
@@ -135,6 +119,38 @@ export default function FinanzasPage() {
                     ))}
                 </div>
             </div>
+        </PageContainer>
+    )
+}
+
+function FinanceStatCard({
+    icon: Icon,
+    label,
+    value,
+    iconColor
+}: {
+    icon: any
+    label: string
+    value: string
+    iconColor: 'blue' | 'red' | 'green' | 'purple' | 'amber'
+}) {
+    const colorClasses: Record<string, string> = {
+        blue: 'bg-blue-50 text-blue-600',
+        red: 'bg-red-50 text-red-600',
+        green: 'bg-green-50 text-green-600',
+        purple: 'bg-purple-50 text-purple-600',
+        amber: 'bg-amber-50 text-amber-600',
+    }
+
+    return (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[iconColor]} flex-shrink-0`}>
+                    <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-gray-600 truncate">{label}</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-900 truncate">{value}</p>
         </div>
     )
 }

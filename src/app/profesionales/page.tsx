@@ -34,12 +34,12 @@ export default function SoyProfesionalPage() {
                         </h1>
 
                         <p className="text-xl md:text-2xl text-gray-600 mb-7 leading-relaxed max-w-3xl mx-auto">
-                            Deja de perder 6.5 horas al mes en administración. <strong className="text-gray-900">Convierte tu práctica en un negocio rentable</strong> con infraestructura tributaria automatizada.
+                            Dedica menos tiempo a la administración. <strong className="text-gray-900">Convierte tu práctica en un negocio rentable</strong> con infraestructura tributaria automatizada.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                             <Link
-                                href="/registro?type=professional"
+                                href="/registro?tipo=profesional"
                                 className="btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-shadow"
                             >
                                 Profesionalizar mi consulta
@@ -56,16 +56,16 @@ export default function SoyProfesionalPage() {
                         {/* Trust Stats */}
                         <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto pt-6 border-t border-gray-200/80">
                             <div>
-                                <div className="text-3xl font-bold text-primary-700">6.5h</div>
-                                <div className="text-sm text-gray-600">Ahorradas/mes</div>
+                                <div className="text-3xl font-bold text-primary-700">Web</div>
+                                <div className="text-sm text-gray-600">Sin instalar software</div>
                             </div>
                             <div>
-                                <div className="text-3xl font-bold text-primary-700">100%</div>
-                                <div className="text-sm text-gray-600">Cumplimiento SII</div>
+                                <div className="text-3xl font-bold text-primary-700">CLP</div>
+                                <div className="text-sm text-gray-600">Cobros en pesos chilenos</div>
                             </div>
                             <div>
-                                <div className="text-3xl font-bold text-primary-700">94%</div>
-                                <div className="text-sm text-gray-600">Retención profesionales</div>
+                                <div className="text-3xl font-bold text-primary-700">Boleta</div>
+                                <div className="text-sm text-gray-600">Electrónica por sesión</div>
                             </div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@ export default function SoyProfesionalPage() {
                                     "Cada mes debo generar manualmente boletas de honorarios, llevar un Excel de ingresos y rezar para que no haya errores en abril."
                                 </p>
                                 <div className="text-xs text-red-700 font-semibold">
-                                    ⏱️ ~3 horas/mes perdidas
+                                    ⏱️ Ejemplo: ~3 horas/mes
                                 </div>
                             </div>
 
@@ -114,7 +114,7 @@ export default function SoyProfesionalPage() {
                                     "Termino la sesión y tengo que pedirle el pago al paciente. Es incómodo, afecta el encuadre terapéutico y me genera ansiedad."
                                 </p>
                                 <div className="text-xs text-amber-700 font-semibold">
-                                    😓 Afecta relación terapéutica
+                                    😓 Ejemplo: ~1.5 horas/mes
                                 </div>
                             </div>
 
@@ -130,16 +130,18 @@ export default function SoyProfesionalPage() {
                                     "Mensajes de WhatsApp a cualquier hora, confirmaciones manuales, cancelaciones de último minuto sin aviso."
                                 </p>
                                 <div className="text-xs text-orange-700 font-semibold">
-                                    📱 ~1.5 horas/mes en coordinación
+                                    📱 Ejemplo: ~1.5 horas/mes
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-7 bg-primary-900 rounded-[28px] p-7 text-white text-center shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
-                            <p className="text-2xl font-bold mb-2">Total de tiempo perdido al mes:</p>
-                            <p className="text-5xl font-bold text-primary-300 mb-3">6.5 horas</p>
+                            <p className="text-2xl font-bold mb-2">Ejemplo de tiempo administrativo al mes:</p>
+                            <p className="text-5xl font-bold text-primary-300 mb-3">6 horas</p>
                             <p className="text-lg opacity-90">
-                                Si cobras $35.000 por sesión, estás dejando de ganar <strong className="text-primary-200">~$273.000/mes</strong> en costo de oportunidad
+                                Si dedicas 6 horas a tareas administrativas y cobras $35.000 por sesión, eso equivale a
+                                unas 6 sesiones: <strong className="text-primary-200">~$210.000</strong> de costo de
+                                oportunidad. Cifra ilustrativa, no un promedio medido.
                             </p>
                         </div>
                     </div>
@@ -199,7 +201,7 @@ export default function SoyProfesionalPage() {
                             </div>
 
                             <div className="bg-white rounded-2xl p-6 shadow-xl border border-emerald-200">
-                                <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Dashboard Tributario</div>
+                                <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Dashboard Tributario (datos de ejemplo)</div>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center pb-2 border-b">
                                         <span className="text-sm text-gray-700">Ingresos enero 2026</span>
@@ -228,7 +230,7 @@ export default function SoyProfesionalPage() {
                         <div className="grid lg:grid-cols-2 gap-8 items-center">
                             <div className="order-2 lg:order-1">
                                 <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-200">
-                                    <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Panel de Adherencia</div>
+                                    <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Panel de Adherencia (datos de ejemplo)</div>
                                     <div className="space-y-4">
                                         <div className="border-l-4 border-blue-500 pl-4">
                                             <div className="text-sm text-gray-600">Paciente: María A.</div>
@@ -243,7 +245,7 @@ export default function SoyProfesionalPage() {
                                         <div className="bg-blue-50 rounded-lg p-4">
                                             <div className="text-xs text-blue-700 font-semibold mb-1">TU TASA DE RETENCIÓN</div>
                                             <div className="text-2xl font-bold text-blue-900">89%</div>
-                                            <div className="text-xs text-gray-600 mt-1">+15% vs. promedio sin sistema</div>
+                                            <div className="text-xs text-gray-600 mt-1">Ejemplo ilustrativo con datos de muestra</div>
                                         </div>
                                     </div>
                                 </div>
@@ -395,23 +397,23 @@ export default function SoyProfesionalPage() {
                             Profesionaliza tu consulta hoy
                         </h2>
                         <p className="text-xl md:text-2xl mb-7 opacity-90 leading-relaxed">
-                            Únete a los <strong>500+ profesionales</strong> que recuperaron 6.5 horas al mes y <strong>$273.000 en costo de oportunidad</strong>
+                            Recupera tiempo cada mes con agenda, boletas electrónicas y reembolsos en un solo lugar
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
                             <Link
-                                href="/registro?type=professional"
+                                href="/registro?tipo=profesional"
                                 className="bg-white text-primary-900 hover:bg-gray-100 inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl"
                             >
                                 Comenzar gratis
                                 <ArrowRight className="w-5 h-5 ml-2" />
                             </Link>
-                            <Link
-                                href="/demo"
+                            <a
+                                href="mailto:contacto@psydoctor.cl?subject=Quiero%20una%20demo%20de%20PsyDoctor"
                                 className="btn-outline-light text-lg px-8 py-4"
                             >
                                 Agendar demo personalizada
-                            </Link>
+                            </a>
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-4 pt-6 border-t border-white/20">

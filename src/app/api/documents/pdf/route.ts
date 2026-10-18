@@ -3,12 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { spawn } from 'child_process'
-import { promisify } from 'util'
-import { exec as execCallback } from 'child_process'
 import path from 'path'
 import fs from 'fs'
-
-const exec = promisify(execCallback)
 
 export const dynamic = 'force-dynamic'
 
@@ -88,26 +84,43 @@ export async function POST(request: Request) {
         }
 
         if (content) {
-            args.push('--content', content.replace(/"/g, '\\"'))
+            args.push('--content', content)
         }
 
         if (diagnosis) {
-            args.push('--diagnosis', diagnosis.replace(/"/g, '\\"'))
+            args.push('--diagnosis', diagnosis)
         }
 
-        const command = `python3 ${args.join(' ')}`
-
-        let stdout, stderr
+        let stdout = ''
+        let stderr = ''
         try {
-            const result = await exec(command, { 
-                cwd: process.cwd(),
-                timeout: 60000,
+            const result = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+                const proc = spawn('python3', args, {
+                    cwd: process.cwd(),
+                    timeout: 60000,
+                })
+
+                let out = ''
+                let err = ''
+
+                proc.stdout.on('data', (data) => { out += data.toString() })
+                proc.stderr.on('data', (data) => { err += data.toString() })
+
+                proc.on('close', (code) => {
+                    if (code === 0) {
+                        resolve({ stdout: out, stderr: err })
+                    } else {
+                        reject(new Error(err || `Process exited with code ${code}`))
+                    }
+                })
+
+                proc.on('error', reject)
             })
             stdout = result.stdout
             stderr = result.stderr
         } catch (execError: any) {
-            stdout = execError.stdout || ''
-            stderr = execError.stderr || execError.message || ''
+            stdout = ''
+            stderr = execError.message || ''
         }
 
         if (stderr && !stderr.includes('PageMetrics')) {

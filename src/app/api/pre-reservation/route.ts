@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { randomBytes } from 'crypto'
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 
 const PRE_RESERVATION_DURATION_MINUTES = 10
 
 // POST: Crear una pre-reserva
 export async function POST(req: NextRequest) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   try {
     const clientIp = getClientIp(req)
     const preReservationLimit = checkRateLimit(`pre-reservation:create:${clientIp}`, {
@@ -147,6 +151,9 @@ export async function POST(req: NextRequest) {
 
 // GET: Verificar estado de una pre-reserva
 export async function GET(req: NextRequest) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   const clientIp = getClientIp(req)
   const statusCheckLimit = checkRateLimit(`pre-reservation:status:${clientIp}`, {
     limit: 120,
@@ -222,6 +229,9 @@ export async function GET(req: NextRequest) {
 
 // DELETE: Cancelar una pre-reserva
 export async function DELETE(req: NextRequest) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   const clientIp = getClientIp(req)
   const cancelLimit = checkRateLimit(`pre-reservation:cancel:${clientIp}`, {
     limit: 60,

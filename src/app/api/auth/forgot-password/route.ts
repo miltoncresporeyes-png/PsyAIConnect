@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { createPasswordResetToken } from '@/lib/tokens'
 import { sendPasswordResetEmail } from '@/lib/email'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 
 const requestResetSchema = z.object({
     email: z.string().email('Email inválido'),
@@ -15,6 +16,19 @@ export const dynamic = 'force-dynamic'
  */
 export async function POST(request: Request) {
     try {
+        const clientIp = getClientIp(request)
+        const rateLimitResult = checkRateLimit(`forgot-password:${clientIp}`, {
+            limit: 3,
+            windowMs: 15 * 60 * 1000,
+        })
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiados intentos. Espera unos minutos.' },
+                { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+            )
+        }
+
         const body = await request.json()
         const { email } = requestResetSchema.parse(body)
 

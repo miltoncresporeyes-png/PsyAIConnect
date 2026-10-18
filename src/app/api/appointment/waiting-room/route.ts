@@ -108,6 +108,13 @@ export async function POST(request: Request) {
     }
 
     if (action === 'start_session') {
+      // Solo el profesional puede iniciar la sesión
+      if (!isProfessional) {
+        return NextResponse.json(
+          { error: 'Solo el profesional puede iniciar la sesión' },
+          { status: 403 }
+        )
+      }
       waitingRoom = await prisma.waitingRoom.update({
         where: { id: waitingRoom.id },
         data: {
@@ -118,6 +125,13 @@ export async function POST(request: Request) {
     }
 
     if (action === 'end_session') {
+      // Solo el profesional puede finalizar la sesión
+      if (!isProfessional) {
+        return NextResponse.json(
+          { error: 'Solo el profesional puede finalizar la sesión' },
+          { status: 403 }
+        )
+      }
       waitingRoom = await prisma.waitingRoom.update({
         where: { id: waitingRoom.id },
         data: {
@@ -141,6 +155,12 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const appointmentId = searchParams.get('appointmentId')
 
@@ -148,6 +168,30 @@ export async function GET(request: Request) {
       return NextResponse.json(
         { error: 'ID de cita requerido' },
         { status: 400 }
+      )
+    }
+
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        professional: { select: { userId: true } },
+      },
+    })
+
+    if (!appointment) {
+      return NextResponse.json(
+        { error: 'Cita no encontrada' },
+        { status: 404 }
+      )
+    }
+
+    const isPatient = appointment.patientId === session.user.id
+    const isProfessional = appointment.professional.userId === session.user.id
+
+    if (!isPatient && !isProfessional) {
+      return NextResponse.json(
+        { error: 'No tienes acceso a esta cita' },
+        { status: 403 }
       )
     }
 

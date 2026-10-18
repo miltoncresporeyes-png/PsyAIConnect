@@ -4,8 +4,11 @@ import '@/styles/legal.css'
 import { BackButton } from '@/components/ui/BackButton'
 
 export const metadata = {
-    title: 'Política de Privacidad | PsyDoctor',
+    title: { absolute: 'Política de Privacidad | PsyDoctor' },
     description: 'Política de privacidad y protección de datos de PsyDoctor - Cumplimiento Ley 19.628 Chile',
+    alternates: {
+        canonical: '/privacidad',
+    },
 }
 
 export default function PrivacidadPage() {

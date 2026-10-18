@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 /**
  * API: Crear nueva solicitud de reembolso
  * POST /api/reembolsos
@@ -19,6 +20,9 @@ const createReimbursementSchema = z.object({
 })
 
 export async function GET(req: NextRequest) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -67,6 +71,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -102,8 +109,8 @@ export async function POST(req: NextRequest) {
 
         const { appointmentIds, hasMedicalReferral, notes } = validation.data
 
-        // Validar que las citas sean elegibles
-        const validationResult = await validateAppointmentsForReimbursement(appointmentIds)
+        // Validar que las citas sean elegibles y pertenezcan a este paciente
+        const validationResult = await validateAppointmentsForReimbursement(appointmentIds, user.id)
 
         if (!validationResult.valid) {
             return NextResponse.json(
@@ -112,9 +119,9 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // Obtener las citas
+        // Obtener las citas (restringido al paciente autenticado)
         const appointments = await prisma.appointment.findMany({
-            where: { id: { in: appointmentIds } },
+            where: { id: { in: appointmentIds }, patientId: user.id },
             include: {
                 invoice: true,
                 patient: {
@@ -170,9 +177,9 @@ export async function POST(req: NextRequest) {
             }
         })
 
-        // Asociar appointments a la solicitud
+        // Asociar appointments a la solicitud (solo citas propias)
         await prisma.appointment.updateMany({
-            where: { id: { in: appointmentIds } },
+            where: { id: { in: appointmentIds }, patientId: user.id },
             data: { reimbursementRequestId: request.id }
         })
 

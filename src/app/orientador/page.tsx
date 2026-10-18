@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronRight, Heart, Brain, Users, Clock, Calendar, MapPin, CreditCard, DollarSign, ArrowLeft } from 'lucide-react'
+import { Header, Footer } from '@/components/layout'
+import { PageContainer, CardGrid } from '@/components/layout/shell'
 
 // ============================================
 // Types & Configuration
@@ -250,109 +252,113 @@ export default function OrientadorInteligentePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex flex-col">
-            {/* Progress Bar */}
-            <div className="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50">
-                <div
-                    className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-out"
-                    style={{ width: `${progress}%` }}
-                />
-            </div>
+        <>
+            <Header />
+            <PageContainer variant="alt" size="narrow" padding="xl" className="flex flex-col min-h-screen">
+                {/* Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50">
+                    <div
+                        className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-out"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
 
-            {/* Back Button */}
-            {currentStep > 0 && (
-                <button
-                    onClick={handleBack}
-                    className="fixed top-6 left-6 z-40 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5" />
-                    <span className="text-sm font-medium">Atrás</span>
-                </button>
-            )}
+                {/* Back Button */}
+                {currentStep > 0 && (
+                    <button
+                        onClick={handleBack}
+                        className="fixed top-6 left-6 z-40 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                        <span className="text-sm font-medium">Atrás</span>
+                    </button>
+                )}
 
-            {/* Progress Counter */}
-            <div className="fixed top-6 right-6 z-40">
-                <span className="text-sm font-medium text-gray-500">
-                    {currentStep + 1} de {questions.length}
-                </span>
-            </div>
+                {/* Progress Counter */}
+                <div className="fixed top-6 right-6 z-40">
+                    <span className="text-sm font-medium text-gray-500">
+                        {currentStep + 1} de {questions.length}
+                    </span>
+                </div>
 
-            {/* Question Container */}
-            <div className="flex-1 flex items-center justify-center px-4 py-20">
-                <div className="w-full max-w-2xl">
-                    <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <h1 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-3 leading-tight">
-                            {currentQuestion.title}
-                        </h1>
-                        {currentQuestion.subtitle && (
-                            <p className="text-lg text-gray-600">
-                                {currentQuestion.subtitle}
-                            </p>
-                        )}
-                    </div>
+                {/* Question Container */}
+                <div className="flex-1 flex items-center justify-center px-4 py-20">
+                    <div className="w-full max-w-2xl">
+                        <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <h1 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-3 leading-tight">
+                                {currentQuestion.title}
+                            </h1>
+                            {currentQuestion.subtitle && (
+                                <p className="text-lg text-gray-600">
+                                    {currentQuestion.subtitle}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Options Grid */}
-                    <div className="grid gap-3 md:gap-4">
-                        {currentQuestion.options.map((option, index) => {
-                            const isSelected = answers[currentQuestion.id] === option.id
+                        {/* Options Grid */}
+                        <div className="grid gap-3 md:gap-4">
+                            {currentQuestion.options.map((option, index) => {
+                                const isSelected = answers[currentQuestion.id] === option.id
 
-                            return (
-                                <button
-                                    key={option.id}
-                                    onClick={() => handleAnswer(currentQuestion.id, option.id)}
-                                    className={`
-                                        group relative w-full text-left p-5 rounded-2xl border-2 transition-all duration-200
-                                        hover:scale-[1.02] hover:shadow-lg
-                                        animate-in fade-in slide-in-from-bottom-2 duration-500
-                                        ${isSelected
-                                            ? 'bg-primary-50 border-primary-500 shadow-md'
-                                            : 'bg-white border-gray-200 hover:border-primary-300'
-                                        }
-                                    `}
-                                    style={{ animationDelay: `${index * 50}ms` }}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        {/* Icon */}
-                                        {option.icon && (
-                                            <div className={`
-                                                flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors
-                                                ${isSelected
-                                                    ? 'bg-primary-100 text-primary-700'
-                                                    : 'bg-gray-100 text-gray-600 group-hover:bg-primary-50 group-hover:text-primary-600'
-                                                }
-                                            `}>
-                                                {option.icon}
-                                            </div>
-                                        )}
-
-                                        {/* Content */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-gray-900 mb-1">
-                                                {option.label}
-                                            </div>
-                                            {option.description && (
-                                                <div className="text-sm text-gray-600">
-                                                    {option.description}
+                                return (
+                                    <button
+                                        key={option.id}
+                                        onClick={() => handleAnswer(currentQuestion.id, option.id)}
+                                        className={`
+                                            group relative w-full text-left p-5 rounded-2xl border-2 transition-all duration-200
+                                            hover:scale-[1.02] hover:shadow-lg
+                                            animate-in fade-in slide-in-from-bottom-2 duration-500
+                                            ${isSelected
+                                                ? 'bg-primary-50 border-primary-500 shadow-md'
+                                                : 'bg-white border-gray-200 hover:border-primary-300'
+                                            }
+                                        `}
+                                        style={{ animationDelay: `${index * 50}ms` }}
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            {/* Icon */}
+                                            {option.icon && (
+                                                <div className={`
+                                                    flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors
+                                                    ${isSelected
+                                                        ? 'bg-primary-100 text-primary-700'
+                                                        : 'bg-gray-100 text-gray-600 group-hover:bg-primary-50 group-hover:text-primary-600'
+                                                    }
+                                                `}>
+                                                    {option.icon}
                                                 </div>
                                             )}
-                                        </div>
 
-                                        {/* Arrow */}
-                                        <ChevronRight className={`
-                                            flex-shrink-0 w-5 h-5 transition-all
-                                            ${isSelected
-                                                ? 'text-primary-600 translate-x-1'
-                                                : 'text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1'
-                                            }
-                                        `} />
-                                    </div>
-                                </button>
-                            )
-                        })}
+                                            {/* Content */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-semibold text-gray-900 mb-1">
+                                                    {option.label}
+                                                </div>
+                                                {option.description && (
+                                                    <div className="text-sm text-gray-600">
+                                                        {option.description}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Arrow */}
+                                            <ChevronRight className={`
+                                                flex-shrink-0 w-5 h-5 transition-all
+                                                ${isSelected
+                                                    ? 'text-primary-600 translate-x-1'
+                                                    : 'text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1'
+                                                }
+                                            `} />
+                                        </div>
+                                    </button>
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </PageContainer>
+            <Footer />
+        </>
     )
 }
 
@@ -399,8 +405,9 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
-            <div className="container-wide py-12">
+        <>
+            <Header />
+            <PageContainer variant="alt" size="wide" padding="lg">
                 {/* Header */}
                 <div className="max-w-4xl mx-auto mb-12 text-center">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 border border-green-200 mb-6">
@@ -417,7 +424,7 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
                 </div>
 
                 {/* Professionals Grid */}
-                <div className="max-w-5xl mx-auto space-y-6">
+                <CardGrid count={3} className="max-w-5xl mx-auto space-y-6">
                     {professionals.map((prof, index) => (
                         <div
                             key={prof.id}
@@ -441,10 +448,10 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
                                 {/* Center: Info */}
                                 <div className="flex-1 min-w-0">
                                     <div className="mb-4">
-                                        <h3 className="text-2xl font-heading font-bold text-gray-900 mb-1">
+                                        <h3 className="text-2xl font-heading font-bold text-gray-900 mb-1 truncate">
                                             {prof.name}
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-gray-600 truncate">
                                             {prof.specialty} • {prof.experience}
                                         </p>
                                     </div>
@@ -461,23 +468,23 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
 
                                     {/* Details Grid */}
                                     <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                                        <div className="flex items-center gap-2text-sm">
+                                        <div className="flex items-center gap-2 text-sm">
                                             <CreditCard className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                            <span className="text-gray-700">
+                                            <span className="text-gray-700 truncate">
                                                 <strong className="text-green-700">✓</strong> Acepta {prof.acceptsInsurance}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm">
                                             <DollarSign className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                            <span className="text-gray-700">{prof.price} por sesión (50 min)</span>
+                                            <span className="text-gray-700 truncate">{prof.price} por sesión (50 min)</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm">
                                             <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                            <span className="text-gray-700">{prof.modalities.join(' y ')}</span>
+                                            <span className="text-gray-700 truncate">{prof.modalities.join(' y ')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm">
                                             <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                            <span className="text-gray-700">
+                                            <span className="text-gray-700 truncate">
                                                 Disponible: <strong className="text-primary-700">{prof.nextAvailable}</strong>
                                             </span>
                                         </div>
@@ -502,7 +509,7 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
                             </div>
                         </div>
                     ))}
-                </div>
+                </CardGrid>
 
                 {/* Footer Actions */}
                 <div className="max-w-5xl mx-auto mt-12 text-center">
@@ -518,7 +525,8 @@ function ResultsScreen({ answers, professionals, loading, onRestart }: ResultsSc
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </PageContainer>
+            <Footer />
+        </>
     )
 }

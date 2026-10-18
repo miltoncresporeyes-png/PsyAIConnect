@@ -122,7 +122,7 @@ export default function VideoCall({
         callFrameRef.current.destroy()
       }
     }
-  }, [roomUrl, token, userName])
+  }, [roomUrl, token, userName, leaveCall])
 
   const updateParticipants = () => {
     if (callFrameRef.current) {
@@ -131,23 +131,23 @@ export default function VideoCall({
     }
   }
 
-  const toggleMute = () => {
+  const toggleMute = useCallback(() => {
     if (callFrameRef.current) {
       const currentState = callFrameRef.current.localAudio()
       callFrameRef.current.setLocalAudio(!currentState)
       setIsMuted(!currentState)
     }
-  }
+  }, [])
 
-  const toggleVideo = () => {
+  const toggleVideo = useCallback(() => {
     if (callFrameRef.current) {
       const currentState = callFrameRef.current.localVideo()
       callFrameRef.current.setLocalVideo(!currentState)
       setIsVideoOff(!currentState)
     }
-  }
+  }, [])
 
-  const toggleScreenShare = async () => {
+  const toggleScreenShare = useCallback(async () => {
     if (!callFrameRef.current) return
 
     try {
@@ -161,7 +161,7 @@ export default function VideoCall({
     } catch (err) {
       console.error('Screen share error:', err)
     }
-  }
+  }, [isScreenSharing])
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return

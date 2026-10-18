@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 /**
  * API: Obtener guía de reembolso de una Isapre específica
  * GET /api/reembolsos/guide/[isapreSlug]
@@ -10,6 +11,9 @@ export async function GET(
     req: NextRequest,
     { params }: { params: { isapreSlug: string } }
 ) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const { isapreSlug } = params
 

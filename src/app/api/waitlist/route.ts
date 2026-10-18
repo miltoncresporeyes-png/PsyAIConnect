@@ -1,21 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { waitlistSchema } from '@/lib/validation/waitlist'
 import { z } from 'zod'
-
-const waitlistSchema = z.object({
-    email: z.string().email('Email inválido'),
-    name: z.string().optional(),
-    type: z.enum(['patient', 'professional']).default('patient'),
-    profession: z.string().optional(),
-    source: z.string().optional(),
-})
 
 export async function POST(request: Request) {
     try {
         const body = await request.json()
         const data = waitlistSchema.parse(body)
-
-        // Check if email already exists
         const existing = await prisma.waitlistEntry.findUnique({
             where: { email: data.email },
         })

@@ -10,6 +10,7 @@
 import { useState, useEffect } from 'react'
 import { Download, FileText, FileSpreadsheet, Calendar, TrendingUp, Users, DollarSign } from 'lucide-react'
 import { exportToPDF, exportToCSV } from '@/lib/reportExport'
+import { TableContainer, TableHeader, TableBody, TableRow, TableHeaderCell, TableCell, TableEmptyState } from '@/components/layout/shell'
 
 interface MonthlyReportData {
     professionalId: string
@@ -130,17 +131,17 @@ export default function MonthlyReportViewer() {
     return (
         <div className="space-y-6">
             {/* Header con selectores */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">
                     📊 Reportes Mensuales
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex flex-wrap gap-4">
                         <select
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent input"
                         >
                             {monthNames.map((name, index) => (
                                 <option key={index + 1} value={index + 1}>
@@ -152,7 +153,7 @@ export default function MonthlyReportViewer() {
                         <select
                             value={selectedYear}
                             onChange={(e) => setSelectedYear(Number(e.target.value))}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent input"
                         >
                             {[2024, 2025, 2026, 2027].map(year => (
                                 <option key={year} value={year}>{year}</option>
@@ -162,17 +163,17 @@ export default function MonthlyReportViewer() {
                         <button
                             onClick={loadReport}
                             disabled={loading}
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors btn-primary"
                         >
                             {loading ? 'Generando...' : 'Generar Reporte'}
                         </button>
                     </div>
 
                     {report && (
-                        <div className="flex gap-2 ml-auto">
+                        <div className="flex gap-2 flex-wrap">
                             <button
                                 onClick={() => exportToPDF(report)}
-                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors btn-ghost"
                                 title="Exportar a PDF"
                             >
                                 <FileText className="w-4 h-4" />
@@ -180,7 +181,7 @@ export default function MonthlyReportViewer() {
                             </button>
                             <button
                                 onClick={() => exportToCSV(report)}
-                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors btn-ghost"
                                 title="Exportar a CSV"
                             >
                                 <FileSpreadsheet className="w-4 h-4" />
@@ -200,7 +201,7 @@ export default function MonthlyReportViewer() {
 
             {/* Loading state */}
             {loading && (
-                <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
                     <p className="text-gray-600">Generando reporte...</p>
                 </div>
@@ -210,7 +211,7 @@ export default function MonthlyReportViewer() {
             {report && !loading && (
                 <div className="space-y-6">
                     {/* Resumen Financiero */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                             <DollarSign className="w-6 h-6 text-green-600" />
                             Resumen Financiero - {report.period.monthName}
@@ -268,64 +269,54 @@ export default function MonthlyReportViewer() {
                     </div>
 
                     {/* Desglose por Previsión */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-6">🏥 Desglose por Previsión</h2>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b-2 border-gray-200">
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Sistema</th>
-                                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Sesiones</th>
-                                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Bruto</th>
-                                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Líquido</th>
-                                        <th className="text-right py-3 px-4 font-semibold text-gray-700">%</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr className="border-b border-gray-100">
-                                        <td className="py-3 px-4 font-medium">Isapres</td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.isapres.count}</td>
-                                        <td className="text-right py-3 px-4">{formatCurrency(report.healthSystemBreakdown.isapres.brutAmount)}</td>
-                                        <td className="text-right py-3 px-4 text-green-600 font-semibold">
-                                            {formatCurrency(report.healthSystemBreakdown.isapres.netAmount)}
-                                        </td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.isapres.percentage.toFixed(1)}%</td>
-                                    </tr>
-                                    <tr className="border-b border-gray-100">
-                                        <td className="py-3 px-4 font-medium">Fonasa</td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.fonasa.count}</td>
-                                        <td className="text-right py-3 px-4">{formatCurrency(report.healthSystemBreakdown.fonasa.brutAmount)}</td>
-                                        <td className="text-right py-3 px-4 text-green-600 font-semibold">
-                                            {formatCurrency(report.healthSystemBreakdown.fonasa.netAmount)}
-                                        </td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.fonasa.percentage.toFixed(1)}%</td>
-                                    </tr>
-                                    <tr className="border-b border-gray-100">
-                                        <td className="py-3 px-4 font-medium">Particular</td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.private.count}</td>
-                                        <td className="text-right py-3 px-4">{formatCurrency(report.healthSystemBreakdown.private.brutAmount)}</td>
-                                        <td className="text-right py-3 px-4 text-green-600 font-semibold">
-                                            {formatCurrency(report.healthSystemBreakdown.private.netAmount)}
-                                        </td>
-                                        <td className="text-right py-3 px-4">{report.healthSystemBreakdown.private.percentage.toFixed(1)}%</td>
-                                    </tr>
-                                    <tr className="bg-gray-50 font-bold">
-                                        <td className="py-3 px-4">TOTAL</td>
-                                        <td className="text-right py-3 px-4">{report.financialSummary.totalSessions}</td>
-                                        <td className="text-right py-3 px-4">{formatCurrency(report.financialSummary.totalBrut)}</td>
-                                        <td className="text-right py-3 px-4 text-green-600">
-                                            {formatCurrency(report.financialSummary.totalNet)}
-                                        </td>
-                                        <td className="text-right py-3 px-4">100%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <TableContainer>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>Sistema</TableHeaderCell>
+                                    <TableHeaderCell align="right">Sesiones</TableHeaderCell>
+                                    <TableHeaderCell align="right">Bruto</TableHeaderCell>
+                                    <TableHeaderCell align="right">Líquido</TableHeaderCell>
+                                    <TableHeaderCell align="right">%</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell font="semibold">Isapres</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.isapres.count}</TableCell>
+                                    <TableCell align="right">{formatCurrency(report.healthSystemBreakdown.isapres.brutAmount)}</TableCell>
+                                    <TableCell align="right" color="success">{formatCurrency(report.healthSystemBreakdown.isapres.netAmount)}</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.isapres.percentage.toFixed(1)}%</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell font="semibold">Fonasa</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.fonasa.count}</TableCell>
+                                    <TableCell align="right">{formatCurrency(report.healthSystemBreakdown.fonasa.brutAmount)}</TableCell>
+                                    <TableCell align="right" color="success">{formatCurrency(report.healthSystemBreakdown.fonasa.netAmount)}</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.fonasa.percentage.toFixed(1)}%</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell font="semibold">Particular</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.private.count}</TableCell>
+                                    <TableCell align="right">{formatCurrency(report.healthSystemBreakdown.private.brutAmount)}</TableCell>
+                                    <TableCell align="right" color="success">{formatCurrency(report.healthSystemBreakdown.private.netAmount)}</TableCell>
+                                    <TableCell align="right">{report.healthSystemBreakdown.private.percentage.toFixed(1)}%</TableCell>
+                                </TableRow>
+                                <TableRow className="bg-gray-50 font-bold">
+                                    <TableCell>TOTAL</TableCell>
+                                    <TableCell align="right">{report.financialSummary.totalSessions}</TableCell>
+                                    <TableCell align="right">{formatCurrency(report.financialSummary.totalBrut)}</TableCell>
+                                    <TableCell align="right" color="success">{formatCurrency(report.financialSummary.totalNet)}</TableCell>
+                                    <TableCell align="right">100%</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </TableContainer>
                     </div>
 
                     {/* Métricas de Gestión */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-6">📈 Métricas de Gestión</h2>
 
                         <div className="grid md:grid-cols-2 gap-6">
@@ -370,51 +361,49 @@ export default function MonthlyReportViewer() {
                     </div>
 
                     {/* Estado de Boletas */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                         <h2 className="text-xl font-bold mb-6">📄 Estado de Boletas ({report.invoices.length})</h2>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b-2 border-gray-200">
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-700">N° Boleta</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Fecha</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Paciente</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Previsión</th>
-                                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Líquido</th>
-                                        <th className="text-center py-3 px-4 font-semibold text-gray-700">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {report.invoices.slice(0, 10).map((invoice) => (
-                                        <tr key={invoice.invoiceNumber} className="border-b border-gray-100 hover:bg-gray-50">
-                                            <td className="py-3 px-4 font-mono text-sm">{invoice.invoiceNumber}</td>
-                                            <td className="py-3 px-4 text-sm">{formatDate(invoice.date)}</td>
-                                            <td className="py-3 px-4">{invoice.patientName}</td>
-                                            <td className="py-3 px-4">
-                                                <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-                                                    {invoice.healthSystem}
-                                                </span>
-                                            </td>
-                                            <td className="text-right py-3 px-4 font-semibold text-green-600">
-                                                {formatCurrency(invoice.netAmount)}
-                                            </td>
-                                            <td className="text-center py-3 px-4">
-                                                <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                                                    {invoice.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <TableContainer>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>N° Boleta</TableHeaderCell>
+                                    <TableHeaderCell>Fecha</TableHeaderCell>
+                                    <TableHeaderCell>Paciente</TableHeaderCell>
+                                    <TableHeaderCell>Previsión</TableHeaderCell>
+                                    <TableHeaderCell align="right">Líquido</TableHeaderCell>
+                                    <TableHeaderCell align="center">Estado</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {report.invoices.slice(0, 10).map((invoice) => (
+                                    <TableRow key={invoice.invoiceNumber} hover>
+                                        <TableCell font="mono" className="text-sm">{invoice.invoiceNumber}</TableCell>
+                                        <TableCell className="text-sm">{formatDate(invoice.date)}</TableCell>
+                                        <TableCell>{invoice.patientName}</TableCell>
+                                        <TableCell>
+                                            <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                                                {invoice.healthSystem}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell align="right" font="semibold" color="success">
+                                            {formatCurrency(invoice.netAmount)}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                                {invoice.status}
+                                            </span>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </TableContainer>
 
-                            {report.invoices.length > 10 && (
-                                <div className="text-center py-4 text-sm text-gray-500">
-                                    Mostrando 10 de {report.invoices.length} boletas
-                                </div>
-                            )}
-                        </div>
+                        {report.invoices.length > 10 && (
+                            <div className="text-center py-4 text-sm text-gray-500">
+                                Mostrando 10 de {report.invoices.length} boletas
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -439,12 +428,12 @@ function StatCard({ label, value, icon: Icon, color }: {
     return (
         <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses[color]} flex-shrink-0`}>
                     <Icon className="w-5 h-5" />
                 </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{value}</p>
-            <p className="text-sm text-gray-600">{label}</p>
+            <p className="text-2xl font-bold text-gray-900 mb-1 truncate">{value}</p>
+            <p className="text-sm text-gray-600 truncate">{label}</p>
         </div>
     )
 }

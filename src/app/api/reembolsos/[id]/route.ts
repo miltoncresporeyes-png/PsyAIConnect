@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 /**
  * API: Obtener detalles de una solicitud de reembolso
  * GET /api/reembolsos/[id]
@@ -16,6 +17,9 @@ export async function GET(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -78,10 +82,22 @@ const updateReimbursementSchema = z.object({
     submittedAt: z.string().datetime().optional()
 })
 
+// Estados que un paciente (dueño de la solicitud) puede fijar por sí mismo
+const PATIENT_ALLOWED_STATUS = ['PENDING', 'CANCELLED'] as const
+
+// Transiciones permitidas para el paciente desde el estado actual
+const PATIENT_ALLOWED_TRANSITIONS: Record<string, string[]> = {
+    DRAFT: ['PENDING', 'CANCELLED'],
+    PENDING: ['CANCELLED'],
+}
+
 export async function PATCH(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -135,9 +151,41 @@ export async function PATCH(
         }
 
         const updates = validation.data
+        const isAdmin = user.role === 'ADMIN'
 
         // Preparar datos de actualización
         const updateData: any = {}
+
+        if (!isAdmin) {
+            // Un paciente solo puede enviar a revisión o cancelar su propia solicitud.
+            // El monto reembolsado, el tracking y los estados de aprobación/pago
+            // están reservados al administrador.
+            if (
+                updates.reimbursedAmount !== undefined ||
+                updates.trackingNumber !== undefined ||
+                updates.submittedAt !== undefined
+            ) {
+                return NextResponse.json(
+                    { error: 'No autorizado para modificar estos campos' },
+                    { status: 403 }
+                )
+            }
+
+            if (updates.status) {
+                const allowedTargets: readonly string[] =
+                    PATIENT_ALLOWED_TRANSITIONS[request.status] ?? []
+
+                if (
+                    !PATIENT_ALLOWED_STATUS.includes(updates.status as any) ||
+                    !allowedTargets.includes(updates.status)
+                ) {
+                    return NextResponse.json(
+                        { error: 'Transición de estado no permitida' },
+                        { status: 403 }
+                    )
+                }
+            }
+        }
 
         if (updates.status) {
             updateData.status = updates.status
@@ -167,6 +215,13 @@ export async function PATCH(
 
         if (updates.submittedAt) {
             updateData.submittedAt = new Date(updates.submittedAt)
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json(
+                { error: 'No hay cambios para aplicar' },
+                { status: 400 }
+            )
         }
 
         // Actualizar

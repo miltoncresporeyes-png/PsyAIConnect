@@ -4,8 +4,11 @@ import '@/styles/legal.css'
 import { BackButton } from '@/components/ui/BackButton'
 
 export const metadata = {
-    title: 'Términos y Condiciones | PsyDoctor',
+    title: { absolute: 'Términos y Condiciones | PsyDoctor' },
     description: 'Términos y condiciones de uso de la plataforma PsyDoctor - Plataforma de intermediación para servicios de salud mental',
+    alternates: {
+        canonical: '/terminos',
+    },
 }
 
 export default function TerminosPage() {
@@ -279,7 +282,7 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-11" className="legal-section-title">11º Contacto.</h2>
                             <div className="legal-contact-box">
-                                <p><strong>Email:</strong> <a href="mailto:soporte@psydoctor.cl" className="legal-link">soporte@psydoctor.cl</a></p>
+                                <p><strong>Email:</strong> <a href="mailto:contacto@psydoctor.cl" className="legal-link">contacto@psydoctor.cl</a></p>
                                 <p><strong>Email Legal:</strong> <a href="mailto:legal@psydoctor.cl" className="legal-link">legal@psydoctor.cl</a></p>
                                 <p><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00 hrs (Chile Continental)</p>
                             </div>

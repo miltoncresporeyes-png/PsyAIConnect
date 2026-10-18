@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -5,6 +6,9 @@ import { prisma } from '@/lib/prisma'
 import { getOrCreateVideoRoom, createVideoToken, deleteVideoRoom } from '@/lib/videoRoom'
 
 export async function POST(request: Request) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   try {
     const session = await getServerSession(authOptions)
 
@@ -100,6 +104,9 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   try {
     const session = await getServerSession(authOptions)
 

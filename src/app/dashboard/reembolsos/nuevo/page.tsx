@@ -194,7 +194,7 @@ export default function NewReimbursementPage() {
     const estimatedReimbursement = Math.round(totalAmount * 0.55)
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
             {/* Progress Steps */}
             <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">

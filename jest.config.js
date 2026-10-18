@@ -15,7 +15,7 @@ const customJestConfig = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
     },
-    testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+    testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/', '<rootDir>/tests/'],
     // Limit workers to avoid OOM crashes that produce "child process exceptions"
     maxWorkers: '50%',
     collectCoverageFrom: [

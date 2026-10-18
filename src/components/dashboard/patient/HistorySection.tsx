@@ -17,6 +17,22 @@ export function HistorySection({ hasHistory }: HistorySectionProps) {
 
             <div className="space-y-2">
                 <Link
+                    href="#diagnosticos-clinicos"
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-teal-50/50 transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 group-hover:bg-teal-100">
+                            <FileText className="w-4 h-4 text-teal-600" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-medium text-gray-800">Diagnósticos e Indicaciones</span>
+                            <span className="block text-[11px] text-teal-600 font-normal">Ficha clínica Ley 20.584</span>
+                        </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-teal-600 transition-colors" />
+                </Link>
+
+                <Link
                     href="/dashboard/historial/profesionales"
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >

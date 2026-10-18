@@ -80,15 +80,15 @@ export async function POST(request: Request) {
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">ðŸŽ‰ Â¡Felicitaciones!</h1>
+        <h1 style="color: white; margin: 0; font-size: 28px;">ðŸŽ‰ ¡Felicitaciones!</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Tu cuenta ha sido verificada</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
         <h2 style="color: #1f2937; margin-top: 0;">Hola ${professional.user.name || 'Profesional'} ðŸ‘‹</h2>
-        <p style="color: #4b5563;">Â¡Buenas noticias! Tu cuenta de profesional en <strong>PsyDoctor</strong> ha sido <strong>verificada exitosamente</strong>.</p>
+        <p style="color: #4b5563;">¡Buenas noticias! Tu cuenta de profesional en <strong>PsyDoctor</strong> ha sido <strong>verificada exitosamente</strong>.</p>
         <p style="color: #4b5563;">Ahora puedes:</p>
         <ul style="color: #4b5563; line-height: 2;">
-            <li>Completar tu perfil pÃºblico</li>
+            <li>Completar tu perfil público</li>
             <li>Configurar tu disponibilidad</li>
             <li>Recibir pacientes</li>
         </ul>
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         </div>
         <p style="color: #6b7280; font-size: 14px;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-        <p style="color: #9ca3af; font-size: 12px; margin: 0;">Â© ${new Date().getFullYear()} PsyDoctor. Todos los derechos reservados.</p>
+        <p style="color: #9ca3af; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
@@ -130,7 +130,7 @@ export async function POST(request: Request) {
         } else {
             await sendEmail({
                 to: professional.user.email,
-                subject: 'âš ï¸ ActualizaciÃ³n de tu solicitud - PsyDoctor',
+                subject: 'âš ️ Actualización de tu solicitud - PsyDoctor',
                 html: `
 <!DOCTYPE html>
 <html>
@@ -149,10 +149,10 @@ export async function POST(request: Request) {
             <p style="color: #991b1b; font-weight: 600; margin: 0 0 8px 0;">Motivo del rechazo:</p>
             <p style="color: #7f1d1d; margin: 0;">${rejectionReason}</p>
         </div>
-        <p style="color: #4b5563;">Si crees que hay un error o deseas corregir tu documentaciÃ³n, por favor contacta a nuestro equipo de soporte.</p>
+        <p style="color: #4b5563;">Si crees que hay un error o deseas corregir tu documentación, por favor contacta a nuestro equipo de soporte.</p>
         <p style="color: #6b7280; font-size: 14px;">Equipo PsyDoctor</p>
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-        <p style="color: #9ca3af; font-size: 12px; margin: 0;">Â© ${new Date().getFullYear()} PsyDoctor. Todos los derechos reservados.</p>
+        <p style="color: #9ca3af; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} PsyDoctor. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>

@@ -4,10 +4,14 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit';
 import { captureApiError, getRequestId } from '@/lib/observability';
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   const requestId = getRequestId(request)
   try {
     const session = await getServerSession(authOptions)
@@ -111,21 +115,46 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the actual appointment
-    const appointment = await prisma.appointment.create({
-      data: {
-        scheduledAt: preReservation.scheduledAt,
-        duration: preReservation.duration,
-        status: 'CONFIRMED',
-        modality: 'ONLINE', // Default to online, can be changed later
-        patient: {
-          connect: { id: session.user.id },
+    // Create the actual appointment as PENDING: no se confirma sin pago.
+    // Después se crea el registro de pago y el paciente paga en /cita/[id]/confirmar
+    // (mismo flujo que POST /api/citas).
+    let appointment;
+    try {
+      appointment = await prisma.appointment.create({
+        data: {
+          scheduledAt: preReservation.scheduledAt,
+          duration: preReservation.duration,
+          status: 'PENDING',
+          modality: 'ONLINE', // Default to online, can be changed later
+          patient: {
+            connect: { id: session.user.id },
+          },
+          professional: {
+            connect: { id: preReservation.professionalId },
+          },
         },
-        professional: {
-          connect: { id: preReservation.professionalId },
+      });
+
+      const commissionRate = preReservation.professional.subscriptionTier === 'PREMIUM' ? 0.05 :
+        preReservation.professional.subscriptionTier === 'PRO' ? 0.08 : 0.12
+      const commission = Math.round(preReservation.professional.sessionPrice * commissionRate)
+
+      await prisma.payment.create({
+        data: {
+          appointmentId: appointment.id,
+          amount: preReservation.professional.sessionPrice,
+          commission,
+          netAmount: preReservation.professional.sessionPrice - commission,
+          status: 'PENDING',
         },
-      },
-    });
+      });
+    } catch (err) {
+      // Sin registro de pago la cita quedaría sin poder pagarse: se revierte.
+      if (appointment) {
+        await prisma.appointment.delete({ where: { id: appointment.id } }).catch(() => undefined);
+      }
+      throw err;
+    }
 
     // Mark pre-reservation as confirmed
     await prisma.preReservation.update({
@@ -147,9 +176,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Cita confirmada exitosamente',
+      message: 'Reserva creada. Procede al pago para confirmar.',
       appointmentId: appointment.id,
       scheduledAt: preReservation.scheduledAt,
+      requiresPayment: true,
       professional: {
         name: preReservation.professional.user.name,
       },

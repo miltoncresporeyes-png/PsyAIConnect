@@ -11,6 +11,7 @@ import {
     AlertTriangle,
     Loader2
 } from 'lucide-react'
+import { PageContainer, PageHeader, KPIGrid } from '@/components/layout/shell'
 
 interface DashboardStats {
     totalUsers: number
@@ -72,61 +73,78 @@ export default function AdminDashboardPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-500">Resumen de la plataforma</p>
+        <PageContainer size="full" padding="md">
+            <PageHeader
+                title="Dashboard"
+                description="Resumen de la plataforma"
+            />
+
+            <KPIGrid count={3}>
+                <AdminStatCard
+                    icon={Users}
+                    label="Total Usuarios"
+                    value={stats?.totalUsers?.toLocaleString('es-CL') || '0'}
+                    iconColor="blue"
+                    trend={<TrendingUp className="w-5 h-5 text-green-500" />}
+                />
+                <AdminStatCard
+                    icon={Stethoscope}
+                    label="Médicos Pendientes"
+                    value={stats?.pendingProfessionals || 0}
+                    iconColor="red"
+                    alert={Boolean(stats?.pendingProfessionals && stats.pendingProfessionals > 0)}
+                />
+                <AdminStatCard
+                    icon={DollarSign}
+                    label="Ingresos del Mes"
+                    value={formatCurrency(stats?.monthlyRevenue || 0)}
+                    iconColor="green"
+                    trend={<TrendingUp className="w-5 h-5 text-green-500" />}
+                />
+            </KPIGrid>
+        </PageContainer>
+    )
+}
+
+function AdminStatCard({
+    icon: Icon,
+    label,
+    value,
+    iconColor,
+    trend,
+    alert
+}: {
+    icon: any
+    label: string
+    value: string | number
+    iconColor: 'blue' | 'red' | 'green' | 'purple' | 'amber'
+    trend?: React.ReactNode
+    alert?: boolean
+}) {
+    const colorClasses: Record<string, string> = {
+        blue: 'bg-blue-50 text-blue-600',
+        red: 'bg-red-50 text-red-600',
+        green: 'bg-green-50 text-green-600',
+        purple: 'bg-purple-50 text-purple-600',
+        amber: 'bg-amber-50 text-amber-600',
+    }
+
+    return (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[iconColor]}`}>
+                    <Icon className="w-6 h-6" />
+                </div>
+                {trend && <div className="flex-shrink-0">{trend}</div>}
             </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
-                            <Users className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <TrendingUp className="w-5 h-5 text-green-500" />
-                    </div>
-                    <p className="text-sm text-gray-500 mb-1">Total Usuarios</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {stats?.totalUsers?.toLocaleString('es-CL') || '0'}
-                    </p>
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center">
-                            <Stethoscope className="w-6 h-6 text-red-600" />
-                        </div>
-                        {stats?.pendingProfessionals && stats.pendingProfessionals > 0 ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium animate-pulse">
-                                <AlertTriangle className="w-3 h-3" />
-                                Pendiente
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                                Sin alertas
-                            </span>
-                        )}
-                    </div>
-                    <p className="text-sm text-gray-500 mb-1">Médicos Pendientes</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {stats?.pendingProfessionals || 0}
-                    </p>
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
-                            <DollarSign className="w-6 h-6 text-green-600" />
-                        </div>
-                        <TrendingUp className="w-5 h-5 text-green-500" />
-                    </div>
-                    <p className="text-sm text-gray-500 mb-1">Ingresos del Mes</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {formatCurrency(stats?.monthlyRevenue || 0)}
-                    </p>
-                </div>
-            </div>
+            <p className="text-sm text-gray-500 mb-1">{label}</p>
+            <p className="text-3xl font-bold text-gray-900">{value}</p>
+            {alert && (
+                <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium animate-pulse">
+                    <AlertTriangle className="w-3 h-3" />
+                    Pendiente
+                </span>
+            )}
         </div>
     )
 }

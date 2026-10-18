@@ -54,3 +54,10 @@ prisma/migrations/
 
 # Generated
 src/generated/
+
+# Local databases and virtualenvs
+postgres_data/
+.venv/
+.coverage
+tests_python/
+.pytest_cache/

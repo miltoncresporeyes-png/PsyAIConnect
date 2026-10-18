@@ -50,8 +50,8 @@ export default async function NotFound() {
                     {/* Help text */}
                     <p className="mt-12 text-sm text-gray-500">
                         {t('helpText')}{' '}
-                        <a href="mailto:soporte@psydoctor.cl" className="text-primary-600 hover:underline">
-                            soporte@psydoctor.cl
+                        <a href="mailto:contacto@psydoctor.cl" className="text-primary-600 hover:underline">
+                            contacto@psydoctor.cl
                         </a>
                     </p>
                 </div>

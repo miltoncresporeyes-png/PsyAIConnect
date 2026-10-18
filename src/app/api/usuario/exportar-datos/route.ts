@@ -90,7 +90,7 @@ export async function GET() {
                 revokedAt: c.revokedAt?.toISOString(),
             })),
             note: 'Este archivo contiene todos tus datos personales almacenados en PsyDoctor. ' +
-                'Las notas clÃ­nicas estÃ¡n cifradas y solo son accesibles por tu profesional.',
+                'Las notas clínicas están cifradas y solo son accesibles por tu profesional.',
         }
 
         // Return as downloadable JSON

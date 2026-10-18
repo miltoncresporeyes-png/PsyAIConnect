@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Header, Footer } from '@/components/layout'
+import { PageContainer, PageHeader, ListContainer, ListItem } from '@/components/layout/shell'
+import { BackToDashboard } from '@/components/ui/BackToDashboard'
 import { formatPrice } from '@/lib/utils'
 import {
     Loader2, Calendar, Clock, Video, MapPin,
-    ChevronRight, X, ExternalLink
+    X, ExternalLink, Filter
 } from 'lucide-react'
-import { BackToDashboard } from '@/components/ui/BackToDashboard'
 
 interface Appointment {
     id: string
@@ -121,184 +122,176 @@ export default function CitasPage() {
         <>
             <Header />
 
-            <div className="dashboard-shell">
-                <div className="dashboard-container">
-                    <div className="max-w-4xl mx-auto">
-                        {/* Back to Dashboard */}
-                        <BackToDashboard />
+            <PageContainer variant="dashboard" size="medium">
+                <BackToDashboard />
 
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-                            <div>
-                                <h1 className="text-2xl font-heading font-bold text-gray-900">
-                                    Mis citas
-                                </h1>
-                                <p className="text-gray-600">
-                                    {isProfessional ? 'Gestiona las citas con tus pacientes' : 'Revisa tus próximas sesiones'}
-                                </p>
-                            </div>
-                            {!isProfessional && (
-                                <Link href="/buscar" className="btn-primary">
-                                    Nueva cita
-                                </Link>
-                            )}
-                        </div>
+                <PageHeader
+                    title="Mis citas"
+                    description={isProfessional ? 'Gestiona las citas con tus pacientes' : 'Revisa tus próximas sesiones'}
+                    actions={!isProfessional && (
+                        <Link href="/buscar" className="btn-primary">
+                            Nueva cita
+                        </Link>
+                    )}
+                />
 
-                        {/* Filter Tabs */}
-                        <div className="flex gap-2 mb-5 flex-wrap">
-                            {(['upcoming', 'past', 'all'] as const).map(f => (
-                                <button
-                                    key={f}
-                                    onClick={() => setFilter(f)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === f
-                                        ? 'bg-primary-100 text-primary-700'
-                                        : 'text-gray-600 hover:bg-gray-100'
-                                        }`}
-                                >
-                                    {f === 'upcoming' ? 'Próximas' : f === 'past' ? 'Pasadas' : 'Todas'}
-                                </button>
-                            ))}
-                        </div>
+                {/* Filter Tabs */}
+                <div className="flex flex-wrap gap-2 mb-5" role="tablist" aria-label="Filtrar citas">
+                    {(['upcoming', 'past', 'all'] as const).map(f => (
+                        <button
+                            key={f}
+                            role="tab"
+                            aria-selected={filter === f}
+                            onClick={() => setFilter(f)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === f
+                                ? 'bg-primary-100 text-primary-700'
+                                : 'text-gray-600 hover:bg-gray-100'
+                            }`}
+                        >
+                            {f === 'upcoming' ? 'Próximas' : f === 'past' ? 'Pasadas' : 'Todas'}
+                        </button>
+                    ))}
+                </div>
 
-                        {/* Appointments List */}
-                        {filteredAppointments.length === 0 ? (
-                            <div className="dashboard-panel p-10 text-center">
-                                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                    No hay citas {filter === 'upcoming' ? 'próximas' : filter === 'past' ? 'pasadas' : ''}
-                                </h3>
-                                <p className="text-gray-600 mb-6">
-                                    {isProfessional
-                                        ? 'Cuando tengas citas agendadas, aparecerán aquí.'
-                                        : 'Busca un profesional y agenda tu primera sesión.'}
-                                </p>
-                                {!isProfessional && (
-                                    <Link href="/buscar" className="btn-primary">
-                                        Buscar profesional
-                                    </Link>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {filteredAppointments.map(apt => {
-                                    const aptDate = new Date(apt.scheduledAt)
-                                    const isUpcoming = aptDate >= now && apt.status === 'CONFIRMED'
-                                    const canJoin = isUpcoming && apt.modality === 'ONLINE' && apt.videoLink
-                                    const canCancel = ['PENDING', 'CONFIRMED'].includes(apt.status) && aptDate > now
-
-                                    const person = isProfessional ? apt.patient : apt.professional?.user
-
-                                    return (
-                                        <div key={apt.id} className="dashboard-panel p-5 hover:border-primary-200 transition-colors">
-                                            <div className="flex items-start gap-4">
-                                                {/* Avatar */}
-                                                <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
-                                                    {person?.image ? (
-                                                        <Image
-                                                            src={person.image}
-                                                            alt={person.name || ''}
-                                                            width={56}
-                                                            height={56}
-                                                            className="object-cover"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xl font-bold text-primary-600">
-                                                            {person?.name?.charAt(0) || '?'}
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Info */}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <h3 className="font-semibold text-gray-900">
-                                                            {person?.name}
-                                                        </h3>
-                                                        <span className={`badge ${statusLabels[apt.status]?.color || 'bg-gray-100'}`}>
-                                                            {statusLabels[apt.status]?.label || apt.status}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
-                                                        <span className="flex items-center gap-1">
-                                                            <Calendar className="w-4 h-4" />
-                                                            {aptDate.toLocaleDateString('es-CL', {
-                                                                weekday: 'short',
-                                                                day: 'numeric',
-                                                                month: 'short',
-                                                            })}
-                                                        </span>
-                                                        <span className="flex items-center gap-1">
-                                                            <Clock className="w-4 h-4" />
-                                                            {aptDate.toLocaleTimeString('es-CL', {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                            })} ({apt.duration} min)
-                                                        </span>
-                                                        <span className="flex items-center gap-1">
-                                                            {apt.modality === 'ONLINE' ? (
-                                                                <Video className="w-4 h-4" />
-                                                            ) : (
-                                                                <MapPin className="w-4 h-4" />
-                                                            )}
-                                                            {apt.modality === 'ONLINE' ? 'Online' : 'Presencial'}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Actions */}
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {apt.status === 'PENDING' && !isProfessional && (
-                                                            <Link
-                                                                href={`/cita/${apt.id}/confirmar`}
-                                                                className="text-sm text-primary-600 hover:text-primary-700 font-medium"
-                                                            >
-                                                                Completar pago →
-                                                            </Link>
-                                                        )}
-                                                        {canJoin && (
-                                                            <a
-                                                                href={apt.videoLink}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium"
-                                                            >
-                                                                <Video className="w-4 h-4" />
-                                                                Unirse a la sesión
-                                                                <ExternalLink className="w-3 h-3" />
-                                                            </a>
-                                                        )}
-                                                        {canCancel && (
-                                                            <button
-                                                                onClick={() => handleCancel(apt.id)}
-                                                                className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
-                                                            >
-                                                                <X className="w-4 h-4" />
-                                                                Cancelar
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Price */}
-                                                {apt.payment && (
-                                                    <div className="text-right">
-                                                        <p className="font-semibold text-gray-900">
-                                                            {formatPrice(apt.payment.amount)}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500">
-                                                            {apt.payment.status === 'COMPLETED' ? 'Pagado' : 'Pendiente'}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                {/* Appointments List */}
+                {filteredAppointments.length === 0 ? (
+                    <div className="dashboard-panel p-10 text-center">
+                        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            No hay citas {filter === 'upcoming' ? 'próximas' : filter === 'past' ? 'pasadas' : ''}
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            {isProfessional
+                                ? 'Cuando tengas citas agendadas, aparecerán aquí.'
+                                : 'Busca un profesional y agenda tu primera sesión.'}
+                        </p>
+                        {!isProfessional && (
+                            <Link href="/buscar" className="btn-primary">
+                                Buscar profesional
+                            </Link>
                         )}
                     </div>
-                </div>
-            </div>
+                ) : (
+                    <ListContainer divided>
+                        {filteredAppointments.map(apt => {
+                            const aptDate = new Date(apt.scheduledAt)
+                            const isUpcoming = aptDate >= now && apt.status === 'CONFIRMED'
+                            const canJoin = isUpcoming && apt.modality === 'ONLINE' && apt.videoLink
+                            const canCancel = ['PENDING', 'CONFIRMED'].includes(apt.status) && aptDate > now
+
+                            const person = isProfessional ? apt.patient : apt.professional?.user
+
+                            return (
+                                <ListItem
+                                    key={apt.id}
+                                    action={
+                                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                                            {apt.status === 'PENDING' && !isProfessional && (
+                                                <Link
+                                                    href={`/cita/${apt.id}/confirmar`}
+                                                    className="text-sm text-primary-600 hover:text-primary-700 font-medium whitespace-nowrap"
+                                                >
+                                                    Completar pago →
+                                                </Link>
+                                            )}
+                                            {canJoin && (
+                                                <a
+                                                    href={apt.videoLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium whitespace-nowrap"
+                                                >
+                                                    <Video className="w-4 h-4" />
+                                                    Unirse
+                                                    <ExternalLink className="w-3 h-3" />
+                                                </a>
+                                            )}
+                                            {canCancel && (
+                                                <button
+                                                    onClick={() => handleCancel(apt.id)}
+                                                    className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 whitespace-nowrap"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                    Cancelar
+                                                </button>
+                                            )}
+                                        </div>
+                                    }
+                                >
+                                    <Link className="flex w-full items-start gap-4" href={`/dashboard/citas/${apt.id}`}>
+                                        {/* Avatar */}
+                                        <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                                            {person?.image ? (
+                                                <Image
+                                                    src={person.image}
+                                                    alt={person.name || ''}
+                                                    width={56}
+                                                    height={56}
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <span className="text-xl font-bold text-primary-600">
+                                                    {person?.name?.charAt(0) || '?'}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="font-semibold text-gray-900 truncate">
+                                                    {person?.name}
+                                                </h3>
+                                                <span className={`badge ${statusLabels[apt.status]?.color || 'bg-gray-100'} flex-shrink-0`}>
+                                                    {statusLabels[apt.status]?.label || apt.status}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                                                <span className="flex items-center gap-1 whitespace-nowrap">
+                                                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                                                    {aptDate.toLocaleDateString('es-CL', {
+                                                        weekday: 'short',
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                    })}
+                                                </span>
+                                                <span className="flex items-center gap-1 whitespace-nowrap">
+                                                    <Clock className="w-4 h-4 flex-shrink-0" />
+                                                    {aptDate.toLocaleTimeString('es-CL', {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })} ({apt.duration} min)
+                                                </span>
+                                                <span className="flex items-center gap-1 whitespace-nowrap">
+                                                    {apt.modality === 'ONLINE' ? (
+                                                        <Video className="w-4 h-4 flex-shrink-0" />
+                                                    ) : (
+                                                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                                                    )}
+                                                    {apt.modality === 'ONLINE' ? 'Online' : 'Presencial'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Price */}
+                                        {apt.payment && (
+                                            <div className="text-right shrink-0 min-w-[140px]">
+                                                <p className="font-semibold text-gray-900">
+                                                    {formatPrice(apt.payment.amount)}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    {apt.payment.status === 'COMPLETED' ? 'Pagado' : 'Pendiente'}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </Link>
+                                </ListItem>
+                            )
+                        })}
+                    </ListContainer>
+                )}
+            </PageContainer>
 
             <Footer />
         </>

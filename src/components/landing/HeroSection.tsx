@@ -7,9 +7,8 @@ import { useBetaWaitlist } from '@/lib/hooks/useBetaWaitlist'
 import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
-  const { daysRemaining, message, handleSubmit, email, setEmail, isSubmitting } = useBetaWaitlist()
+  const { message, handleSubmit, email, setEmail, isSubmitting } = useBetaWaitlist()
   const t = useTranslations('hero')
-  const launchLabel = daysRemaining > 0 ? `${daysRemaining} ${daysRemaining === 1 ? t('launchDay') : t('launchDays')}` : t('launchAvailable')
 
   return (
     <section
@@ -27,7 +26,7 @@ export function HeroSection() {
             <div className="inline-flex items-center gap-2.5 rounded-full border border-teal-200/70 bg-white/80 px-4 py-2 shadow-sm shadow-teal-100/40 backdrop-blur-sm">
               <Clock className="w-4 h-4 text-teal-600" aria-hidden="true" />
               <span className="text-sm font-semibold text-slate-700">
-                Lanzamiento beta: <span className="font-bold text-teal-700">{launchLabel}</span>
+                PsyDoctor ya está en línea
               </span>
             </div>
 
@@ -62,13 +61,13 @@ export function HeroSection() {
               </Link>
             </div>
 
-             <form onSubmit={handleSubmit} className="mt-5 w-full max-w-2xl rounded-3xl border border-white/70 bg-white/80 p-3 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                <div className="flex-1 text-left">
+             <form onSubmit={handleSubmit} className="mt-5 w-full max-w-2xl rounded-3xl border border-white/70 bg-white/80 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+              <div className="flex flex-col gap-3">
+                <div className="text-left">
                   <p className="text-sm font-semibold text-slate-900">{t('waitlistTitle')}</p>
-                  <p className="mt-1 text-sm text-slate-500">{t('waitlistDesc')}</p>
+                  <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">{t('waitlistDesc')}</p>
                 </div>
-                <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <label className="sr-only" htmlFor="beta-email">{t('emailLabel')}</label>
                   <input
                     id="beta-email"
@@ -82,7 +81,7 @@ export function HeroSection() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="rounded-2xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="shrink-0 whitespace-nowrap rounded-2xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSubmitting ? t('submitSending') : t('submitBtn')}
                   </button>

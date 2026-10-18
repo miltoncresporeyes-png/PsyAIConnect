@@ -102,6 +102,13 @@ export function calculateCommission(
  * Create a payment with Flow.cl
  */
 export async function createPayment(params: CreatePaymentParams): Promise<PaymentResult> {
+    if (process.env.ENABLE_PAYMENTS === 'false') {
+        return {
+            success: false,
+            error: 'Los pagos en línea se encuentran temporalmente en mantenimiento preventivo. Intenta más tarde.',
+        }
+    }
+
     const {
         appointmentId,
         amount,
@@ -111,8 +118,17 @@ export async function createPayment(params: CreatePaymentParams): Promise<Paymen
         subscriptionTier
     } = params
 
-    // In development without API key, simulate payment
+    // Sin API key solo se simula el pago fuera de producción.
+    // En producción hay que fallar: un pago "simulado" no cobra a nadie.
     if (!process.env.FLOW_API_KEY) {
+        if (process.env.NODE_ENV === 'production') {
+            console.error('💳 [PAYMENT SERVICE] FLOW_API_KEY no configurada en producción')
+            return {
+                success: false,
+                error: 'Pagos no configurados. Contacta al soporte.',
+            }
+        }
+
         console.log('💳 [PAYMENT SERVICE - DEV MODE]')
         console.log('Creating simulated payment:', {
             appointmentId,
@@ -185,6 +201,12 @@ export async function createPayment(params: CreatePaymentParams): Promise<Paymen
  */
 export async function getPaymentStatus(flowToken: string): Promise<FlowPaymentStatusResponse | null> {
     if (!process.env.FLOW_API_KEY) {
+        // Nunca reportar un pago como completado sin gateway en producción
+        if (process.env.NODE_ENV === 'production') {
+            console.error('💳 [PAYMENT SERVICE] FLOW_API_KEY no configurada en producción')
+            return null
+        }
+
         console.log('💳 [PAYMENT SERVICE - DEV MODE] Getting status for:', flowToken)
         return {
             flowOrder: flowToken,
@@ -214,69 +236,5 @@ export async function getPaymentStatus(flowToken: string): Promise<FlowPaymentSt
     } catch (error) {
         console.error('Payment status error:', error)
         return null
-    }
-}
-
-/**
- * Process refund through Flow.cl
- */
-export async function refundPayment(
-    flowToken: string,
-    amount: number,
-    reason: string
-): Promise<{ success: boolean; error?: string }> {
-    if (!process.env.FLOW_API_KEY) {
-        console.log('💳 [PAYMENT SERVICE - DEV MODE] Processing refund:', { flowToken, amount, reason })
-        return { success: true }
-    }
-
-    try {
-        const apiUrl = process.env.FLOW_API_URL || 'https://www.flow.cl/api'
-
-        const params: Record<string, string> = {
-            apiKey: process.env.FLOW_API_KEY,
-            token: flowToken,
-            amount: amount.toString(),
-            receiverEmail: '', // Will use original payer email
-        }
-        params.s = generateFlowSignature(params)
-
-        const response = await fetch(`${apiUrl}/refund/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams(params),
-        })
-
-        if (!response.ok) {
-            const error = await response.json()
-            throw new Error(error.message || 'Error processing refund')
-        }
-
-        return { success: true }
-    } catch (error) {
-        console.error('Refund error:', error)
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Error processing refund',
-        }
-    }
-}
-
-/**
- * Map Flow status code to our PaymentStatus enum
- */
-export function mapFlowStatus(flowStatus: number): PaymentStatus {
-    switch (flowStatus) {
-        case 1:
-            return PaymentStatus.PENDING
-        case 2:
-            return PaymentStatus.COMPLETED
-        case 3:
-        case 4:
-            return PaymentStatus.FAILED
-        default:
-            return PaymentStatus.PENDING
     }
 }

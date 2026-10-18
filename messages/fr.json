@@ -2,6 +2,7 @@
   "nav": {
     "patient": "Je suis Patient",
     "professional": "Je suis Professionnel",
+    "planes": "Tarifs",
     "howItWorks": "Comment ça Marche",
     "trySearch": "Tester la Recherche",
     "trustBadge": "Confiance, rendez-vous et paiement en une seule expérience",
@@ -37,7 +38,7 @@
     "submitBtn": "Demander l'accès",
     "trustProtected": "Vos données sont protégées. Pas de spam.",
     "trustSchedule": "Réservez en quelques minutes, sans frais cachés.",
-    "statsProfessionals": "500+ professionnels vérifiés",
+    "statsProfessionals": "Professionnels v\u00e9rifi\u00e9s",
     "statsBeta": "Bêta Chili",
     "stats24h": "24h/7",
     "statsAgenda": "réservation en ligne",
@@ -52,7 +53,7 @@
     "title": "Conçu par des experts en gestion et en santé",
     "subtitle": "Une infrastructure fiable en toutes circonstances",
     "compliance": "Conformité réglementaire",
-    "activePros": "+500 professionnels actifs"
+    "activePros": "Professionnels v\u00e9rifi\u00e9s"
   },
   "differentiation": {
     "sectionLabel": "Pourquoi nous sommes différents",
@@ -288,6 +289,8 @@
     "findPro": "Trouver un Professionnel",
     "joinPro": "Je suis Professionnel",
     "pricing": "Tarifs",
+    "orientation": "Guide du bien-être",
+    "forProfessionals": "Pour les professionnels",
     "faqLink": "Questions Fréquentes",
     "howItWorksLink": "Comment ça Marche",
     "terms": "Conditions d'Utilisation",

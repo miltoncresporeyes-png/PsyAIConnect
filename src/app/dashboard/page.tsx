@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Header, Footer } from '@/components/layout'
+import { PageContainer, PageHeader, KPIGrid, CardGrid } from '@/components/layout/shell'
 import {
     Loader2, Calendar, Clock, DollarSign, Users,
     Settings, LogOut, ExternalLink, BarChart3, FileText
@@ -17,6 +18,7 @@ import { HistorySection } from '@/components/dashboard/patient/HistorySection'
 import { EmotionalCheckIn } from '@/components/dashboard/patient/EmotionalCheckIn'
 import { BreathingResource } from '@/components/dashboard/patient/BreathingResource'
 import { SafetyMicroCopy } from '@/components/dashboard/patient/SafetyMicroCopy'
+import { DiagnosisSection, PatientDiagnosis } from '@/components/dashboard/patient/DiagnosisSection'
 import FeeCalculator from '@/components/dashboard/FeeCalculator'
 import ReimbursementCard from '@/components/dashboard/ReimbursementCard'
 
@@ -46,6 +48,9 @@ export default function DashboardPage() {
         totalSessions: 0,
         hasHistory: false
     })
+
+    const [diagnoses, setDiagnoses] = useState<PatientDiagnosis[]>([])
+    const [diagnosesLoading, setDiagnosesLoading] = useState(false)
 
     const [professionalStats, setProfessionalStats] = useState<ProfessionalStats>({
         todayAppointments: 0,
@@ -152,7 +157,24 @@ export default function DashboardPage() {
                     console.error("Error fetching patient summary")
                 }
             }
+
+            const fetchDiagnoses = async () => {
+                setDiagnosesLoading(true)
+                try {
+                    const res = await fetch('/api/patient/diagnoses')
+                    if (res.ok) {
+                        const data = await res.json()
+                        setDiagnoses(data.diagnoses || [])
+                    }
+                } catch {
+                    console.error("Error fetching patient diagnoses")
+                } finally {
+                    setDiagnosesLoading(false)
+                }
+            }
+
             fetchAppointments()
+            fetchDiagnoses()
         }
     }, [session])
 
@@ -182,153 +204,152 @@ export default function DashboardPage() {
         <>
             <Header />
 
-            <div className="dashboard-shell">
-                <div className="dashboard-container">
+            <PageContainer variant="dashboard" size="wide">
+                {/* =========================================================
+                    VISTA PROFESIONAL
+                   ========================================================= */}
+                {isProfessional && (
+                    <>
+                        <PageHeader
+                            title={`Hola, ${userName} 👋`}
+                            description="Gestiona tu práctica profesional"
+                        />
 
-                    {/* =========================================================
-                        VISTA PROFESIONAL
-                       ========================================================= */}
-                    {isProfessional && (
-                        <>
-                            <div className="dashboard-header">
-                                <h1 className="text-2xl font-heading font-bold text-gray-900 mb-1">
-                                    Hola, {userName} 👋
-                                </h1>
-                                <p className="text-gray-600">Gestiona tu práctica profesional</p>
-                            </div>
+                        <KPIGrid count={4}>
+                            <StatCard
+                                icon={Calendar}
+                                label="Citas hoy"
+                                value={loading ? '-' : professionalStats.todayAppointments.toString()}
+                                color="primary"
+                            />
+                            <StatCard
+                                icon={Clock}
+                                label="Esta semana"
+                                value={loading ? '-' : professionalStats.weekAppointments.toString()}
+                                color="secondary"
+                            />
+                            <StatCard
+                                icon={Users}
+                                label="Pacientes"
+                                value={loading ? '-' : professionalStats.totalPatients.toString()}
+                                color="accent"
+                            />
+                            <StatCard
+                                icon={DollarSign}
+                                label="Ingresos mes"
+                                value={loading ? '-' : formatCurrency(professionalStats.monthlyIncome)}
+                                color="green"
+                            />
+                        </KPIGrid>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                                <StatCard
-                                    icon={Calendar}
-                                    label="Citas hoy"
-                                    value={loading ? '-' : professionalStats.todayAppointments.toString()}
-                                    color="primary"
-                                />
-                                <StatCard
-                                    icon={Clock}
-                                    label="Esta semana"
-                                    value={loading ? '-' : professionalStats.weekAppointments.toString()}
-                                    color="secondary"
-                                />
-                                <StatCard
-                                    icon={Users}
-                                    label="Pacientes"
-                                    value={loading ? '-' : professionalStats.totalPatients.toString()}
-                                    color="accent"
-                                />
-                                <StatCard
-                                    icon={DollarSign}
-                                    label="Ingresos mes"
-                                    value={loading ? '-' : formatCurrency(professionalStats.monthlyIncome)}
-                                    color="green"
-                                />
-                            </div>
-
-                            {/* Pending notification */}
-                            {professionalStats.pendingCount > 0 && (
-                                <div className="bg-yellow-50 border border-yellow-200 rounded-[22px] p-4 mb-5 shadow-sm">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                                            <Clock className="w-5 h-5 text-yellow-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-yellow-800">
-                                                {professionalStats.pendingCount} cita{professionalStats.pendingCount > 1 ? 's' : ''} pendiente{professionalStats.pendingCount > 1 ? 's' : ''} de confirmación
-                                            </p>
-                                            <Link href="/dashboard/citas" className="text-sm text-yellow-700 underline hover:no-underline">
-                                                Ver y confirmar
-                                            </Link>
-                                        </div>
+                        {/* Pending notification */}
+                        {professionalStats.pendingCount > 0 && (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-[22px] p-4 mb-5 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                                        <Clock className="w-5 h-5 text-yellow-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="font-medium text-yellow-800">
+                                            {professionalStats.pendingCount} cita{professionalStats.pendingCount > 1 ? 's' : ''} pendiente{professionalStats.pendingCount > 1 ? 's' : ''} de confirmación
+                                        </p>
+                                        <Link href="/dashboard/citas" className="text-sm text-yellow-700 underline hover:no-underline">
+                                            Ver y confirmar
+                                        </Link>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Fee Calculator */}
-                            <div className="mb-6">
-                                <FeeCalculator />
                             </div>
+                        )}
 
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                <DashboardCard icon={Calendar} title="Mis citas" description="Revisa y gestiona tus próximas citas" href="/dashboard/citas" />
-                                <DashboardCard icon={Users} title="Mis pacientes" description="Ver historial y notas de pacientes" href="/dashboard/pacientes" />
-                                <DashboardCard icon={Clock} title="Disponibilidad" description="Configura tu horario de atención" href="/dashboard/disponibilidad" />
-                                <DashboardCard icon={BarChart3} title="Estadísticas" description="Revisa tus métricas e ingresos" href="/dashboard/estadisticas" />
-                                <DashboardCard icon={FileText} title="Reportes" description="Reportes mensuales financieros" href="/dashboard/reportes" />
-                                <DashboardCard icon={Settings} title="Mi perfil" description="Edita tu información profesional" href="/profesional/completar-perfil" />
-                                <DashboardCard icon={ExternalLink} title="Ver mi página" description="Mira cómo te ven los pacientes" href="/profesional/ps-demo-profesional" target="_blank" />
-                            </div>
-                        </>
-                    )}
+                        {/* Fee Calculator */}
+                        <div className="mb-6">
+                            <FeeCalculator />
+                        </div>
 
-                    {/* =========================================================
-                        VISTA PACIENTE (Dashboard Clínico)
-                       ========================================================= */}
-                    {!isProfessional && (
-                        <>
-                            {/* Encabezado */}
-                            <div className="dashboard-header">
-                                <h1 className="text-xl font-heading font-semibold text-gray-900 mb-1">
-                                    Tu panel de salud mental
-                                </h1>
-                                <p className="text-sm text-gray-500">
-                                    Bienvenido/a, {userName}
-                                </p>
-                            </div>
+                        <CardGrid count={3}>
+                            <DashboardCard icon={Calendar} title="Mis citas" description="Revisa y gestiona tus próximas citas" href="/dashboard/citas" />
+                            <DashboardCard icon={Users} title="Mis pacientes" description="Ver historial y notas de pacientes" href="/dashboard/pacientes" />
+                            <DashboardCard icon={Clock} title="Disponibilidad" description="Configura tu horario de atención" href="/dashboard/disponibilidad" />
+                            <DashboardCard icon={BarChart3} title="Estadísticas" description="Revisa tus métricas e ingresos" href="/dashboard/estadisticas" />
+                            <DashboardCard icon={FileText} title="Reportes" description="Reportes mensuales financieros" href="/dashboard/reportes" />
+                            <DashboardCard icon={Settings} title="Mi perfil" description="Edita tu información profesional" href="/profesional/completar-perfil" />
+                            <DashboardCard icon={ExternalLink} title="Ver mi página" description="Mira cómo te ven los pacientes" href="/profesional/ps-demo-profesional" target="_blank" />
+                        </CardGrid>
+                    </>
+                )}
 
-                            {/* ZONA 1: Métricas operativas */}
-                            <MetricsCards
-                                totalSessions={patientData.totalSessions}
-                                lastSessionDate={patientData.lastSessionDaysAgo}
-                                nextSessionDate={patientData.nextSession}
-                                professionalName={patientData.professionalName}
-                                professionalType={patientData.professionalType}
-                            />
+                {/* =========================================================
+                    VISTA PACIENTE (Dashboard Clínico)
+                   ========================================================= */}
+                {!isProfessional && (
+                    <>
+                        <PageHeader
+                            title="Tu panel de salud mental"
+                            description={`Bienvenido/a, ${userName}`}
+                            titleClassName="text-xl"
+                        />
 
-                            {/* ZONA 2: Acción principal */}
-                            <PrimaryAction
-                                hasProfessional={!!patientData.professionalName}
-                                professionalName={patientData.professionalName}
-                            />
+                        {/* ZONA 1: Métricas operativas */}
+                        <MetricsCards
+                            totalSessions={patientData.totalSessions}
+                            lastSessionDate={patientData.lastSessionDaysAgo}
+                            nextSessionDate={patientData.nextSession}
+                            professionalName={patientData.professionalName}
+                            professionalType={patientData.professionalType}
+                        />
 
-                            {/* ZONA 3, 4, 5: Layout de dos columnas */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        {/* ZONA 2: Acción principal */}
+                        <PrimaryAction
+                            hasProfessional={!!patientData.professionalName}
+                            professionalName={patientData.professionalName}
+                        />
 
-                                {/* Columna Principal */}
-                                <div className="lg:col-span-7 space-y-5">
-                                    {/* ZONA 3: Historial */}
-                                    <HistorySection hasHistory={patientData.hasHistory} />
+                        {/* ZONA 3, 4, 5: Layout de dos columnas */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+                            {/* Columna Principal */}
+                            <div className="lg:col-span-7 space-y-5 min-w-0">
+                                {/* ZONA Diagnósticos y Tratamiento Clínico (Potenciado) */}
+                                <div id="diagnosticos-clinicos" className="scroll-mt-6">
+                                    <DiagnosisSection
+                                        diagnoses={diagnoses}
+                                        loading={diagnosesLoading}
+                                    />
                                 </div>
 
-                                {/* Columna Lateral */}
-                                <div className="lg:col-span-5 space-y-4">
-                                    {/* ZONA 4: Check-in emocional (reducido) */}
-                                    <EmotionalCheckIn />
-
-                                    {/* Reembolsos */}
-                                    <ReimbursementCard />
-
-                                    {/* ZONA 5: Recursos (terciario) */}
-                                    <BreathingResource />
-
-                                    {/* Privacidad */}
-                                    <SafetyMicroCopy />
-                                </div>
+                                {/* ZONA 3: Historial y accesos */}
+                                <HistorySection hasHistory={patientData.hasHistory} />
                             </div>
-                        </>
-                    )}
 
-                    {/* Sign Out (Común) */}
-                    <div className="mt-10 text-center">
-                        <button
-                            onClick={() => signOut({ callbackUrl: '/' })}
-                            className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
-                        >
-                            <LogOut className="w-4 h-4" />
-                            Cerrar sesión
-                        </button>
-                    </div>
+                            {/* Columna Lateral */}
+                            <div className="lg:col-span-5 space-y-4 min-w-0">
+                                {/* ZONA 4: Check-in emocional (reducido) */}
+                                <EmotionalCheckIn />
+
+                                {/* Reembolsos */}
+                                <ReimbursementCard />
+
+                                {/* ZONA 5: Recursos (terciario) */}
+                                <BreathingResource />
+
+                                {/* Privacidad */}
+                                <SafetyMicroCopy />
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Sign Out (Común) */}
+                <div className="mt-10 text-center">
+                    <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Cerrar sesión
+                    </button>
                 </div>
-            </div>
+            </PageContainer>
 
             <Footer />
         </>
@@ -346,12 +367,12 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any, label: strin
     return (
         <div className="dashboard-panel p-4">
             <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[color]} flex-shrink-0`}>
                     <Icon className="w-5 h-5" />
                 </div>
-                <div>
-                    <p className="text-2xl font-bold text-gray-900">{value}</p>
-                    <p className="text-sm text-gray-500">{label}</p>
+                <div className="min-w-0">
+                    <p className="text-2xl font-bold text-gray-900 truncate">{value}</p>
+                    <p className="text-sm text-gray-500 truncate">{label}</p>
                 </div>
             </div>
         </div>
@@ -361,11 +382,11 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any, label: strin
 function DashboardCard({ icon: Icon, title, description, href, target }: { icon: any, title: string, description: string, href: string, target?: string }) {
     return (
         <Link href={href} target={target} className="dashboard-panel p-5 hover:border-primary-300 transition-colors group hover:-translate-y-0.5">
-            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors flex-shrink-0">
                 <Icon className="w-6 h-6 text-primary-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">{title}</h3>
-            <p className="text-sm text-gray-600">{description}</p>
+            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors truncate">{title}</h3>
+            <p className="text-sm text-gray-600 truncate">{description}</p>
         </Link>
     )
 }

@@ -1,9 +1,11 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createVerificationToken } from '@/lib/tokens'
 import { sendVerificationEmail } from '@/lib/email'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,6 +13,9 @@ export const dynamic = 'force-dynamic'
  * Resend verification email
  */
 export async function POST() {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 
@@ -18,6 +23,19 @@ export async function POST() {
             return NextResponse.json(
                 { error: 'No autenticado' },
                 { status: 401 }
+            )
+        }
+
+        const clientIp = session.user.email
+        const rateLimitResult = checkRateLimit(`resend-verification:${clientIp}`, {
+            limit: 3,
+            windowMs: 15 * 60 * 1000,
+        })
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiados reenvíos. Espera unos minutos.' },
+                { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
             )
         }
 

@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 /**
  * API: Generar kit de reembolso en PDF
  * POST /api/reembolsos/[id]/generate-kit
@@ -14,6 +15,9 @@ export async function POST(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 

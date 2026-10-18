@@ -349,9 +349,11 @@ export default function PerfilPage() {
                     <div className="flex items-center gap-4">
                         {userRole === 'PROFESSIONAL' && professionalData?.profileImageUrl ? (
                             <div className="w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-white relative">
-                                <img
+                                <Image
                                     src={professionalData.profileImageUrl}
                                     alt={profileData.name}
+                                    width={64}
+                                    height={64}
                                     className="w-full h-full object-cover"
                                 />
                             </div>

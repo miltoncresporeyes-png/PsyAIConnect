@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { FileText, Download, Eye, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -33,11 +33,7 @@ export default function ReimbursementTracker() {
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<string>('all')
 
-    useEffect(() => {
-        loadRequests()
-    }, [filter])
-
-    const loadRequests = async () => {
+    const loadRequests = useCallback(async () => {
         try {
             const url = filter === 'all'
                 ? '/api/reembolsos'
@@ -53,7 +49,11 @@ export default function ReimbursementTracker() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [filter])
+
+    useEffect(() => {
+        loadRequests()
+    }, [loadRequests])
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('es-CL', {

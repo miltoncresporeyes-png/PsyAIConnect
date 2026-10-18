@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { CoverageFilter, CoverageData } from '@/components/search/CoverageFilter'
 import { ProfessionalCardWithCoverage } from '@/components/search/ProfessionalCardWithCoverage'
 import { Search, Filter, X } from 'lucide-react'
@@ -31,11 +31,7 @@ export default function BuscarConCoberturaPage() {
         'Trastornos del sueño',
     ]
 
-    useEffect(() => {
-        searchProfessionals()
-    }, [coverage, selectedSpecialties, modality])
-
-    const searchProfessionals = async () => {
+    const searchProfessionals = useCallback(async () => {
         setLoading(true)
         try {
             const response = await fetch('/api/professionals/search-with-coverage', {
@@ -60,7 +56,11 @@ export default function BuscarConCoberturaPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [coverage, selectedSpecialties, modality])
+
+    useEffect(() => {
+        searchProfessionals()
+    }, [searchProfessionals])
 
     const toggleSpecialty = (specialty: string) => {
         setSelectedSpecialties((prev) =>

@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 /**
  * API: Obtener sesiones elegibles para reembolso
  * GET /api/reembolsos/eligible-sessions
@@ -9,6 +10,9 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const session = await getServerSession(authOptions)
 

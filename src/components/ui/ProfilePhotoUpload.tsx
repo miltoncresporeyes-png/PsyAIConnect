@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Camera, User, Loader2, X } from 'lucide-react'
+import Image from 'next/image'
 
 interface ProfilePhotoUploadProps {
     value?: string
@@ -60,9 +61,11 @@ export function ProfilePhotoUpload({ value, onChange, error }: ProfilePhotoUploa
                     ${!value ? 'bg-primary-50' : ''}
                 `}>
                     {value ? (
-                        <img
+                        <Image
                             src={value}
                             alt="Preview"
+                            width={128}
+                            height={128}
                             className="w-full h-full object-cover"
                         />
                     ) : (

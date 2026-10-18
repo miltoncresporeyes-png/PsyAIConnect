@@ -5,11 +5,13 @@
 
 import { Metadata } from 'next'
 import { Header, Footer } from '@/components/layout'
+import { PageContainer } from '@/components/layout/shell'
 import MonthlyReportViewer from '@/components/dashboard/MonthlyReportViewer'
 
 export const metadata: Metadata = {
-    title: 'Reportes Mensuales | PsyDoctor',
+    title: { absolute: 'Reportes Mensuales | PsyDoctor' },
     description: 'Reportes financieros y de gestión mensual',
+    robots: { index: false, follow: false },
 }
 
 export default function ReportesPage() {
@@ -17,11 +19,9 @@ export default function ReportesPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-[#F8F9FA] py-8">
-                <div className="container-wide max-w-7xl mx-auto px-4">
-                    <MonthlyReportViewer />
-                </div>
-            </div>
+            <PageContainer variant="dashboard" size="wide">
+                <MonthlyReportViewer />
+            </PageContainer>
 
             <Footer />
         </>

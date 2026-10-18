@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { Header, Footer } from '@/components/layout'
+import { PageContainer, PageHeader, CardGrid } from '@/components/layout/shell'
 import { formatPrice } from '@/lib/utils'
 import { MapPin, Clock, DollarSign, Shield, Calendar, Linkedin } from 'lucide-react'
 import Link from 'next/link'
@@ -8,6 +9,7 @@ import Image from 'next/image'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { BackToDashboard } from '@/components/ui/BackToDashboard'
+import type { Metadata } from 'next'
 
 interface Props {
     params: { slug: string }
@@ -28,8 +30,79 @@ const modalityLabels: Record<string, string> = {
     BOTH: 'Online y presencial',
 }
 
+function truncate(text: string, max: number): string {
+    if (text.length <= max) return text
+    return `${text.slice(0, max - 1).trimEnd()}…`
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const professional = await prisma.professional.findFirst({
+        where: {
+            slug: params.slug,
+            isPublic: true,
+            isActive: true,
+        },
+        select: {
+            professionalType: true,
+            specialties: true,
+            comuna: true,
+            region: true,
+            yearsExperience: true,
+            profileImageUrl: true,
+            user: { select: { name: true } },
+        },
+    })
+
+    if (!professional) {
+        return { title: 'Profesional no encontrado', robots: { index: false, follow: true } }
+    }
+
+    const name = professional.user.name?.trim() || 'Profesional'
+    const typeLabel = professionalTypeLabels[professional.professionalType] || 'Profesional'
+    const location = professional.comuna
+        ? `en ${professional.comuna}${professional.region ? `, ${professional.region}` : ''}`
+        : 'en Chile'
+    const specialties = professional.specialties.slice(0, 3).join(', ')
+
+    const specialtyKeyword = professional.specialties.slice(0, 2).join(' y ')
+    const title = specialtyKeyword
+        ? `${name} — ${typeLabel} ${specialtyKeyword} ${location}`
+        : `${name} — ${typeLabel} ${location}`
+    const description = truncate(
+        `Agenda con ${name}, ${typeLabel.toLowerCase()} ${location}` +
+            (specialties ? `. Especialidades: ${specialties}` : '') +
+            (professional.yearsExperience ? `. ${professional.yearsExperience} años de experiencia` : '') +
+            '. Precios transparentes y verificación de identidad.',
+        158
+    )
+
+    return {
+        title: { absolute: title },
+        description,
+        alternates: {
+            canonical: `/profesional/${params.slug}`,
+        },
+        openGraph: {
+            title,
+            description,
+            type: 'profile',
+            url: `/profesional/${params.slug}`,
+            siteName: 'PsyDoctor',
+            locale: 'es_CL',
+            images: professional.profileImageUrl
+                ? [{ url: professional.profileImageUrl, alt: `${name} — ${typeLabel} en PsyDoctor` }]
+                : undefined,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+        },
+    }
+}
+
 export default async function ProfessionalProfilePage({ params }: Props) {
-    const professional = await prisma.professional.findUnique({
+    const professional = await prisma.professional.findFirst({
         where: {
             slug: params.slug,
             isPublic: true,
@@ -49,7 +122,8 @@ export default async function ProfessionalProfilePage({ params }: Props) {
             verificationStatus: true,
             linkedinUrl: true,
             profileImageUrl: true,
-            // UX Redesign fields
+            comuna: true,
+            region: true,
             targetAudience: true,
             approachDescription: true,
             yearsExperience: true,
@@ -70,205 +144,285 @@ export default async function ProfessionalProfilePage({ params }: Props) {
     const session = await getServerSession(authOptions)
     const isOwner = session?.user?.id === professional.userId
 
+    const profileUrl = `https://psydoctor.cl/profesional/${professional.slug}`
+    const typeLabel = professionalTypeLabels[professional.professionalType] || 'Profesional'
+    const isPsychiatrist = professional.professionalType === 'PSYCHIATRIST'
+
+    const professionalEntity = isPsychiatrist
+        ? {
+            '@type': 'Physician',
+            '@id': `${profileUrl}/#professional`,
+            name: professional.user.name,
+            jobTitle: 'Psiquiatra',
+            medicalSpecialty: professional.specialties,
+        }
+        : {
+            '@type': 'Person',
+            '@id': `${profileUrl}/#professional`,
+            name: professional.user.name,
+            jobTitle: typeLabel,
+            occupation: {
+                '@type': 'Occupation',
+                name: typeLabel,
+            },
+            knowsAbout: professional.specialties,
+        }
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                ...professionalEntity,
+                description: professional.bio ?? undefined,
+                url: profileUrl,
+                image: professional.profileImageUrl ?? professional.user.image ?? undefined,
+                ...(professional.linkedinUrl ? { sameAs: [professional.linkedinUrl] } : {}),
+                ...(professional.comuna
+                    ? {
+                        address: {
+                            '@type': 'PostalAddress',
+                            addressLocality: professional.comuna,
+                            addressRegion: professional.region ?? undefined,
+                            addressCountry: 'CL',
+                        },
+                    }
+                    : {}),
+                availableService: [
+                    {
+                        '@type': 'MedicalTherapy',
+                        name: `${typeLabel} ${professional.modality === 'IN_PERSON' ? 'presencial' : 'online'}`,
+                        url: profileUrl,
+                    },
+                ],
+                worksFor: { '@id': 'https://psydoctor.cl/#organization' },
+            },
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    {
+                        '@type': 'ListItem',
+                        position: 1,
+                        name: 'Inicio',
+                        item: 'https://psydoctor.cl/',
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 2,
+                        name: 'Profesionales',
+                        item: 'https://psydoctor.cl/profesionales',
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 3,
+                        name: `${professional.user.name} — ${typeLabel}`,
+                        item: profileUrl,
+                    },
+                ],
+            },
+        ],
+    }
+
     return (
         <>
             <Header />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
 
-            <div className="min-h-screen bg-[linear-gradient(180deg,_#f6faf9_0%,_#f8fafc_24%,_#ffffff_100%)] py-8 md:py-10">
-                <div className="container-wide">
-                    {isOwner && (
-                        <div className="max-w-4xl mx-auto">
-                            <BackToDashboard />
-                        </div>
-                    )}
+            <PageContainer variant="alt" size="wide" padding="md">
+                {isOwner && (
+                    <div className="max-w-4xl mx-auto mb-6">
+                        <BackToDashboard />
+                    </div>
+                )}
 
-                    <div className="grid lg:grid-cols-3 gap-6">
-                        {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-5">
-                            {/* Profile Header */}
-                            <div className="dashboard-panel p-6 md:p-7">
-                                <div className="flex items-start gap-5">
-                                    {/* Avatar */}
-                                    <div className="w-24 h-24 rounded-2xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
-                                        {professional.profileImageUrl ? (
-                                            <Image
-                                                src={professional.profileImageUrl}
-                                                alt={professional.user.name || 'Profesional'}
-                                                width={96}
-                                                height={96}
-                                                className="object-cover"
-                                            />
-                                        ) : professional.user.image ? (
-                                            <Image
-                                                src={professional.user.image}
-                                                alt={professional.user.name || 'Profesional'}
-                                                width={96}
-                                                height={96}
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <span className="text-3xl font-bold text-primary-600">
-                                                {professional.user.name?.charAt(0) || 'P'}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Info */}
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <h1 className="text-2xl font-heading font-bold text-gray-900">
-                                                {professional.user.name}
-                                            </h1>
-                                            {professional.verificationStatus === 'VERIFIED' && (
-                                                <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-md">
-                                                    <Shield className="w-3.5 h-3.5" />
-                                                    <span>Identidad y título verificados</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <p className="text-lg text-primary-600 font-medium">
-                                            {professionalTypeLabels[professional.professionalType]}
-                                        </p>
-                                        {professional.yearsExperience && (
-                                            <p className="text-sm text-gray-500 mb-3">
-                                                +{professional.yearsExperience} años de experiencia
-                                            </p>
-                                        )}
-
-                                        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                                            <span className="flex items-center gap-1">
-                                                <MapPin className="w-4 h-4" />
-                                                {modalityLabels[professional.modality]}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <Clock className="w-4 h-4" />
-                                                {professional.sessionDuration} min
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <DollarSign className="w-4 h-4" />
-                                                {formatPrice(professional.sessionPrice)}
-                                            </span>
-                                            {professional.linkedinUrl && (
-                                                <a
-                                                    href={professional.linkedinUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1 text-primary-600 hover:text-primary-700 transition-colors"
-                                                >
-                                                    <Linkedin className="w-4 h-4" />
-                                                    LinkedIn
-                                                </a>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Para quién es útil - Human-centered UX */}
-                            {professional.targetAudience && (
-                                <div className="dashboard-panel p-6 md:p-7">
-                                    <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
-                                        Para quién suele ser útil
-                                    </h2>
-                                    <p className="text-gray-700 leading-relaxed border-l-2 border-primary-200 pl-4 italic">
-                                        {professional.targetAudience}
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Cómo acompaña - Human-centered UX */}
-                            {professional.approachDescription && (
-                                <div className="dashboard-panel p-6 md:p-7">
-                                    <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
-                                        Cómo acompaña
-                                    </h2>
-                                    <p className="text-gray-600 leading-relaxed">
-                                        {professional.approachDescription}
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Bio */}
-                            <div className="dashboard-panel p-6 md:p-7">
-                                <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
-                                    Acerca de mí
-                                </h2>
-                                <p className="text-gray-600 whitespace-pre-line leading-relaxed">
-                                    {professional.bio}
-                                </p>
-                            </div>
-
-                            {/* Specialties */}
-                            <div className="dashboard-panel p-6 md:p-7">
-                                <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
-                                    Áreas de trabajo
-                                </h2>
-                                <div className="flex flex-wrap gap-2">
-                                    {professional.specialties.map((specialty) => (
-                                        <span
-                                            key={specialty}
-                                            className="px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium"
-                                        >
-                                            {specialty}
+                <div className="grid lg:grid-cols-3 gap-6">
+                    {/* Main Content */}
+                    <div className="lg:col-span-2 space-y-5 min-w-0">
+                        {/* Profile Header */}
+                        <div className="dashboard-panel p-6 md:p-7">
+                            <div className="flex items-start gap-5">
+                                {/* Avatar */}
+                                <div className="w-24 h-24 rounded-2xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                                    {professional.profileImageUrl ? (
+                                        <Image
+                                            src={professional.profileImageUrl}
+                                            alt={professional.user.name || 'Profesional'}
+                                            width={96}
+                                            height={96}
+                                            className="object-cover"
+                                        />
+                                    ) : professional.user.image ? (
+                                        <Image
+                                            src={professional.user.image}
+                                            alt={professional.user.name || 'Profesional'}
+                                            width={96}
+                                            height={96}
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-3xl font-bold text-primary-600">
+                                            {professional.user.name?.charAt(0) || 'P'}
                                         </span>
-                                    ))}
+                                    )}
+                                </div>
+
+                                {/* Info */}
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                        <h1 className="text-2xl font-heading font-bold text-gray-900 truncate">
+                                            {professional.user.name}
+                                        </h1>
+                                        {professional.verificationStatus === 'VERIFIED' && (
+                                            <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-md flex-shrink-0">
+                                                <Shield className="w-3.5 h-3.5" />
+                                                <span>Identidad y título verificados</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p className="text-lg text-primary-600 font-medium">
+                                        {professionalTypeLabels[professional.professionalType]}
+                                    </p>
+                                    {professional.yearsExperience && (
+                                        <p className="text-sm text-gray-500 mb-3">
+                                            +{professional.yearsExperience} años de experiencia
+                                        </p>
+                                    )}
+
+                                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                                        <span className="flex items-center gap-1">
+                                            <MapPin className="w-4 h-4 flex-shrink-0" />
+                                            {modalityLabels[professional.modality]}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="w-4 h-4 flex-shrink-0" />
+                                            {professional.sessionDuration} min
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <DollarSign className="w-4 h-4 flex-shrink-0" />
+                                            {formatPrice(professional.sessionPrice)}
+                                        </span>
+                                        {professional.linkedinUrl && (
+                                            <a
+                                                href={professional.linkedinUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-primary-600 hover:text-primary-700 transition-colors"
+                                            >
+                                                <Linkedin className="w-4 h-4" />
+                                                LinkedIn
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Sidebar - Book Appointment */}
-                        <div className="lg:col-span-1">
-                            <div className="dashboard-panel p-5 md:p-6 sticky top-24">
-                                <div className="text-center mb-5">
-                                    <p className="text-sm text-gray-500 mb-1">Valor por sesión</p>
-                                    <p className="text-3xl font-bold text-gray-900">
-                                        {formatPrice(professional.sessionPrice)}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        {professional.sessionDuration} minutos
-                                    </p>
-                                </div>
-
-                                <Link
-                                    href={`/reservar/${professional.slug}`}
-                                    className="btn-primary w-full flex items-center justify-center gap-2 mb-4"
-                                >
-                                    <Calendar className="w-5 h-5" />
-                                    Agendar sesión
-                                </Link>
-
-                                {/* Primera sesión info */}
-                                {professional.firstSessionInfo && (
-                                    <p className="text-sm text-primary-600 text-center font-medium mb-2">
-                                        {professional.firstSessionInfo}
-                                    </p>
-                                )}
-
-                                <p className="text-xs text-gray-500 text-center">
-                                    Sin compromiso. Puedes cancelar hasta 24h antes.
+                        {/* Para quién es útil - Human-centered UX */}
+                        {professional.targetAudience && (
+                            <div className="dashboard-panel p-6 md:p-7">
+                                <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
+                                    Para quién suele ser útil
+                                </h2>
+                                <p className="text-gray-700 leading-relaxed border-l-2 border-primary-200 pl-4 italic">
+                                    {professional.targetAudience}
                                 </p>
+                            </div>
+                        )}
 
-                                {/* Trust badges */}
-                                <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
-                                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                            <Shield className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <span>Pagos seguros con Flow.cl</span>
+                        {/* Cómo acompaña - Human-centered UX */}
+                        {professional.approachDescription && (
+                            <div className="dashboard-panel p-6 md:p-7">
+                                <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
+                                    Cómo acompaña
+                                </h2>
+                                <p className="text-gray-600 leading-relaxed">
+                                    {professional.approachDescription}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Bio */}
+                        <div className="dashboard-panel p-6 md:p-7">
+                            <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
+                                Acerca de mí
+                            </h2>
+                            <p className="text-gray-600 whitespace-pre-line leading-relaxed">
+                                {professional.bio}
+                            </p>
+                        </div>
+
+                        {/* Specialties */}
+                        <div className="dashboard-panel p-6 md:p-7">
+                            <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
+                                Áreas de trabajo
+                            </h2>
+                            <div className="flex flex-wrap gap-2">
+                                {professional.specialties.map((specialty) => (
+                                    <span
+                                        key={specialty}
+                                        className="px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium"
+                                    >
+                                        {specialty}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sidebar - Book Appointment */}
+                    <div className="lg:col-span-1">
+                        <div className="dashboard-panel p-5 md:p-6 sticky top-24">
+                            <div className="text-center mb-5">
+                                <p className="text-sm text-gray-500 mb-1">Valor por sesión</p>
+                                <p className="text-3xl font-bold text-gray-900">
+                                    {formatPrice(professional.sessionPrice)}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    {professional.sessionDuration} minutos
+                                </p>
+                            </div>
+
+                            <Link
+                                href={`/reservar/${professional.slug}`}
+                                className="btn-primary w-full flex items-center justify-center gap-2 mb-4"
+                            >
+                                <Calendar className="w-5 h-5" />
+                                Agendar sesión
+                            </Link>
+
+                            {/* Primera sesión info */}
+                            {professional.firstSessionInfo && (
+                                <p className="text-sm text-primary-600 text-center font-medium mb-2">
+                                    {professional.firstSessionInfo}
+                                </p>
+                            )}
+
+                            <p className="text-xs text-gray-500 text-center">
+                                Sin compromiso. Puedes cancelar hasta 24h antes.
+                            </p>
+
+                            {/* Trust badges */}
+                            <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
+                                <div className="flex items-center gap-3 text-sm text-gray-600">
+                                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <Shield className="w-4 h-4 text-green-600" />
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <Clock className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <span>Recordatorios automáticos</span>
+                                    <span>Pagos seguros con Flow.cl</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-gray-600">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                        <Clock className="w-4 h-4 text-blue-600" />
                                     </div>
+                                    <span>Recordatorios automáticos</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </PageContainer>
 
             <Footer />
         </>

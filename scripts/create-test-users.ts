@@ -3,7 +3,7 @@
  * Ejecutar con: npx tsx scripts/create-test-users.ts
  */
 
-import { PrismaClient, UserRole, HealthSystem, ProfessionalType, Gender, VerificationStatus } from '@prisma/client';
+import { PrismaClient, UserRole, HealthSystem, ProfessionalType, Gender, VerificationStatus } from '../src/generated/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();

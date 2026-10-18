@@ -2,6 +2,7 @@
   "nav": {
     "patient": "Sou Paciente",
     "professional": "Sou Profissional",
+    "planes": "Planos",
     "howItWorks": "Como Funciona",
     "trySearch": "Testar a Busca",
     "trustBadge": "Confiança, agendamento e pagamento em uma só experiência",
@@ -37,7 +38,7 @@
     "submitBtn": "Quero acesso",
     "trustProtected": "Seus dados estão protegidos. Sem spam.",
     "trustSchedule": "Agende em minutos e sem custos ocultos.",
-    "statsProfessionals": "500+ profissionais verificados",
+    "statsProfessionals": "Profissionais verificados",
     "statsBeta": "Beta Chile",
     "stats24h": "24/7",
     "statsAgenda": "agendamento online",
@@ -52,7 +53,7 @@
     "title": "Projetado por especialistas em gestão e saúde",
     "subtitle": "Infraestrutura que não falha",
     "compliance": "Conformidade regulatória",
-    "activePros": "+500 profissionais ativos"
+    "activePros": "Profissionais verificados"
   },
   "differentiation": {
     "sectionLabel": "Por que somos diferentes",
@@ -288,6 +289,8 @@
     "findPro": "Encontrar Profissional",
     "joinPro": "Sou Profissional",
     "pricing": "Planos",
+    "orientation": "Guia de bem-estar",
+    "forProfessionals": "Para profissionais",
     "faqLink": "Perguntas Frequentes",
     "howItWorksLink": "Como Funciona",
     "terms": "Termos de Uso",

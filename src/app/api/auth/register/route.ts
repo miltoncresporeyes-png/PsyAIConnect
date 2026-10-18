@@ -4,6 +4,8 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { createVerificationToken } from '@/lib/tokens'
 import { sendVerificationEmail } from '@/lib/email'
+import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 
 const registerSchema = z.object({
     name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -13,7 +15,23 @@ const registerSchema = z.object({
 })
 
 export async function POST(request: Request) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
+        const clientIp = getClientIp(request)
+        const rateLimitResult = checkRateLimit(`register:${clientIp}`, {
+            limit: 5,
+            windowMs: 15 * 60 * 1000,
+        })
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: 'Demasiados intentos de registro. Espera unos minutos.' },
+                { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+            )
+        }
+
         const body = await request.json()
         const data = registerSchema.parse(body)
 

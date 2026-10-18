@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { encryptClinicalNote } from '@/lib/encryption'
+import { encryptClinicalNote, decryptStoredNote } from '@/lib/encryption'
 import { generateAnnexHash, generateClinicalSignature } from '@/lib/clinicalSignature'
 import { z } from 'zod'
 
@@ -67,7 +67,9 @@ export async function POST(request: Request) {
         const annex = await prisma.clinicalNoteAnnex.create({
             data: {
                 clinicalNoteId,
-                content,
+                // El contenido solo se guarda cifrado; `content` queda vacío
+                // para que no haya datos clínicos en texto plano en la BD.
+                content: '',
                 encryptedContent,
                 createdBy: professional.id,
                 contentHash,
@@ -150,12 +152,20 @@ export async function GET(request: Request) {
             select: {
                 id: true,
                 content: true,
+                encryptedContent: true,
                 createdAt: true,
                 contentHash: true,
             },
         })
 
-        return NextResponse.json({ annexes })
+        return NextResponse.json({
+            annexes: annexes.map((annex) => ({
+                id: annex.id,
+                content: decryptStoredNote(annex.encryptedContent, annex.content),
+                createdAt: annex.createdAt,
+                contentHash: annex.contentHash,
+            })),
+        })
     } catch (error) {
         console.error('Get annexes error:', error)
         return NextResponse.json(

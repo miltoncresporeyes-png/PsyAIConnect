@@ -1,4 +1,7 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { spawn } from 'child_process'
 import path from 'path'
 
@@ -24,7 +27,18 @@ function validarDatosBasicos(data: any): { valido: boolean; error?: string } {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'No autorizado' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
 
     // Validar datos básicos
@@ -137,28 +151,10 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 }
 
-// Método GET para verificar estado de la API
+// Método GET no permitido
 export async function GET() {
-  return NextResponse.json({
-    status: 'API de emisión de boletas activa',
-    endpoints: {
-      POST: '/api/emitir-boleta - Emitir nueva boleta',
-      GET: '/api/emitir-boleta - Verificar estado'
-    },
-    ejemplo_payload: {
-      paciente: {
-        rut: "11111111-1",
-        nombre: "Juan Pérez González",
-        email: "juan@email.com",
-        telefono: "+56912345678"
-      },
-      servicio: {
-        descripcion: "Sesión de psicoterapia individual",
-        fecha_servicio: "2024-02-03",
-        precio_unitario: 35000,
-        descuento: 0
-      },
-      notas_adicionales: "Pago por transferencia"
-    }
-  })
+  return NextResponse.json(
+    { error: 'Método no permitido' },
+    { status: 405 }
+  )
 }

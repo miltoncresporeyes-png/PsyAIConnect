@@ -1,11 +1,14 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { createPayment, getPaymentStatus, calculateCommission } from '@/lib/payment'
-import { addToInvoiceQueue } from '@/lib/billingQueue'
+import { createPayment, calculateCommission } from '@/lib/payment'
 
 export async function POST(request: Request) {
+  const blocked = getWaitlistBlockedResponse()
+  if (blocked) return blocked
+
   try {
     const session = await getServerSession(authOptions)
 
@@ -116,115 +119,6 @@ export async function POST(request: Request) {
     console.error('Create payment error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
-  }
-}
-
-/**
- * Webhook de Flow.cl para confirmar pagos
- */
-export async function PUT(request: Request) {
-  try {
-    const body = await request.json()
-    const { token, commerceOrder } = body
-
-    if (!token || !commerceOrder) {
-      return NextResponse.json(
-        { error: 'Token y order requeridos' },
-        { status: 400 }
-      )
-    }
-
-    // Obtener el pago
-    const payment = await prisma.payment.findFirst({
-      where: {
-        appointmentId: commerceOrder,
-      },
-      include: {
-        appointment: {
-          include: {
-            professional: {
-              include: { user: true },
-            },
-            patient: true,
-          },
-        },
-      },
-    })
-
-    if (!payment) {
-      return NextResponse.json(
-        { error: 'Pago no encontrado' },
-        { status: 404 }
-      )
-    }
-
-    // Verificar estado del pago con Flow
-    const flowStatus = await getPaymentStatus(token)
-
-    if (!flowStatus || flowStatus.status !== 2) {
-      // Pago no exitoso
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: 'FAILED' },
-      })
-
-      return NextResponse.json({
-        success: false,
-        message: 'Pago no completado',
-      })
-    }
-
-    // Pago exitoso - confirmar cita
-    await prisma.$transaction([
-      // Actualizar pago
-      prisma.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: 'COMPLETED',
-          paidAt: new Date(),
-        },
-      }),
-
-      // Actualizar cita a confirmada
-      prisma.appointment.update({
-        where: { id: payment.appointmentId },
-        data: { status: 'CONFIRMED' },
-      }),
-    ])
-
-    // Agregar a la cola de facturación SII
-    const appointment = payment.appointment
-    const professional = appointment.professional
-
-    // Obtener RUT del paciente desde su perfil
-    const patientProfile = await prisma.patientProfile.findUnique({
-      where: { userId: appointment.patientId },
-    })
-
-    await addToInvoiceQueue({
-      appointmentId: appointment.id,
-      pacienteRut: patientProfile?.rut || '',
-      pacienteNombre: appointment.patient.name || '',
-      pacienteEmail: appointment.patient.email || undefined,
-      pacienteTelefono: appointment.patient.phone || undefined,
-      servicioDescripcion: `Sesión de psicoterapia - ${professional.user.name}`,
-      servicioFecha: appointment.scheduledAt.toISOString(),
-      servicioMonto: payment.amount,
-      descuento: 0,
-      profesionalRut: professional.rut || '',
-      profesionalNombre: professional.user.name || '',
-    })
-
-    return NextResponse.json({
-      success: true,
-      message: 'Pago confirmado y boleta en cola',
-    })
-  } catch (error) {
-    console.error('Payment webhook error:', error)
-    return NextResponse.json(
-      { error: 'Error procesando webhook' },
       { status: 500 }
     )
   }

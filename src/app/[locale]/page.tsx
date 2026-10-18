@@ -36,9 +36,18 @@ export function generateMetadata({ params: { locale } }: Props): Metadata {
     const meta = localeMeta[locale]
     if (!meta) return {}
     return {
-        title: meta.title,
+        title: { absolute: meta.title },
         description: meta.description,
-        alternates: { canonical: meta.canonical },
+        alternates: {
+            canonical: meta.canonical,
+            languages: {
+                'es-CL': 'https://psydoctor.cl',
+                'en': 'https://psydoctor.cl/en',
+                'fr': 'https://psydoctor.cl/fr',
+                'pt': 'https://psydoctor.cl/pt',
+                'x-default': 'https://psydoctor.cl',
+            },
+        },
     }
 }
 
@@ -48,7 +57,13 @@ export function generateStaticParams() {
         .map((locale) => ({ locale }))
 }
 
+import WaitlistLandingPage from '@/components/waitlist/WaitlistLandingPage'
+
 export default async function LocalePage({ params: { locale } }: Props) {
+    if (process.env.WAITLIST_MODE === 'true') {
+        return <WaitlistLandingPage />
+    }
+
     // Activa las traducciones para Server Components bajo esta ruta
     setRequestLocale(locale)
     const t = await getTranslations()

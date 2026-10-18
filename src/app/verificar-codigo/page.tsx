@@ -181,24 +181,31 @@ function VerifyCodeContent() {
                     return
                 }
 
+                let nextPath = userType === 'professional'
+                    ? '/profesional/completar-perfil'
+                    : '/completar-perfil'
+
                 if (preReservationToken) {
                     try {
-                        await fetch('/api/pre-reservation/confirm', {
+                        const confirmResponse = await fetch('/api/pre-reservation/confirm', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ token: preReservationToken }),
                         })
+                        const confirmData = await confirmResponse.json().catch(() => null)
+
+                        // La reserva queda PENDIENTE de pago: se lleva al pago en vez
+                        // de saltárselo (antes la sesión se confirmaba sin cobrar).
+                        if (confirmResponse.ok && confirmData?.appointmentId) {
+                            nextPath = `/cita/${confirmData.appointmentId}/confirmar`
+                        }
                     } catch {
                         console.warn('Failed to confirm pre-reservation')
                     }
                 }
 
                 sessionStorage.removeItem(PENDING_REGISTRATION_KEY)
-                router.push(
-                    userType === 'professional'
-                        ? '/profesional/completar-perfil'
-                        : '/completar-perfil'
-                )
+                router.push(nextPath)
             }, 1500)
 
         } catch (err) {

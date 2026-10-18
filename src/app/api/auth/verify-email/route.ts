@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
@@ -13,6 +14,9 @@ export const dynamic = 'force-dynamic'
  * Verify email with token
  */
 export async function POST(request: Request) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const body = await request.json()
         const { token } = verifyEmailSchema.parse(body)

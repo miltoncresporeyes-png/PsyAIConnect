@@ -43,7 +43,7 @@ Los datos podrán ser compartidos con:
 
 ### 2.4 Derechos del titular
 El paciente tiene derecho a:
-- **Acceso:** Conocer qué datos personales se存储an
+- **Acceso:** Conocer qué datos personales se almacenan
 - **Rectificación:** Corregir datos inexactos
 - **Cancelación:** Solicitar eliminación de datos (respecto de aquellos que no sean necesarios legalmente)
 - **Oposición:** Restringir el tratamiento de sus datos

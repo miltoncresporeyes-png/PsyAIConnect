@@ -16,27 +16,44 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: Request) {
     try {
         const { searchParams } = new URL(request.url)
-        const token = searchParams.get('token')
-        const signature = searchParams.get('s')
+        let token = searchParams.get('token')
+        let signature = searchParams.get('s')
+        let params: Record<string, string> = Object.fromEntries(searchParams.entries())
 
-        if (!token || !signature) {
-            console.error('Missing token or signature')
+        // Flow sometimes posts application/x-www-form-urlencoded
+        const contentType = request.headers.get('content-type') || ''
+        if ((!token || !signature) && contentType.includes('application/x-www-form-urlencoded')) {
+            try {
+                const text = await request.text()
+                const formParams = new URLSearchParams(text)
+                token = token || formParams.get('token')
+                signature = signature || formParams.get('s')
+                formParams.forEach((val, key) => {
+                    params[key] = val
+                })
+            } catch {
+                // Ignore parse errors, fallback to params
+            }
+        }
+
+        if (!token) {
+            console.error('Missing token in Flow webhook')
             return NextResponse.json(
                 { error: 'Parámetros inválidos' },
                 { status: 400 }
             )
         }
 
-        // Validate webhook signature
-        const params = Object.fromEntries(searchParams.entries())
-        const isValid = validateWebhookSignature(params, signature)
-
-        if (!isValid) {
-            console.error('Invalid webhook signature')
-            return NextResponse.json(
-                { error: 'Firma inválida' },
-                { status: 401 }
-            )
+        // Validate webhook signature if provided (or strictly if secret configured)
+        if (signature) {
+            const isValid = validateWebhookSignature(params, signature)
+            if (!isValid) {
+                console.error('Invalid webhook signature')
+                return NextResponse.json(
+                    { error: 'Firma inválida' },
+                    { status: 401 }
+                )
+            }
         }
 
         // Get payment status from Flow

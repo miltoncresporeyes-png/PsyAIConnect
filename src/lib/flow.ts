@@ -18,17 +18,23 @@ const FLOW_API_URL = process.env.FLOW_ENVIRONMENT === 'production'
 const FLOW_API_KEY = process.env.FLOW_API_KEY!
 const FLOW_SECRET_KEY = process.env.FLOW_SECRET_KEY!
 
+function getFlowSecretKey(): string {
+    return process.env.FLOW_SECRET_KEY || ''
+}
+
 /**
  * Generate Flow signature for API requests
  */
-function generateSignature(params: Record<string, any>): string {
+export function generateSignature(params: Record<string, any>): string {
+    const secret = getFlowSecretKey()
+    if (!secret) return ''
     // Sort parameters alphabetically
     const sortedKeys = Object.keys(params).sort()
     const data = sortedKeys.map(key => `${key}${params[key]}`).join('')
 
     // Create HMAC SHA256 signature
     return crypto
-        .createHmac('sha256', FLOW_SECRET_KEY)
+        .createHmac('sha256', secret)
         .update(data)
         .digest('hex')
 }
@@ -134,9 +140,16 @@ export function validateWebhookSignature(
     params: Record<string, string>,
     receivedSignature: string
 ): boolean {
+    if (!receivedSignature) return false
     const { s, ...paramsWithoutSignature } = params
     const calculatedSignature = generateSignature(paramsWithoutSignature)
-    return calculatedSignature === receivedSignature
+    if (!calculatedSignature || calculatedSignature.length !== receivedSignature.length) {
+        return false
+    }
+    return crypto.timingSafeEqual(
+        Buffer.from(calculatedSignature, 'utf-8'),
+        Buffer.from(receivedSignature, 'utf-8')
+    )
 }
 
 /**

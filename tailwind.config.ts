@@ -55,10 +55,26 @@ const config: Config = {
                     DEFAULT: '#dc2626',
                     dark: '#991b1b',
                 },
+                // Landing v2 Sobria
+                niebla: 'var(--color-niebla)',
+                tinta: 'var(--color-tinta)',
+                pino: {
+                    DEFAULT: 'var(--color-pino)',
+                    hover: 'var(--color-pino-hover)',
+                },
+                bruma: 'var(--color-bruma)',
+                ambar: {
+                    DEFAULT: 'var(--color-ambar)',
+                    hover: 'var(--color-ambar-hover)',
+                },
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 heading: ['Outfit', 'system-ui', 'sans-serif'],
+                serifWarm: ['var(--font-serif-warm)'],
+                'serif-warm': ['var(--font-serif-warm)'],
+                sansClean: ['var(--font-sans-clean)'],
+                'sans-clean': ['var(--font-sans-clean)'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

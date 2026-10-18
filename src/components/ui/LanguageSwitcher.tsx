@@ -112,22 +112,25 @@ function LanguageSwitcherInner({ compact, variant = 'dark' }: Props) {
       return
     }
 
-    setOpen(false)
-    
+setOpen(false)
+
     // 1. Guardar la cookie del locale para el middleware
     document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`
 
-    // 2. Construir la URL final con el prefijo correcto
+    // 2. Sólo el home tiene variante localizada (/en, /fr, /pt). En el resto de
+    //    secciones el middleware redirige cualquier prefijo de idioma hacia la
+    //    ruta base, por lo que generar /en/buscar sólo añade un salto de
+    //    redirección y expone URLs que redirigen. Basta con recargar la ruta
+    //    actual: la cookie ya fuerza el idioma en el servidor.
     const unlocalizedPath = normalizeLocalePath(pathname)
-    let targetPath = unlocalizedPath
-    if (nextLocale !== 'es') {
-      targetPath = `/${nextLocale}${unlocalizedPath === '/' ? '' : unlocalizedPath}`
-    }
-    const searchParamsStr = search ? `?${search}` : ''
-    const finalUrl = `${targetPath}${searchParamsStr}`
+    const searchStr = search ? `?${search}` : ''
+    const finalUrl =
+        unlocalizedPath === '/'
+            ? `${nextLocale === 'es' ? '' : `/${nextLocale}`}${searchStr}`
+            : `${unlocalizedPath}${searchStr}`
 
-    // 3. Redirigir físicamente para recargar las traducciones del servidor
-    window.location.href = finalUrl
+    // 3. Recargar físicamente para aplicar las traducciones del servidor
+    window.location.href = finalUrl || '/'
   }
 
   useEffect(() => {

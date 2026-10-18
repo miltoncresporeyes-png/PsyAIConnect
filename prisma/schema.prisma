@@ -231,19 +231,27 @@ model Appointment {
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  appointmentId String        @unique
-  amount        Int
-  commission    Int
-  netAmount     Int
-  status        PaymentStatus @default(PENDING)
-  flowToken     String?
-  flowOrderId   String?
-  paidAt        DateTime?
-  refundedAt    DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+  id              String          @id @default(cuid())
+  appointmentId   String          @unique
+  amount          Int
+  commission      Int
+  netAmount       Int
+  status          PaymentStatus   @default(PENDING)
+  provider        PaymentProvider @default(FLOW)
+  externalOrderId String?
+  externalToken   String?
+  flowToken       String?         @unique
+  flowOrderId     String?
+  paidAt          DateTime?
+  refundedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  appointment     Appointment     @relation(fields: [appointmentId], references: [id])
+
+  @@index([status])
+  @@index([provider])
+  @@index([externalOrderId])
+  @@index([flowOrderId])
 }
 
 model ClinicalNote {
@@ -293,6 +301,22 @@ model ClinicalNoteAnnex {
   clinicalNote          ClinicalNote @relation(fields: [clinicalNoteId], references: [id], onDelete: Cascade)
   
   @@index([clinicalNoteId])
+}
+
+model ClinicalAccessAudit {
+  id              String   @id @default(cuid())
+  userId          String   // Quién accede
+  userRole        String   // ADMIN, PROFESSIONAL, etc.
+  patientId       String   // Titular de la ficha
+  action          String   // VIEW_HISTORY, VIEW_NOTE, EXPORT, UPDATE_NOTE
+  resourceId      String?  // appointmentId or noteId
+  ipAddress       String?
+  userAgent       String?
+  timestamp       DateTime @default(now())
+
+  @@index([patientId, timestamp])
+  @@index([userId, timestamp])
+  @@index([action])
 }
 
 model ClinicalNoteDraft {
@@ -475,11 +499,19 @@ enum PaymentStatus {
   FAILED
 }
 
+enum PaymentProvider {
+  FLOW
+  MERCADOPAGO
+  TRANSBANK
+  PAYPAL
+}
+
 enum ConsentType {
   TERMS_OF_SERVICE
   PRIVACY_POLICY
   CLINICAL_CONSENT
   DATA_SHARING
+  ACCOUNT_DELETION_REQUEST
 }
 
 enum WaitlistType {

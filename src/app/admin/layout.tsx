@@ -74,11 +74,14 @@ export default function AdminLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <div className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+        <div className="min-h-screen bg-gray-100 sidebar-layout">
+            <meta name="robots" content="noindex, nofollow" />
+            
+            {/* Sidebar */}
+            <aside className={`sidebar ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between p-4 border-b border-slate-700">
-                        <h1 className="text-xl font-bold">PsyAI Admin</h1>
+                        <h1 className="text-xl font-bold truncate">PsyAI Admin</h1>
                         <button
                             onClick={() => setSidebarOpen(false)}
                             className="lg:hidden p-1 hover:bg-slate-800 rounded"
@@ -87,7 +90,7 @@ export default function AdminLayout({
                         </button>
                     </div>
 
-                    <nav className="flex-1 p-4 space-y-1">
+                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                         {menuItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href
@@ -97,18 +100,18 @@ export default function AdminLayout({
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors truncate ${
                                         isActive
                                             ? 'bg-blue-600 text-white'
                                             : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                                     }`}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <Icon className="w-5 h-5" />
-                                        <span>{item.label}</span>
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <Icon className="w-5 h-5 flex-shrink-0" />
+                                        <span className="truncate">{item.label}</span>
                                     </div>
                                     {showAlert && (
-                                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+                                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse flex-shrink-0 ml-2">
                                             {pendingCount.pendingProfessionals}
                                         </span>
                                     )}
@@ -119,7 +122,7 @@ export default function AdminLayout({
 
                     <div className="p-4 border-t border-slate-700">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-medium">
+                            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-medium flex-shrink-0">
                                 {session.user.name?.[0] || 'A'}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -131,15 +134,16 @@ export default function AdminLayout({
                             onClick={() => signOut({ callbackUrl: '/' })}
                             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
                         >
-                            <LogOut className="w-4 h-4" />
-                            Cerrar sesión
+                            <LogOut className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Cerrar sesión</span>
                         </button>
                     </div>
                 </div>
-            </div>
+            </aside>
 
-            <div className="lg:pl-64">
-                <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+            {/* Main Content */}
+            <div className="main-content min-w-0">
+                <header className="main-content-header">
                     <div className="flex items-center justify-between px-4 py-3 lg:px-6">
                         <button
                             onClick={() => setSidebarOpen(true)}
@@ -161,11 +165,12 @@ export default function AdminLayout({
                     </div>
                 </header>
 
-                <main className="p-4 lg:p-6">
+                <main className="main-content-body">
                     {children}
                 </main>
             </div>
 
+            {/* Mobile overlay */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"

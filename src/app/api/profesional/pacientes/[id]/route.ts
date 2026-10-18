@@ -32,6 +32,48 @@ export async function GET(
             )
         }
 
+        // Get appointments between this professional and patient
+        const appointments = await prisma.appointment.findMany({
+            where: {
+                professionalId: professional.id,
+                patientId: params.id,
+            },
+            include: {
+                clinicalNotes: {
+                    where: { deletedAt: null },
+                    take: 1,
+                    orderBy: { createdAt: 'desc' },
+                },
+                payment: true,
+            },
+            orderBy: { scheduledAt: 'desc' },
+        })
+
+        // El profesional solo puede ver pacientes con los que tiene (o tuvo) una cita.
+        // Sin esta comprobación, cualquier ID de usuario sería enumerable.
+        if (appointments.length === 0) {
+            return NextResponse.json(
+                { error: 'Paciente no encontrado' },
+                { status: 404 }
+            )
+        }
+
+        // Auditar acceso a la ficha clínica (Ley 19.628 y estándares de salud)
+        const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+        const userAgent = request.headers.get('user-agent') || 'unknown'
+        await prisma.clinicalAccessAudit.create({
+            data: {
+                userId: session.user.id,
+                userRole: session.user.role || 'PROFESSIONAL',
+                patientId: params.id,
+                action: 'VIEW_HISTORY',
+                ipAddress: ip.split(',')[0].trim(),
+                userAgent: userAgent.slice(0, 255),
+            },
+        }).catch((err) => {
+            console.error('Failed to create clinical audit record:', err)
+        })
+
         // Get patient info
         const patient = await prisma.user.findUnique({
             where: { id: params.id },
@@ -49,23 +91,6 @@ export async function GET(
                 { status: 404 }
             )
         }
-
-        // Get appointments between this professional and patient
-        const appointments = await prisma.appointment.findMany({
-            where: {
-                professionalId: professional.id,
-                patientId: params.id,
-            },
-            include: {
-                clinicalNotes: {
-                    where: { deletedAt: null },
-                    take: 1,
-                    orderBy: { createdAt: 'desc' },
-                },
-                payment: true,
-            },
-            orderBy: { scheduledAt: 'desc' },
-        })
 
         // Calculate stats
         const completedAppointments = appointments.filter(a => a.status === 'COMPLETED')

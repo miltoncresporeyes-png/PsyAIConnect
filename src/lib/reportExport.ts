@@ -51,12 +51,12 @@ export function exportToPDF(report: MonthlyReportData) {
 
     doc.setFontSize(16)
     doc.setTextColor(0, 0, 0)
-    doc.text('Reporte de GestiÃ³n Mensual', 14, 30)
+    doc.text('Reporte de Gestión Mensual', 14, 30)
 
     doc.setFontSize(10)
     doc.setTextColor(100, 100, 100)
     doc.text(`Profesional: ${report.professionalName}`, 14, 38)
-    doc.text(`PerÃ­odo: ${report.period.monthName}`, 14, 44)
+    doc.text(`Período: ${report.period.monthName}`, 14, 44)
     doc.text(`Generado: ${new Date().toLocaleDateString('es-CL')}`, 14, 50)
 
     // Line separator
@@ -85,9 +85,9 @@ export function exportToPDF(report: MonthlyReportData) {
         body: [
             ['Total Sesiones', report.financialSummary.totalSessions.toString()],
             ['Monto Bruto', formatCurrency(report.financialSummary.totalBrut)],
-            ['RetenciÃ³n SII (15.25%)', formatCurrency(-report.financialSummary.totalSiiRetention)],
-            ['ComisiÃ³n Plataforma', formatCurrency(-report.financialSummary.totalCommission)],
-            ['Monto LÃ­quido', formatCurrency(report.financialSummary.totalNet)],
+            ['Retención SII (15.25%)', formatCurrency(-report.financialSummary.totalSiiRetention)],
+            ['Comisión Plataforma', formatCurrency(-report.financialSummary.totalCommission)],
+            ['Monto Líquido', formatCurrency(report.financialSummary.totalNet)],
         ],
         theme: 'grid',
         headStyles: { fillColor: [79, 70, 229] },
@@ -98,12 +98,12 @@ export function exportToPDF(report: MonthlyReportData) {
 
     // 2. Health System Breakdown
     doc.setFontSize(14)
-    doc.text('ðŸ¥ Desglose por PrevisiÃ³n', 14, yPos)
+    doc.text('ðŸ¥ Desglose por Previsión', 14, yPos)
     yPos += 10
 
     autoTable(doc, {
         startY: yPos,
-        head: [['Sistema', 'Sesiones', 'Bruto', 'LÃ­quido', '%']],
+        head: [['Sistema', 'Sesiones', 'Bruto', 'Líquido', '%']],
         body: [
             [
                 'Isapres',
@@ -145,12 +145,12 @@ export function exportToPDF(report: MonthlyReportData) {
 
     // 3. Metrics
     doc.setFontSize(14)
-    doc.text('ðŸ“ˆ MÃ©tricas de GestiÃ³n', 14, yPos)
+    doc.text('ðŸ“ˆ Métricas de Gestión', 14, yPos)
     yPos += 10
 
     autoTable(doc, {
         startY: yPos,
-        head: [['MÃ©trica', 'Valor']],
+        head: [['Métrica', 'Valor']],
         body: [
             ['Sesiones Asistidas', report.metrics.attendance.completed.toString()],
             ['Sesiones Canceladas', report.metrics.attendance.cancelled.toString()],
@@ -183,7 +183,7 @@ export function exportToPDF(report: MonthlyReportData) {
 
     autoTable(doc, {
         startY: yPos,
-        head: [['NÂ° Boleta', 'Fecha', 'Paciente', 'PrevisiÃ³n', 'LÃ­quido', 'Estado']],
+        head: [['N° Boleta', 'Fecha', 'Paciente', 'Previsión', 'Líquido', 'Estado']],
         body: invoiceRows,
         theme: 'grid',
         headStyles: { fillColor: [79, 70, 229] },
@@ -197,7 +197,7 @@ export function exportToPDF(report: MonthlyReportData) {
         doc.setFontSize(8)
         doc.setTextColor(150, 150, 150)
         doc.text(
-            `PÃ¡gina ${i} de ${pageCount}`,
+            `Página ${i} de ${pageCount}`,
             doc.internal.pageSize.width / 2,
             doc.internal.pageSize.height - 10,
             { align: 'center' }
@@ -228,7 +228,7 @@ export function exportToCSV(report: MonthlyReportData) {
     // Header
     csv += `REPORTE DE GESTIÃ“N MENSUAL\n`
     csv += `Profesional,${report.professionalName}\n`
-    csv += `PerÃ­odo,${report.period.monthName}\n`
+    csv += `Período,${report.period.monthName}\n`
     csv += `Generado,${new Date().toLocaleDateString('es-CL')}\n`
     csv += `\n`
 
@@ -237,14 +237,14 @@ export function exportToCSV(report: MonthlyReportData) {
     csv += `Concepto,Monto\n`
     csv += `Total Sesiones,${report.financialSummary.totalSessions}\n`
     csv += `Bruto Acumulado,${report.financialSummary.totalBrut}\n`
-    csv += `RetenciÃ³n SII (15.25%),-${report.financialSummary.totalSiiRetention}\n`
-    csv += `ComisiÃ³n Plataforma,-${report.financialSummary.totalCommission}\n`
-    csv += `LÃ­quido Final,${report.financialSummary.totalNet}\n`
+    csv += `Retención SII (15.25%),-${report.financialSummary.totalSiiRetention}\n`
+    csv += `Comisión Plataforma,-${report.financialSummary.totalCommission}\n`
+    csv += `Líquido Final,${report.financialSummary.totalNet}\n`
     csv += `\n`
 
     // Health System Breakdown
     csv += `DESGLOSE POR PREVISIÃ“N\n`
-    csv += `Sistema,Sesiones,Bruto,LÃ­quido,Porcentaje\n`
+    csv += `Sistema,Sesiones,Bruto,Líquido,Porcentaje\n`
     csv += `Isapres,${report.healthSystemBreakdown.isapres.count},${report.healthSystemBreakdown.isapres.brutAmount},${report.healthSystemBreakdown.isapres.netAmount},${report.healthSystemBreakdown.isapres.percentage.toFixed(1)}%\n`
     csv += `Fonasa,${report.healthSystemBreakdown.fonasa.count},${report.healthSystemBreakdown.fonasa.brutAmount},${report.healthSystemBreakdown.fonasa.netAmount},${report.healthSystemBreakdown.fonasa.percentage.toFixed(1)}%\n`
     csv += `Particular,${report.healthSystemBreakdown.private.count},${report.healthSystemBreakdown.private.brutAmount},${report.healthSystemBreakdown.private.netAmount},${report.healthSystemBreakdown.private.percentage.toFixed(1)}%\n`
@@ -253,7 +253,7 @@ export function exportToCSV(report: MonthlyReportData) {
 
     // Metrics
     csv += `MÃ‰TRICAS DE GESTIÃ“N\n`
-    csv += `MÃ©trica,Valor\n`
+    csv += `Métrica,Valor\n`
     csv += `Sesiones Asistidas,${report.metrics.attendance.completed}\n`
     csv += `Sesiones Canceladas,${report.metrics.attendance.cancelled}\n`
     csv += `Tasa de Asistencia,${report.metrics.attendance.rate.toFixed(1)}%\n`
@@ -263,7 +263,7 @@ export function exportToCSV(report: MonthlyReportData) {
 
     // Invoices
     csv += `BOLETAS DE HONORARIOS\n`
-    csv += `NÃºmero,Fecha,Paciente,PrevisiÃ³n,LÃ­quido,Estado\n`
+    csv += `Número,Fecha,Paciente,Previsión,Líquido,Estado\n`
     report.invoices.forEach(inv => {
         csv += `${inv.invoiceNumber},${new Date(inv.date).toLocaleDateString('es-CL')},${inv.patientName},${inv.healthSystem},${inv.netAmount},${inv.status}\n`
     })

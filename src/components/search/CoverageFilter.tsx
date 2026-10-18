@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface CoverageFilterProps {
     onCoverageChange: (coverage: CoverageData) => void
@@ -41,8 +41,7 @@ export function CoverageFilter({ onCoverageChange }: CoverageFilterProps) {
         fetchFonasaTramos()
     }, [])
 
-    // Notificar cambios
-    useEffect(() => {
+    const notifyCoverageChange = useCallback(() => {
         const coverage: CoverageData = {
             healthSystem: healthSystem as any || null,
             isapreId: selectedIsapre || undefined,
@@ -51,7 +50,12 @@ export function CoverageFilter({ onCoverageChange }: CoverageFilterProps) {
             maxCopayment: maxCopayment ? parseInt(maxCopayment) : undefined,
         }
         onCoverageChange(coverage)
-    }, [healthSystem, selectedIsapre, selectedTramo, hasBonoIMED, maxCopayment])
+    }, [healthSystem, selectedIsapre, selectedTramo, hasBonoIMED, maxCopayment, onCoverageChange])
+
+    // Notificar cambios
+    useEffect(() => {
+        notifyCoverageChange()
+    }, [notifyCoverageChange])
 
     const fetchIsapres = async () => {
         try {

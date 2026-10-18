@@ -68,14 +68,23 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, user, trigger, session }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id
                 token.role = user.role
             }
 
-            if (trigger === "update" && session) {
-                token.role = session.role
+            // En trigger "update" NUNCA se acepta `session.role` del cliente:
+            // cualquier usuario podría llamar update({ role: "ADMIN" }) y escalar
+            // privilegios. Se relee el rol desde la base de datos.
+            if (trigger === "update" && token.id) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: token.id as string },
+                    select: { role: true },
+                })
+                if (dbUser) {
+                    token.role = dbUser.role
+                }
             }
 
             return token

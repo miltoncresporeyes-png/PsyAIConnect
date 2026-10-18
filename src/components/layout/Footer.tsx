@@ -3,17 +3,20 @@
 import Link from 'next/link'
 import { PaymentMethods } from '@/components/ui/PaymentMethods'
 import { useTranslations } from 'next-intl'
+import { Logo } from './Logo'
 
 export function Footer() {
     const t = useTranslations('footer')
 
     const footerLinks = {
         producto: [
-            { name: t('findPro'), href: '/registro?tipo=paciente' },
+            { name: t('findPro'), href: '/buscar' },
             { name: t('joinPro'), href: '/registro?tipo=profesional' },
             { name: t('pricing'), href: '/planes' },
         ],
         recursos: [
+            { name: t('orientation'), href: '/orientador' },
+            { name: t('forProfessionals'), href: '/profesionales' },
             { name: t('faqLink'), href: '/faq' },
             { name: t('howItWorksLink'), href: '/#como-funciona' },
         ],
@@ -25,17 +28,13 @@ export function Footer() {
 
     return (
         <footer className="bg-gray-900 text-gray-300 border-t border-white/5">
-            <div className="container-wide py-10 md:py-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
+            <div className="container-wide py-10 md:py-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 lg:gap-10">
                     {/* Brand */}
-                    <div className="col-span-2 md:col-span-1">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">P</span>
-                            </div>
-                            <span className="font-heading font-semibold text-xl text-white">
-                                PsyDoctor
-                            </span>
+                    <div className="col-span-1 sm:col-span-2 md:col-span-1">
+                        <div className="flex items-center gap-2.5 mb-4">
+                            <Logo variant="icon" size={32} />
+                            <span className="font-heading font-semibold text-xl text-white">PsyDoctor</span>
                         </div>
                         <p className="text-sm text-gray-400 mb-4">
                             {t('tagline')}
@@ -88,7 +87,9 @@ export function Footer() {
                     </div>
 
                     {/* Payment Methods */}
-                    <PaymentMethods />
+                    <div className="col-span-1 sm:col-span-2 md:col-span-1">
+                        <PaymentMethods />
+                    </div>
                 </div>
 
                 {/* Legal Disclaimer */}

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { CrisisBanner, WhatsAppAssistant } from '@/components/layout'
+import { NewsletterPopup } from '@/components/newsletter/NewsletterPopup'
 import { Providers } from '@/components/providers/Providers'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -84,16 +85,6 @@ export const metadata: Metadata = {
         telephone: false,
     },
     metadataBase: new URL('https://psydoctor.cl'),
-    alternates: {
-        canonical: 'https://psydoctor.cl',
-        languages: {
-            'es-CL': 'https://psydoctor.cl',
-            'en': 'https://psydoctor.cl/en',
-            'fr': 'https://psydoctor.cl/fr',
-            'pt-BR': 'https://psydoctor.cl/pt',
-            'x-default': 'https://psydoctor.cl',
-        },
-    },
     openGraph: {
         title: 'PsyDoctor | Psicólogo Online en Chile | Agenda tu sesión hoy',
         description: 'Encuentra psicólogos y psiquiatras verificados en Chile. Agenda con cobertura Fonasa e Isapre. Precios transparentes, sin lista de espera.',
@@ -103,10 +94,10 @@ export const metadata: Metadata = {
         type: 'website',
         images: [
             {
-                url: '/images/og-homepage.jpg',
+                url: '/images/og-homepage.png',
                 width: 1200,
                 height: 630,
-                alt: 'PsyDoctor - Plataforma de salud mental en Chile',
+                alt: 'PsyDoctor: agenda con psicólogos y psiquiatras verificados en Chile',
             },
         ],
     },
@@ -114,7 +105,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'PsyDoctor | Psicólogo Online Chile | Fonasa e Isapre',
         description: 'Psicólogos y psiquiatras verificados en Chile. Agenda online, cobertura Fonasa/Isapre, precios transparentes. ¡Primera sesión hoy!',
-        images: ['/images/og-homepage.jpg'],
+        images: ['/images/og-homepage.png'],
         site: '@psydoctor_cl',
         creator: '@psydoctor_cl',
     },
@@ -130,9 +121,22 @@ export const metadata: Metadata = {
         },
     },
     category: 'health',
-    verification: {
-        google: 'google-site-verification-code',
+    alternates: {
+        canonical: '/',
+        languages: {
+            'es-CL': '/',
+            en: '/en',
+            fr: '/fr',
+            pt: '/pt',
+        },
     },
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+        ? {
+            verification: {
+                google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+            },
+        }
+        : {}),
 }
 
 export default async function RootLayout({
@@ -142,8 +146,9 @@ export default async function RootLayout({
 }) {
     const locale = await getLocale()
     const messages = await getMessages()
+    const htmlLang = locale === 'es' ? 'es-CL' : locale
     return (
-        <html lang={locale}>
+        <html lang={htmlLang}>
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -155,116 +160,77 @@ export default async function RootLayout({
                     dangerouslySetInnerHTML={{
                         __html: JSON.stringify({
                             '@context': 'https://schema.org',
-                            '@type': 'MedicalOrganization',
-                            name: 'PsyDoctor',
-                            description: 'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras verificados con cobertura Fonasa e Isapre.',
-                            url: 'https://psydoctor.cl',
-                            logo: 'https://psydoctor.cl/icon.svg',
-                            image: 'https://psydoctor.cl/images/hero-illustration.png',
-                            telephone: '+56983414730',
-                            email: 'contacto@psydoctor.cl',
-                            medicalSpecialty: [
-                                'Psychiatry',
-                                'MentalHealth',
-                                'Psychology',
-                            ],
-                            availableService: [
-                                { '@type': 'MedicalTherapy', name: 'Terapia psicológica online', url: 'https://psydoctor.cl/buscar' },
-                                { '@type': 'MedicalTherapy', name: 'Consulta psiquiátrica online', url: 'https://psydoctor.cl/buscar' },
-                                { '@type': 'MedicalTherapy', name: 'Terapia cognitivo conductual (TCC)', url: 'https://psydoctor.cl/buscar' },
-                                { '@type': 'MedicalTherapy', name: 'Terapia de pareja', url: 'https://psydoctor.cl/buscar' },
-                            ],
-                            address: {
-                                '@type': 'PostalAddress',
-                                addressCountry: 'CL',
-                                addressLocality: 'Santiago',
-                            },
-                            geo: {
-                                '@type': 'GeoCoordinates',
-                                latitude: -33.4489,
-                                longitude: -70.6693,
-                            },
-                            openingHoursSpecification: {
-                                '@type': 'OpeningHoursSpecification',
-                                dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                                opens: '09:00',
-                                closes: '21:00',
-                            },
-                            areaServed: {
-                                '@type': 'Country',
-                                name: 'Chile',
-                            },
-                            sameAs: [
-                                'https://www.instagram.com/psydoctor_cl',
-                                'https://www.linkedin.com/company/psydoctor',
-                            ],
-                        }),
-                    }}
-                />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'WebSite',
-                            name: 'PsyDoctor',
-                            url: 'https://psydoctor.cl',
-                            potentialAction: {
-                                '@type': 'SearchAction',
-                                target: {
-                                    '@type': 'EntryPoint',
-                                    urlTemplate: 'https://psydoctor.cl/buscar?q={search_term_string}',
-                                },
-                                'query-input': 'required name=search_term_string',
-                            },
-                        }),
-                    }}
-                />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'FAQPage',
-                            mainEntity: [
+                            '@graph': [
                                 {
-                                    '@type': 'Question',
-                                    name: '¿Puedo usar Fonasa o Isapre para pagar la sesión?',
-                                    acceptedAnswer: {
-                                        '@type': 'Answer',
-                                        text: 'Sí. Los profesionales en PsyDoctor emiten boleta electrónica que puedes usar para solicitar reembolso a tu Isapre o bonificar con Fonasa, según tu plan de salud.',
+                                    '@type': 'MedicalOrganization',
+                                    '@id': 'https://psydoctor.cl/#organization',
+                                    name: 'PsyDoctor',
+                                    legalName: 'PsyDoctor SpA',
+                                    description:
+                                        'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras verificados con cobertura Fonasa e Isapre.',
+                                    url: 'https://psydoctor.cl',
+                                    logo: 'https://psydoctor.cl/icon.svg',
+                                    image: 'https://psydoctor.cl/images/hero-illustration.png',
+                                    telephone: '+56983414730',
+                                    email: 'contacto@psydoctor.cl',
+                                    priceRange: '$$',
+                                    currenciesAccepted: 'CLP',
+                                    paymentAccepted: 'Tarjeta de crédito, transferencia, boleta electrónica',
+                                    medicalSpecialty: ['Psychiatry', 'MentalHealth', 'Psychology'],
+                                    availableService: [
+                                        { '@type': 'MedicalTherapy', name: 'Terapia psicológica online', url: 'https://psydoctor.cl/buscar' },
+                                        { '@type': 'MedicalTherapy', name: 'Consulta psiquiátrica online', url: 'https://psydoctor.cl/buscar' },
+                                        { '@type': 'MedicalTherapy', name: 'Terapia cognitivo conductual (TCC)', url: 'https://psydoctor.cl/buscar' },
+                                        { '@type': 'MedicalTherapy', name: 'Terapia de pareja', url: 'https://psydoctor.cl/buscar' },
+                                    ],
+                                    address: {
+                                        '@type': 'PostalAddress',
+                                        addressCountry: 'CL',
+                                        addressLocality: 'Santiago',
+                                        addressRegion: 'Región Metropolitana',
                                     },
-                                },
-                                {
-                                    '@type': 'Question',
-                                    name: '¿Cómo agendo una sesión con un psicólogo online?',
-                                    acceptedAnswer: {
-                                        '@type': 'Answer',
-                                        text: 'Usa el buscador de PsyDoctor, filtra por especialidad, precio o disponibilidad, elige al profesional y reserva tu hora en menos de 3 minutos. Recibirás confirmación por email.',
+                                    geo: {
+                                        '@type': 'GeoCoordinates',
+                                        latitude: -33.4489,
+                                        longitude: -70.6693,
                                     },
-                                },
-                                {
-                                    '@type': 'Question',
-                                    name: '¿Los psicólogos de PsyDoctor están verificados?',
-                                    acceptedAnswer: {
-                                        '@type': 'Answer',
-                                        text: 'Sí. Todos los profesionales pasan un proceso de verificación de título, colegiatura y antecedentes antes de publicar su perfil en la plataforma.',
+                                    openingHoursSpecification: [{
+                                        '@type': 'OpeningHoursSpecification',
+                                        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                                        opens: '09:00',
+                                        closes: '18:00',
+                                    }],
+                                    areaServed: {
+                                        '@type': 'Country',
+                                        name: 'Chile',
                                     },
+                                    contactPoint: [{
+                                        '@type': 'ContactPoint',
+                                        contactType: 'customer support',
+                                        telephone: '+56983414730',
+                                        email: 'contacto@psydoctor.cl',
+                                        areaServed: 'CL',
+                                        availableLanguage: ['es', 'en', 'pt'],
+                                    }],
+                                    sameAs: [
+                                        'https://www.instagram.com/psydoctor_cl',
+                                        'https://www.linkedin.com/company/psydoctor',
+                                    ],
                                 },
                                 {
-                                    '@type': 'Question',
-                                    name: '¿Cuánto cuesta una sesión de psicología online en Chile?',
-                                    acceptedAnswer: {
-                                        '@type': 'Answer',
-                                        text: 'Los precios varían según el profesional. En PsyDoctor los ves antes de reservar: desde $25.000 hasta $80.000 CLP por sesión, con precios transparentes y sin costos ocultos.',
-                                    },
-                                },
-                                {
-                                    '@type': 'Question',
-                                    name: '¿PsyDoctor funciona fuera de Santiago?',
-                                    acceptedAnswer: {
-                                        '@type': 'Answer',
-                                        text: 'Sí. Al ser una plataforma 100% online, puedes conectarte con psicólogos desde cualquier región de Chile: Valparaíso, Concepción, La Serena, Temuco y más.',
+                                    '@type': 'WebSite',
+                                    '@id': 'https://psydoctor.cl/#website',
+                                    name: 'PsyDoctor',
+                                    url: 'https://psydoctor.cl',
+                                    inLanguage: 'es-CL',
+                                    publisher: { '@id': 'https://psydoctor.cl/#organization' },
+                                    potentialAction: {
+                                        '@type': 'SearchAction',
+                                        target: {
+                                            '@type': 'EntryPoint',
+                                            urlTemplate: 'https://psydoctor.cl/buscar?q={search_term_string}',
+                                        },
+                                        'query-input': 'required name=search_term_string',
                                     },
                                 },
                             ],
@@ -273,8 +239,8 @@ export default async function RootLayout({
                 />
                 <NextIntlClientProvider messages={messages}>
                     <Providers>
-                        <CrisisBanner />
-                        <main>{children}</main>
+                        <NewsletterPopup />
+                        <main className="w-full max-w-full min-w-0">{children}</main>
                         <WhatsAppAssistant />
                     </Providers>
                 </NextIntlClientProvider>

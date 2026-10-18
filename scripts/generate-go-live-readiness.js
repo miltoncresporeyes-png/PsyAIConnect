@@ -32,7 +32,7 @@ function getEnvFlag(name) {
 function readLatestTaskResult(taskName) {
   const cmd = require('child_process').spawnSync(
     'powershell',
-    ['-Command', `schtasks /Query /TN ${taskName} /V /FO LIST`],
+    ['-Command', `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; schtasks /Query /TN ${taskName} /V /FO LIST`],
     { encoding: 'utf8' }
   )
 
@@ -40,7 +40,7 @@ function readLatestTaskResult(taskName) {
     return 'N/A'
   }
 
-  const match = cmd.stdout.match(/Último resultado:\s*([^\r\n]+)/)
+  const match = cmd.stdout.match(/(?:[Úú\uFFFD]?ltimo resultado|Last Result):\s*([^\r\n]+)/i)
   return match ? match[1].trim() : 'N/A'
 }
 
@@ -86,6 +86,30 @@ function run() {
       name: 'Snapshot readiness generado',
       ok: exists('docs/reports/phase5_progress_snapshot.md'),
       detail: 'docs/reports/phase5_progress_snapshot.md',
+    },
+    {
+      id: 'PROD-CHECK-001',
+      name: 'Documentación de Tareas Manuales',
+      ok: exists('docs/MANUAL_TASKS.md'),
+      detail: 'docs/MANUAL_TASKS.md',
+    },
+    {
+      id: 'PROD-CHECK-002',
+      name: 'Protección de Privacidad y Consentimiento',
+      ok: exists('src/app/api/usuario/exportar-datos/route.ts') && exists('src/app/api/usuario/eliminar-cuenta/route.ts'),
+      detail: 'Endpoints ARCO exportar/eliminar disponibles',
+    },
+    {
+      id: 'PROD-CHECK-003',
+      name: 'Reconciliación de Pagos Flow',
+      ok: exists('scripts/reconcile-pending-payments.ts'),
+      detail: 'scripts/reconcile-pending-payments.ts',
+    },
+    {
+      id: 'PROD-CHECK-004',
+      name: 'Health Check con Cifrado y DB',
+      ok: exists('src/app/api/health/launch/route.ts'),
+      detail: 'src/app/api/health/launch/route.ts',
     },
   ]
 

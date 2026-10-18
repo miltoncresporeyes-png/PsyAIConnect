@@ -2,6 +2,7 @@
   "nav": {
     "patient": "I'm a Patient",
     "professional": "I'm a Professional",
+    "planes": "Plans",
     "howItWorks": "How It Works",
     "trySearch": "Try the Search",
     "trustBadge": "Trust, scheduling, and payment — all in one experience",
@@ -37,7 +38,7 @@
     "submitBtn": "Request access",
     "trustProtected": "Your data is protected. No spam.",
     "trustSchedule": "Book in minutes with no hidden fees.",
-    "statsProfessionals": "500+ verified professionals",
+    "statsProfessionals": "Verified professionals",
     "statsBeta": "Chile Beta",
     "stats24h": "24/7",
     "statsAgenda": "online booking",
@@ -52,7 +53,7 @@
     "title": "Designed by healthcare and management experts",
     "subtitle": "Infrastructure that never fails",
     "compliance": "Regulatory compliance",
-    "activePros": "500+ active professionals"
+    "activePros": "Verified professionals"
   },
   "differentiation": {
     "sectionLabel": "Why we're different",
@@ -288,6 +289,8 @@
     "findPro": "Find a Professional",
     "joinPro": "I'm a Professional",
     "pricing": "Pricing",
+    "orientation": "Wellbeing Guide",
+    "forProfessionals": "For Professionals",
     "faqLink": "FAQ",
     "howItWorksLink": "How It Works",
     "terms": "Terms of Use",

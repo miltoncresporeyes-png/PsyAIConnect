@@ -1,3 +1,4 @@
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateVerificationCode, sendVerificationCodeEmail } from '@/lib/email'
@@ -41,12 +42,12 @@ async function ensureProfessionalProfile(userId: string, name: string | null | u
 const CODE_EXPIRATION_MINUTES = 15
 const MAX_ATTEMPTS = 5
 
-// Development test code - use 123456 in development
-const DEV_TEST_CODE = process.env.NODE_ENV === 'development' ? '123456' : null
-
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     const requestId = getRequestId(request)
     try {
         const body = await request.json()
@@ -103,8 +104,8 @@ export async function POST(request: Request) {
                 where: { email },
             })
 
-            // Generate new code (use test code in development)
-            const verificationCode = DEV_TEST_CODE || generateVerificationCode()
+            // Generate new code
+            const verificationCode = generateVerificationCode()
             const expiresAt = new Date(Date.now() + CODE_EXPIRATION_MINUTES * 60 * 1000)
 
             // Log code in development
@@ -138,8 +139,6 @@ export async function POST(request: Request) {
                 success: true,
                 message: 'Código de verificación enviado',
                 expiresIn: CODE_EXPIRATION_MINUTES,
-                // Include code in response for development testing
-                ...(DEV_TEST_CODE && { devCode: verificationCode }),
             })
         }
 
@@ -163,6 +162,15 @@ export async function POST(request: Request) {
                     { status: 400 }
                 )
             }
+
+            const normalizedCode = String(code).trim()
+            if (!/^\d{6}$/.test(normalizedCode)) {
+                return NextResponse.json(
+                    { error: 'Código inválido' },
+                    { status: 400 }
+                )
+            }
+
 
             // Find the verification code
             const verificationRecord = await prisma.emailVerificationCode.findFirst({
@@ -203,7 +211,7 @@ export async function POST(request: Request) {
             }
 
             // Verify code
-            if (verificationRecord.code !== code) {
+            if (verificationRecord.code !== normalizedCode) {
                 // Increment attempts
                 await prisma.emailVerificationCode.update({
                     where: { id: verificationRecord.id },

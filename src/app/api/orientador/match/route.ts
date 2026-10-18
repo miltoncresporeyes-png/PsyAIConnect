@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 
 // ============================================
 // Types
@@ -142,6 +143,9 @@ function getNextAvailableSlot(availability: any[]): string {
 // ============================================
 
 export async function POST(request: NextRequest) {
+    const blocked = getWaitlistBlockedResponse()
+    if (blocked) return blocked
+
     try {
         const answers: MatchRequest = await request.json()
 

@@ -1,0 +1,43 @@
+:root {
+  /* Paleta Sobria Landing v2 */
+  --color-niebla: #F2F5F6;
+  --color-tinta: #16232E;
+  --color-pino: #1F6F68;
+  --color-pino-hover: #175752;
+  --color-bruma: #D5E3E1;
+  --color-ambar: #E3A72F;
+  --color-ambar-hover: #C99124;
+
+  /* Tipografías seguras con fallback serif cálido y sans limpio */
+  --font-serif-warm: "Newsreader", "Lora", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans-clean: "Figtree", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Clases utilitarias directas compatibles sin dependencia de @tailwind directive */
+.bg-niebla {
+  background-color: var(--color-niebla);
+}
+.text-tinta {
+  color: var(--color-tinta);
+}
+.bg-pino {
+  background-color: var(--color-pino);
+}
+.border-bruma {
+  border-color: var(--color-bruma);
+}
+.bg-bruma {
+  background-color: var(--color-bruma);
+}
+.bg-ambar {
+  background-color: var(--color-ambar);
+}
+.text-pino {
+  color: var(--color-pino);
+}
+.font-serif-warm {
+  font-family: var(--font-serif-warm);
+}
+.font-sans-clean {
+  font-family: var(--font-sans-clean);
+}
