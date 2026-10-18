@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "next start -H 0.0.0.0 -p ${PORT:-3000}",
-    "preDeployCommand": "npx prisma migrate deploy || echo 'Prisma migration skipped or failed'",
+    "preDeployCommand": "npx prisma db push --accept-data-loss",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",
