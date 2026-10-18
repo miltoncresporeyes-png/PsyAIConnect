@@ -1,73 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
   <defs>
-    <!-- Background futuristic pill glow -->
-    <linearGradient id="badgeBg" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+    <!-- Gradiente de fondo cálido y orgánico -->
+    <linearGradient id="bgShield" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EBF4F6"/>
+    </linearGradient>
+
+    <!-- Gradiente de trazo / borde exterior -->
+    <linearGradient id="borderGrad" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#CBD5E1"/>
+      <stop offset="50%" stop-color="#94A3B8" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#64748B" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <!-- Gradiente Clínico Primario (Verde Bosque / Esmeralda Profundo a Verde Salvia) -->
+    <linearGradient id="psiEmerald" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F766E"/>
+      <stop offset="60%" stop-color="#0D9488"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+
+    <!-- Gradiente Clínico Secundario (Azul Marino Médico / Confianza y Rigor) -->
+    <linearGradient id="medNavy" x1="30" y1="20" x2="70" y2="85" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="60%" stop-color="#0F2D37"/>
-      <stop offset="100%" stop-color="#0A1926"/>
+      <stop offset="100%" stop-color="#1E3A5F"/>
     </linearGradient>
 
-    <!-- Bio-Tech Core Gradient -->
-    <linearGradient id="neonPulse" x1="16" y1="16" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#22D3EE"/>
-      <stop offset="40%" stop-color="#14B8A6"/>
-      <stop offset="100%" stop-color="#10B981"/>
-    </linearGradient>
-
-    <linearGradient id="neonBorder" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8"/>
-      <stop offset="50%" stop-color="#14B8A6" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#0D9488" stop-opacity="0.7"/>
-    </linearGradient>
-
-    <!-- Glowing filter -->
-    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="2.2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <!-- Sombra suave y distinguida -->
+    <filter id="softShadow" x="-10%" y="-10%" width="125%" height="125%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="3.5" flood-color="#0F172A" flood-opacity="0.08"/>
     </filter>
   </defs>
 
-  <!-- High-contrast dark futuristic rounded badge -->
-  <rect x="3" y="3" width="74" height="74" rx="20" fill="url(#badgeBg)"/>
-  <rect x="3.5" y="3.5" width="73" height="73" rx="19.5" stroke="url(#neonBorder)" stroke-width="1.8"/>
+  <!-- Superficie base: squircle suave, limpio y luminoso -->
+  <rect x="6" y="6" width="88" height="88" rx="26" fill="url(#bgShield)" stroke="url(#borderGrad)" stroke-width="1.2" filter="url(#softShadow)"/>
 
-  <!-- Glowing Health Cross Base -->
-  <g filter="url(#neonGlow)">
-    <!-- Vertical cross beam -->
-    <rect x="34.5" y="16" width="11" height="48" rx="5.5" fill="url(#neonPulse)"/>
-    <!-- Horizontal cross beam -->
-    <rect x="16" y="34.5" width="48" height="11" rx="5.5" fill="url(#neonPulse)"/>
-    
-    <!-- Central Vital Core -->
-    <circle cx="40" cy="40" r="6" fill="#FFFFFF"/>
-    <circle cx="40" cy="40" r="3.2" fill="#0E7490"/>
+  <!-- Cruz Médica Integrada (Centro armónico sutil que ancla la base de salud) -->
+  <g opacity="0.14">
+    <rect x="44.5" y="27" width="11" height="46" rx="5.5" fill="#0F766E"/>
+    <rect x="27" y="44.5" width="46" height="11" rx="5.5" fill="#0F766E"/>
   </g>
 
-  <!-- ECG Vital Synchrony Line (Vibrant White / Cyan overlay) -->
+  <!-- Cáliz / Alas de la letra Psi (Ψ): curvas continuas de acogida, mente y bienestar -->
   <path
-    d="M 15 40 
-       H 24 
-       L 29 33 
-       L 34 47 
-       L 39 21 
-       L 43 57 
-       L 47 32 
-       L 51 44 
-       L 55 40 
-       H 65"
+    d="M 27 34
+       C 27 57, 40 68, 50 68
+       C 60 68, 73 57, 73 34"
     fill="none"
-    stroke="#FFFFFF"
-    stroke-width="2.8"
+    stroke="url(#psiEmerald)"
+    stroke-width="6.5"
     stroke-linecap="round"
-    stroke-linejoin="round"
   />
 
-  <!-- Synapse satellite nodes -->
-  <circle cx="40" cy="16" r="2.5" fill="#67E8F9"/>
-  <circle cx="40" cy="64" r="2.5" fill="#5EEAD4"/>
-  <circle cx="16" cy="40" r="2.5" fill="#38BDF8"/>
-  <circle cx="64" cy="40" r="2.5" fill="#34D399"/>
+  <!-- Columna Central Médica (Eje de equilibrio, sostén y presencia profesional) -->
+  <path
+    d="M 50 21
+       L 50 78"
+    fill="none"
+    stroke="url(#medNavy)"
+    stroke-width="6.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Remate Superior: Núcleo de claridad / sinapsis consciente -->
+  <circle cx="50" cy="21" r="4.8" fill="#0F766E"/>
+
+  <!-- Nodos de equilibrio en las cúspides de la mente -->
+  <circle cx="27" cy="34" r="3.2" fill="#0D9488"/>
+  <circle cx="73" cy="34" r="3.2" fill="#0D9488"/>
+
+  <!-- Barra transversal médica equilibrada en el eje central -->
+  <path
+    d="M 37.5 49
+       L 62.5 49"
+    fill="none"
+    stroke="url(#medNavy)"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-opacity="0.88"
+  />
 </svg>

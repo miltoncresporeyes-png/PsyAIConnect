@@ -35,13 +35,10 @@ export function Logo({ variant = 'full', size = 32, className = '' }: LogoProps)
         priority
       />
       <span
-        className="font-heading font-semibold text-slate-900 leading-none"
+        className="font-heading font-semibold text-slate-900 leading-none tracking-tight"
         style={{ fontSize: Math.round(size * 0.52) }}
       >
-        Psy
-        <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-          Doctor
-        </span>
+        Psy<span className="text-teal-800">Doctor</span>
       </span>
     </div>
   )

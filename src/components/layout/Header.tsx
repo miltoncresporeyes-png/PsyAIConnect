@@ -58,12 +58,12 @@ export function Header() {
                     <div className="flex h-[62px] items-center justify-between gap-4 w-full max-w-full min-w-0">
 
                         {/* Logo */}
-                        <Link href="/" className="group flex shrink-0 items-center gap-3 py-1">
-                            <div className="relative flex items-center justify-center rounded-2xl bg-slate-900/5 p-1 transition-all duration-300 group-hover:bg-teal-500/10 group-hover:scale-105 group-hover:shadow-md group-hover:shadow-teal-500/20">
-                                <Logo variant="icon" size={42} className="transition-transform duration-300" />
+                        <Link href="/" className="group flex shrink-0 items-center gap-2.5 py-1">
+                            <div className="relative flex items-center justify-center rounded-xl p-0.5 transition-transform duration-200 group-hover:scale-105">
+                                <Logo variant="icon" size={38} className="transition-transform duration-200" />
                             </div>
-                            <span className="font-heading text-lg sm:text-[21px] font-bold tracking-tight text-slate-950 inline">
-                                Psy<span className="bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-500 bg-clip-text text-transparent">Doctor</span>
+                            <span className="font-heading text-lg sm:text-[20px] font-bold tracking-tight text-slate-900 inline">
+                                Psy<span className="text-teal-800">Doctor</span>
                             </span>
                         </Link>
 
