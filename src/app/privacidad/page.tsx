@@ -139,11 +139,12 @@ export default function PrivacidadPage() {
                             </p>
 
                             <h2 id="seccion-2" className="legal-section-title">2º Marco Legal y Normativo.</h2>
-                            <p className="legal-paragraph">Esta Política de Privacidad se rige por:</p>
+                            <p className="legal-paragraph">Esta Política de Privacidad y el tratamiento de datos en PsyDoctor se rigen estrictamente por la legislación chilena y estándares internacionales:</p>
                             <ul className="legal-list">
-                                <li className="legal-list-item"><strong>Chile:</strong> Ley N° 19.628 sobre Protección de la Vida Privada y Protección de Datos de Carácter Personal</li>
-                                <li className="legal-list-item"><strong>Preparación GDPR:</strong> Reglamento General de Protección de Datos (Unión Europea)</li>
-                                <li className="legal-list-item"><strong>Preparación LGPD:</strong> Lei Geral de Proteção de Dados (Brasil)</li>
+                                <li className="legal-list-item"><strong>Ley N° 19.628 y Ley N° 21.719:</strong> Sobre Protección de la Vida Privada y Protección de Datos Personales, con estándares reforzados de seguridad para datos sensibles relativos a la salud humana.</li>
+                                <li className="legal-list-item"><strong>Ley N° 20.584:</strong> Que regula los Derechos y Deberes que tienen las personas en relación con acciones vinculadas a su atención en salud (reserva de la ficha clínica, confidencialidad y consentimiento informado).</li>
+                                <li className="legal-list-item"><strong>Ley N° 21.668:</strong> Que modifica la Ley 20.584 para regular la interoperabilidad y estándares de seguridad de las fichas clínicas electrónicas.</li>
+                                <li className="legal-list-item"><strong>Estándares Internacionales:</strong> Preparación y alineación con GDPR (Unión Europea) y LGPD (Brasil).</li>
                             </ul>
 
                             <h2 id="seccion-3" className="legal-section-title">3º Responsable del Tratamiento de Datos.</h2>

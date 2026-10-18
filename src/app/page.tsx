@@ -9,7 +9,7 @@ import { PricingGuidanceSection } from '@/components/landing/PricingGuidanceSect
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
 import { ForProfessionalsSection } from '@/components/landing/ForProfessionalsSection'
 import { CTASection } from '@/components/landing/CTASection'
-import { FAQSection } from '@/components/landing/FAQSection'
+import { UnifiedFAQSection } from '@/components/landing/FAQSection'
 import { ProfessionalDirectory } from '@/components/directory/ProfessionalDirectory'
 import WaitlistLandingPage from '@/components/waitlist/WaitlistLandingPage'
 
@@ -53,7 +53,11 @@ export default function HomePage() {
 
             <ForProfessionalsSection />
 
-            <FAQSection />
+            <section id="faq" className="py-16 md:py-20 bg-slate-50">
+                <div className="container-wide">
+                    <UnifiedFAQSection />
+                </div>
+            </section>
 
             <ProfessionalDirectory limit={12} />
 
