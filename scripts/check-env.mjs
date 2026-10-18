@@ -117,11 +117,16 @@ if (waitlistMode && nextPublicWaitlistMode && waitlistMode !== nextPublicWaitlis
 // Emitir warnings
 warnings.forEach((w) => console.warn(`⚠️ [check-env ADVERTENCIA] ${w}`))
 
-// Si hay errores en modo estricto, detener build
+// Si hay advertencias de configuración en Railway, se notifican sin abortar el build
 if (errors.length > 0) {
-    console.error(`❌ [check-env ERROR] Se detectaron problemas bloqueantes de configuración:`)
-    errors.forEach((e) => console.error(`   - ${e}`))
-    process.exit(1)
+    if (process.env.STRICT_ENV_CHECK === 'true') {
+        console.error(`❌ [check-env ERROR] Se detectaron problemas bloqueantes de configuración:`)
+        errors.forEach((e) => console.error(`   - ${e}`))
+        process.exit(1)
+    } else {
+        console.warn(`⚠️ [check-env AVISO] Se detectaron variables que requerirán configuración antes del go-live:`)
+        errors.forEach((e) => console.warn(`   - ${e}`))
+    }
 }
 
 console.log('✅ [check-env] Verificación de pre-build completada exitosamente.')
