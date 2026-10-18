@@ -9,10 +9,8 @@ interface Props {
 }
 
 export function generateStaticParams() {
-  // Genera rutas estáticas sólo para locales no-default (es está en /)
-  return routing.locales
-    .filter((l) => l !== routing.defaultLocale)
-    .map((locale) => ({ locale }))
+  // Genera rutas estáticas para todos los locales soportados
+  return routing.locales.map((locale) => ({ locale }))
 }
 
 export default async function LocaleLayout({ children, params: { locale } }: Props) {

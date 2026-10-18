@@ -52,9 +52,7 @@ export function generateMetadata({ params: { locale } }: Props): Metadata {
 }
 
 export function generateStaticParams() {
-    return routing.locales
-        .filter((l) => l !== routing.defaultLocale)
-        .map((locale) => ({ locale }))
+    return routing.locales.map((locale) => ({ locale }))
 }
 
 import WaitlistLandingPage from '@/components/waitlist/WaitlistLandingPage'
