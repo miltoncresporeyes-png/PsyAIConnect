@@ -3,7 +3,7 @@ import { Header, Footer } from '@/components/layout'
 import { HeroSection } from '@/components/landing/HeroSection'
 import { AdministrativeValueSection } from '@/components/landing/AdministrativeValueSection'
 import { DifferentiationSection } from '@/components/landing/DifferentiationSection'
-import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
+import { FoundersSection } from '@/components/landing/FoundersSection'
 import { VerificationSection } from '@/components/landing/VerificationSection'
 import { PricingGuidanceSection } from '@/components/landing/PricingGuidanceSection'
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
@@ -14,8 +14,16 @@ import { ProfessionalDirectory } from '@/components/directory/ProfessionalDirect
 import WaitlistLandingPage from '@/components/waitlist/WaitlistLandingPage'
 
 export const metadata: Metadata = {
-    title: { absolute: 'PsyDoctor | Psicólogos y Psiquiatras en Chile | Boleta para Reembolso' },
-    description: 'Encuentra psicólogos y psiquiatras registrados en la Superintendencia de Salud. Agenda online según disponibilidad, precios transparentes y boleta para reembolso.',
+    title: { absolute: 'PsyDoctor | Psicólogos y psiquiatras online en Chile' },
+    description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
+    openGraph: {
+        title: 'PsyDoctor | Psicólogos y psiquiatras online en Chile',
+        description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
+    },
+    twitter: {
+        title: 'PsyDoctor | Psicólogo online en Chile',
+        description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
+    },
     alternates: {
         canonical: 'https://psydoctor.cl',
         languages: {
@@ -43,9 +51,9 @@ export default function HomePage() {
 
             <DifferentiationSection />
 
-            <VerificationSection />
+            <FoundersSection />
 
-            <TestimonialsSection />
+            <VerificationSection />
 
             <PricingGuidanceSection />
 

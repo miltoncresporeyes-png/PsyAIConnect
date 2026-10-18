@@ -27,7 +27,7 @@ export function WaitlistHeroSection() {
 
                 {/* Bajada con longitud de línea óptima (< 75 caracteres) */}
                 <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-700 max-w-2xl mx-auto leading-relaxed font-sansClean">
-                    Estamos reuniendo a psicólogos y psiquiatras habilitados en la Superintendencia de Salud para ofrecer atención online transparente, con boleta para reembolso y sin barreras.
+                    Estamos reuniendo a psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud para ofrecer atención online transparente, con boleta para reembolso y precios claros.
                 </p>
 
                 {/* CTAs con Ámbar solo en principal y foco visible */}

@@ -7,7 +7,7 @@ import { captureApiError, getRequestId } from '@/lib/observability'
 
 export const dynamic = 'force-dynamic'
 
-const SUCCESS_MESSAGE = '¡Te has unido con éxito a la lista de espera de PsyDoctor! Te avisaremos apenas tengamos profesionales disponibles.'
+const SUCCESS_MESSAGE = 'Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.'
 
 export async function POST(req: NextRequest) {
     const requestId = getRequestId(req)
@@ -85,13 +85,15 @@ export async function POST(req: NextRequest) {
             await prisma.waitlistPatient.create({
                 data: {
                     email: data.email,
-                    name: data.name,
+                    name: data.name || null,
                     whatsapp: data.whatsapp || null,
                     comuna: data.comuna,
+                    careType: data.careType || null,
+                    modality: data.modality || null,
                     motivoCategoria: data.motivoCategoria || null,
-                    prevision: data.prevision,
+                    prevision: data.prevision || null,
                     consentAt: new Date(),
-                    consentVersion: data.consentVersion,
+                    consentVersion: data.consentVersion || '1.0',
                     utmSource: data.utmSource || null,
                     utmMedium: data.utmMedium || null,
                     utmCampaign: data.utmCampaign || null,
@@ -106,18 +108,19 @@ export async function POST(req: NextRequest) {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        text: `🔔 Nuevo registro en Lista de Espera (Paciente) - Comuna: ${data.comuna} - Previsión: ${data.prevision}`,
+                        text: `🔔 Nuevo registro en Lista de Espera (Paciente) - Comuna: ${data.comuna} - Tipo: ${data.careType || 'N/A'} - Modalidad: ${data.modality || 'N/A'}`,
                     }),
                 }).catch(() => {})
             }
 
             // Email transaccional de confirmación sin romper el registro si falla
+            const recipientName = data.name ? `¡Hola ${data.name}!` : '¡Hola!'
             const emailHtml = `
                 <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
-                    <h2 style="color: #0f766e;">¡Hola ${data.name}!</h2>
+                    <h2 style="color: #0f766e;">${recipientName}</h2>
                     <p>Confirmamos que te has sumado con éxito a la lista de espera de <strong>PsyDoctor</strong>.</p>
-                    <p>Estamos validando a psicólogos y psiquiatras habilitados en la Superintendencia de Salud para garantizar atención segura, con boleta para reembolso y aranceles claros.</p>
-                    <p>Apenas tengamos profesionales disponibles en tu área o modalidad, serás de los primeros en acceder.</p>
+                    <p>Estamos incorporando a nuestros primeros profesionales inscritos en el Registro de la Superintendencia de Salud para garantizar atención segura, con boleta para reembolso a tu Isapre y precios claros.</p>
+                    <p>Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.</p>
                     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
                     <p style="font-size: 12px; color: #64748b;">
                         Para cancelar tu suscripción o solicitar la eliminación de tus datos, responde a este correo indicando tu solicitud.

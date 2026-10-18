@@ -973,23 +973,26 @@ enum WaitlistProfessionalStatus {
 }
 
 model WaitlistPatient {
-  id             String                   @id @default(cuid())
-  email          String                   @unique
-  name           String
-  whatsapp       String?
-  comuna         String
+  id              String                   @id @default(cuid())
+  email           String                   @unique
+  name            String?
+  whatsapp        String?
+  comuna          String
+  careType        String?                  // 'psicologia', 'psiquiatria', 'no_estoy_seguro'
+  modality        String?                  // 'online', 'presencial', 'ambas'
   motivoCategoria WaitlistMotivoCategoria?
-  prevision      WaitlistPrevision
-  consentAt      DateTime
-  consentVersion String
-  utmSource      String?
-  utmMedium      String?
-  utmCampaign    String?
-  referrer       String?
-  createdAt      DateTime                 @default(now())
+  prevision       WaitlistPrevision?
+  consentAt       DateTime                 @default(now())
+  consentVersion  String?
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  referrer        String?
+  createdAt       DateTime                 @default(now())
 
   @@index([createdAt])
   @@index([comuna])
+  @@map("lista_espera_pacientes")
 }
 
 model WaitlistProfessional {

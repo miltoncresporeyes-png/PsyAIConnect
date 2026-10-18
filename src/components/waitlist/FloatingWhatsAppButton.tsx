@@ -169,9 +169,9 @@ export function FloatingWhatsAppButton() {
       text: 'Hola, busco atención con un profesional de la salud mental según mi motivo de consulta.',
     },
     {
-      id: 'dudas_aranceles',
+      id: 'dudas_precios',
       icon: <FileText className="w-4 h-4 text-teal-700" />,
-      label: 'Aranceles y boleta para Isapre',
+      label: 'Precios y boleta para Isapre',
       text: 'Hola, quisiera información sobre los precios de las sesiones y la boleta para reembolso en Isapre o seguro.',
     },
     {

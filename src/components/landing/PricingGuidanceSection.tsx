@@ -11,11 +11,11 @@ const PREVISIONS = [
     bg: 'bg-blue-50',
     border: 'border-blue-200',
     icon: '🏥',
-    how: 'En Fonasa la bonificación aplica mediante compra de bono MLE con profesionales en convenio, o según el arancel institucional. En consulta particular, el profesional emite boleta para eventuales seguros complementarios.',
+    how: 'En Fonasa la bonificación aplica mediante compra de bono MLE con profesionales en convenio. En consulta particular, el profesional emite boleta para eventuales seguros complementarios.',
     example: {
       sessionPrice: '$35.000',
       bonificacion: 'Bono MLE según convenio',
-      tuPago: 'Arancel Fonasa o copago',
+      tuPago: 'Copago según convenio',
     },
   },
   {

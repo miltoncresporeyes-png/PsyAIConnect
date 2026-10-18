@@ -14,10 +14,11 @@ export const waitlistSchema = z.object({
 
 export const waitlistPatientSchema = z.object({
     name: z
-        .string({ required_error: 'El nombre es requerido' })
+        .string()
         .trim()
-        .min(2, 'El nombre debe tener al menos 2 caracteres')
-        .max(100, 'El nombre no puede exceder 100 caracteres'),
+        .max(100, 'El nombre no puede exceder 100 caracteres')
+        .optional()
+        .or(z.literal('')),
     email: z
         .string({ required_error: 'El correo electrónico es requerido' })
         .trim()
@@ -31,28 +32,34 @@ export const waitlistPatientSchema = z.object({
         .optional()
         .or(z.literal('')),
     comuna: z
-        .string({ required_error: 'La comuna es requerida' })
+        .string({ required_error: 'La comuna o región es requerida' })
         .trim()
-        .min(2, 'Selecciona o ingresa una comuna válida')
+        .min(2, 'Selecciona o ingresa una comuna o región válida')
         .max(80, 'La comuna no puede exceder 80 caracteres'),
-    motivoCategoria: z
-        .enum(['ANSIEDAD', 'ANIMO', 'PAREJA', 'ESTRES_LABORAL', 'OTRO'], {
-            errorMap: (issue) => ({
-                message: issue.code === 'invalid_enum_value' ? 'Selecciona una categoría válida' : 'Campo requerido',
-            }),
+    careType: z
+        .enum(['psicologia', 'psiquiatria', 'no_estoy_seguro'], {
+            errorMap: () => ({ message: 'Selecciona el tipo de atención buscada' }),
         })
+        .optional()
+        .or(z.literal('')),
+    modality: z
+        .enum(['online', 'presencial', 'ambas'], {
+            errorMap: () => ({ message: 'Selecciona la modalidad preferida' }),
+        })
+        .optional()
+        .or(z.literal('')),
+    motivoCategoria: z
+        .enum(['ANSIEDAD', 'ANIMO', 'PAREJA', 'ESTRES_LABORAL', 'OTRO'])
         .optional(),
-    prevision: z.enum(['FONASA', 'ISAPRE', 'PARTICULAR'], {
-        errorMap: (issue) => ({
-            message: issue.code === 'invalid_enum_value' ? 'Previsión no válida' : 'Selecciona tu tipo de previsión de salud',
-        }),
-    }),
+    prevision: z
+        .enum(['FONASA', 'ISAPRE', 'PARTICULAR'])
+        .optional(),
     consentAccepted: z
         .boolean()
         .refine((val) => val === true, 'Debes aceptar los términos y el consentimiento para continuar'),
     consentVersion: z
-        .string({ required_error: 'Versión de consentimiento requerida' })
-        .min(1),
+        .string()
+        .optional(),
 
     // Honeypot anti-bot (debe llegar vacío)
     website: z.string().max(0, 'Bot detected').optional().or(z.literal('')),

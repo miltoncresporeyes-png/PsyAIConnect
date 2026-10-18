@@ -9,7 +9,7 @@ import { PageContainer, PageHeader } from '@/components/layout/shell'
 export const metadata: Metadata = {
     title: { absolute: 'Preguntas Frecuentes | PsyDoctor' },
     description:
-        'Resolvemos las dudas más comunes de pacientes y profesionales de salud mental sobre PsyDoctor: aranceles, boleta para reembolso, privacidad y cómo agendar.',
+        'Resolvemos las dudas más comunes de pacientes y profesionales de salud mental sobre PsyDoctor: precios, boleta para reembolso, privacidad y registro oficial.',
     alternates: {
         canonical: '/faq',
     },

@@ -2,57 +2,33 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { Menu, X, User, LogOut, LayoutDashboard, UserCircle, ArrowRight, Sparkles } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
+import { Menu, X, User, LogOut, LayoutDashboard, UserCircle, ArrowRight } from 'lucide-react'
 import { Logo } from './Logo'
 import { CrisisBanner } from './CrisisBanner'
+import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
 
 export function Header() {
     const { data: session, status } = useSession()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-    const t = useTranslations('nav')
+    const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false)
 
     const isLoggedIn = status === 'authenticated' && session?.user
-    const isWaitlist = process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true'
 
-    const navigation = isWaitlist
-        ? [
-              { name: 'Lista de Espera', href: '/#lista-espera' },
-              { name: 'Programa Fundadores', href: '/#fundadores' },
-              { name: 'Cómo funciona', href: '/#como-funciona' },
-              { name: 'Preguntas frecuentes', href: '/#faq' },
-          ]
-        : [
-              { name: 'Buscar profesional', href: '/buscar' },
-              { name: 'Cómo funciona', href: '/#como-funciona' },
-              { name: 'Para profesionales', href: '/profesionales' },
-          ]
+    const navigation = [
+        { name: 'Cómo funciona', href: '/#como-funciona' },
+        { name: 'Para profesionales', href: '/profesionales' },
+        { name: 'Planes', href: '/planes' },
+    ]
 
     return (
         <header className="sticky top-0 z-50 w-full shadow-sm shadow-slate-900/[0.04]">
-            {/* ── Emergency banner ────────────────────────────────────────────── */}
+            {/* ── Emergency banner ── */}
             <CrisisBanner />
 
-            {/* ── Top utility bar ─────────────────────────────────────────────── */}
-            {!isWaitlist && (
-                <div className="hidden md:block bg-teal-950">
-                    <div className="container-wide flex h-9 items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs text-teal-300/80">
-                            <Sparkles className="h-3 w-3 text-teal-400" aria-hidden="true" />
-                            <span className="font-medium tracking-wide">{t('trustBadge')}</span>
-                        </div>
-                        <Suspense fallback={null}>
-                            <LanguageSwitcher variant="dark" />
-                        </Suspense>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Main navigation ─────────────────────────────────────────────── */}
+            {/* ── Main navigation ── */}
             <div className="border-b border-slate-200/60 bg-white/96 backdrop-blur-xl">
                 <nav className="container-wide w-full max-w-full">
                     <div className="flex h-[62px] items-center justify-between gap-4 w-full max-w-full min-w-0">
@@ -67,6 +43,7 @@ export function Header() {
                             </span>
                         </Link>
 
+                        {/* Desktop Navigation */}
                         <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
                             {navigation.map((item) => (
                                 <Link
@@ -79,7 +56,7 @@ export function Header() {
                             ))}
                         </div>
 
-                        {/* Desktop CTA */}
+                        {/* Desktop CTA: Iniciar sesión + único botón principal 'Avísame cuando abran' */}
                         <div className="hidden lg:flex items-center gap-2 shrink-0">
                             {isLoggedIn ? (
                                 <div className="relative">
@@ -112,7 +89,7 @@ export function Header() {
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
                                                 <LayoutDashboard className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                                {t('dashboard')}
+                                                Dashboard
                                             </Link>
                                             <Link
                                                 href="/dashboard/perfil"
@@ -120,7 +97,7 @@ export function Header() {
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
                                                 <UserCircle className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                                {t('myProfile')}
+                                                Mi Perfil
                                             </Link>
                                             <div className="my-1 border-t border-slate-100" />
                                             <button
@@ -128,45 +105,33 @@ export function Header() {
                                                 className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
                                             >
                                                 <LogOut className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                                {t('logout')}
+                                                Cerrar sesión
                                             </button>
                                         </div>
                                     )}
                                 </div>
-                            ) : isWaitlist ? (
-                                <Link
-                                    href="/#lista-espera"
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-600/20 transition-all duration-200 hover:-translate-y-px hover:bg-teal-500 hover:shadow-lg whitespace-nowrap"
-                                >
-                                    Unirme a la lista
-                                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-                                </Link>
                             ) : (
                                 <>
                                     <Link
                                         href="/login"
                                         className="px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 whitespace-nowrap"
                                     >
-                                        {t('login')}
+                                        Iniciar sesión
                                     </Link>
-                                    <Link
-                                        href="/registro"
-                                        className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-600/20 transition-all duration-200 hover:-translate-y-px hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0 whitespace-nowrap"
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsWaitlistModalOpen(true)}
+                                        className="inline-flex items-center gap-1.5 rounded-xl bg-teal-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-900 whitespace-nowrap cursor-pointer"
                                     >
-                                        {t('startNow')}
+                                        Avísame cuando abran
                                         <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-                                    </Link>
+                                    </button>
                                 </>
                             )}
                         </div>
 
-                        {/* Mobile: lang + hamburger */}
+                        {/* Mobile hamburger */}
                         <div className="flex items-center gap-2 lg:hidden shrink-0">
-                            {!isWaitlist && (
-                                <Suspense fallback={null}>
-                                    <LanguageSwitcher compact />
-                                </Suspense>
-                            )}
                             <button
                                 className="rounded-xl border border-slate-200 p-2 text-slate-600 transition-colors hover:bg-slate-50"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -178,7 +143,7 @@ export function Header() {
                         </div>
                     </div>
 
-                    {/* ── Mobile drawer ──────────────────────────────────────── */}
+                    {/* ── Mobile drawer ── */}
                     {isMenuOpen && (
                         <div className="border-t border-slate-100 pb-5 pt-3 lg:hidden">
                             <div className="flex flex-col gap-0.5">
@@ -202,37 +167,34 @@ export function Header() {
                                             className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
-                                            {t('dashboard')}
+                                            Dashboard
                                         </Link>
                                         <button
                                             onClick={() => signOut({ callbackUrl: '/' })}
                                             className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                                         >
-                                            {t('logout')}
+                                            Cerrar sesión
                                         </button>
                                     </>
-                                ) : isWaitlist ? (
-                                    <Link
-                                        href="/#lista-espera"
-                                        className="rounded-xl bg-teal-600 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-md shadow-teal-600/15 transition-colors hover:bg-teal-500"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    >
-                                        Unirme a la lista
-                                    </Link>
                                 ) : (
                                     <>
                                         <Link
                                             href="/login"
                                             className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                                            onClick={() => setIsMenuOpen(false)}
                                         >
-                                            {t('login')}
+                                            Iniciar sesión
                                         </Link>
-                                        <Link
-                                            href="/registro"
-                                            className="rounded-xl bg-teal-600 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-md shadow-teal-600/15 transition-colors hover:bg-teal-500"
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsMenuOpen(false)
+                                                setIsWaitlistModalOpen(true)
+                                            }}
+                                            className="rounded-xl bg-teal-800 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-900"
                                         >
-                                            {t('startFree')}
-                                        </Link>
+                                            Avísame cuando abran
+                                        </button>
                                     </>
                                 )}
                             </div>
@@ -240,6 +202,11 @@ export function Header() {
                     )}
                 </nav>
             </div>
+
+            <PatientWaitlistModal
+                isOpen={isWaitlistModalOpen}
+                onClose={() => setIsWaitlistModalOpen(false)}
+            />
         </header>
     )
 }

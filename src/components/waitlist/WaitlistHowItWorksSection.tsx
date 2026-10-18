@@ -62,7 +62,7 @@ export function WaitlistHowItWorksSection() {
                             </div>
                             <div className="pt-1.5 flex-1">
                                 <Heading level={3} className="text-lg sm:text-xl font-semibold mb-2">
-                                    Reembolsa sin fricción
+                                    Reembolsa con tu boleta
                                 </Heading>
                                 <p className="text-sm text-tinta/75 leading-relaxed max-w-prose">
                                     Recibe tu boleta de honorarios electrónica oficial y el kit de reembolso médico listo para presentar en tu Isapre o seguro complementario.

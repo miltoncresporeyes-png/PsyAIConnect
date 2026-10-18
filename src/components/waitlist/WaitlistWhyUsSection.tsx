@@ -55,11 +55,11 @@ export function WaitlistWhyUsSection() {
                                 <Clock className="h-4 w-4" aria-hidden="true" />
                             </div>
                             <Heading level={4} className="text-base font-semibold text-tinta">
-                                Sin Listas de Espera Eternas
+                                Avanzas a Tu Ritmo
                             </Heading>
                         </div>
                         <p className="text-sm text-tinta/70 leading-relaxed pl-[3.25rem]">
-                            Visualiza la disponibilidad real de psicólogos y psiquiatras y agenda sesiones en las próximas 24 a 48 horas.
+                            Elige con calma el momento que mejor se ajuste a tus horarios y confirma directamente desde tu celular.
                         </p>
                     </div>
 

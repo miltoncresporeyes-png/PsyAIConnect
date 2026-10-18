@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'Buscar Psicólogo y Psiquiatra en Chile | PsyDoctor',
+    title: 'Buscar Psicólogos y Psiquiatras en Chile | PsyDoctor',
     description:
-        'Encuentra psicólogos y psiquiatras habilitados en Chile: consulta disponibilidad online o presencial, aranceles y emisión de boleta para reembolso en Isapres y seguros.',
+        'Encuentra psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud: precios claros y emisión de boleta para reembolso en tu Isapre o seguro según tu plan.',
     alternates: {
         canonical: '/buscar',
     },

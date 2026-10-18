@@ -10,8 +10,8 @@ import { WaitlistTabsSection } from '@/components/waitlist/WaitlistTabsSection'
 import { FloatingWhatsAppButton } from '@/components/waitlist/FloatingWhatsAppButton'
 
 export const metadata: Metadata = {
-    title: { absolute: 'PsyDoctor | Lista de Espera · Salud Mental Accesible en Chile' },
-    description: 'Únete a la lista de espera de PsyDoctor. Conecta con psicólogos y psiquiatras habilitados en Chile con boleta para reembolso y aranceles transparentes.',
+    title: { absolute: 'PsyDoctor | Lista de Espera · Salud Mental en Chile' },
+    description: 'Únete a la lista de espera de PsyDoctor. Conecta con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud con boleta para reembolso y precios claros.',
     alternates: {
         canonical: 'https://psydoctor.cl',
     },

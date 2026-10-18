@@ -285,10 +285,8 @@ export default function OrientadorInteligentePage() {
                 <div className="flex-1 flex items-center justify-center px-4 py-20">
                     <div className="w-full max-w-2xl">
                         <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-xs font-semibold text-teal-800">
-                                <span>Orientador de Bienestar</span>
-                                <span>•</span>
-                                <span className="font-normal text-teal-700">Herramienta informativa, no constituye diagnóstico médico</span>
+                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-teal-50 border border-teal-200 px-3.5 py-1.5 text-xs font-semibold text-teal-800">
+                                <span>Orientador de Bienestar (Asistente Informativo)</span>
                             </div>
                             <h1 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-3 leading-tight">
                                 {currentQuestion.title}
@@ -298,9 +296,9 @@ export default function OrientadorInteligentePage() {
                                     {currentQuestion.subtitle}
                                 </p>
                             )}
-                            <p className="mt-2 text-xs text-slate-500">
-                                Esta guía te orienta a seleccionar la especialidad y modalidad adecuada. En ningún caso reemplaza la evaluación clínica de un profesional de la salud.
-                            </p>
+                            <div className="mt-3 rounded-xl border border-teal-100 bg-teal-50/60 p-3 text-xs text-teal-900">
+                                <strong>Aviso importante:</strong> Este orientador es una herramienta informativa. No entrega diagnósticos ni reemplaza la atención de un profesional. Si es un asistente interactivo, ten en cuenta que no realiza evaluaciones psiquiátricas.
+                            </div>
                         </div>
 
                         {/* Options Grid */}

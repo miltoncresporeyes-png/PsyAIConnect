@@ -1,109 +1,69 @@
 'use client'
 
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle, Clock, Shield } from 'lucide-react'
-import { useBetaWaitlist } from '@/lib/hooks/useBetaWaitlist'
-import { useTranslations } from 'next-intl'
+import { ArrowRight, Shield } from 'lucide-react'
+import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
 
 export function HeroSection() {
-  const { message, handleSubmit, email, setEmail, isSubmitting } = useBetaWaitlist()
-  const t = useTranslations('hero')
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false)
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-slate-50/50 pb-16 pt-8 md:pb-24 md:pt-14"
+      className="relative w-full overflow-hidden bg-slate-50/50 pb-16 pt-12 md:pb-24 md:pt-20"
       aria-labelledby="hero-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div className="order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white px-3.5 py-1.5 shadow-xs">
-              <Clock className="w-3.5 h-3.5 text-teal-700" aria-hidden="true" />
-              <span className="text-xs font-medium text-slate-700">
-                {t('launchBadge')}
-              </span>
-            </div>
-
-            <h1 id="hero-heading" className="mt-5 max-w-2xl text-balance text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl lg:text-[40px] lg:leading-[1.2]">
-              {t('headline1')}{' '}
-              <span className="text-teal-800">
-                {t('headlineHighlight')}
-              </span>
+            <h1
+              id="hero-heading"
+              className="max-w-2xl text-balance text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-[34px] lg:leading-[1.25]"
+            >
+              Psicólogos y psiquiatras inscritos en el registro oficial. Atención online en todo Chile.
             </h1>
 
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-[#374151] sm:text-lg">
-              {t('description')}
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-[#374151] sm:text-lg">
+              Reserva con precios claros desde el inicio y recibe boleta para solicitar reembolso a tu Isapre, según tu plan. Tus datos de salud están protegidos por la ley chilena.
             </p>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
-              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-2xs">{t('chipVerified')}</span>
-              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-2xs">{t('chipOnline')}</span>
-              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-2xs">{t('chipPayments')}</span>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
+              <span className="rounded-full border border-slate-200 bg-white px-3.5 py-1 text-xs font-medium text-slate-700 shadow-2xs">
+                Inscritos en el Registro de la Superintendencia de Salud
+              </span>
+              <span className="rounded-full border border-slate-200 bg-white px-3.5 py-1 text-xs font-medium text-slate-700 shadow-2xs">
+                Terapia online en todo Chile
+              </span>
+              <span className="rounded-full border border-slate-200 bg-white px-3.5 py-1 text-xs font-medium text-slate-700 shadow-2xs">
+                Pagos seguros en CLP
+              </span>
             </div>
 
-            <div className="mt-6 flex w-full max-w-md flex-col gap-3 sm:flex-row">
-              <Link
-                href="/registro?tipo=paciente"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-900"
+            <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setIsWaitlistOpen(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-900 cursor-pointer"
               >
-                {t('ctaPatient')}
+                <span>Avísame cuando abran</span>
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              </button>
               <Link
-                href="/profesionales"
+                href="/registro?tipo=profesional"
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
               >
-                {t('ctaProfessional')}
+                Unirme como Profesional Fundador
               </Link>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-              <div className="flex flex-col gap-2.5">
-                <div className="text-left">
-                  <p className="text-xs font-semibold text-slate-900">{t('waitlistTitle')}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{t('waitlistDesc')}</p>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <label className="sr-only" htmlFor="beta-email">{t('emailLabel')}</label>
-                  <input
-                    id="beta-email"
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder={t('emailPlaceholder')}
-                    className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-700 focus:bg-white focus:ring-1 focus:ring-teal-700"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="shrink-0 whitespace-nowrap rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSubmitting ? t('submitSending') : t('submitBtn')}
-                  </button>
-                </div>
-              </div>
-
-              {message && (
-                <div
-                  role="alert"
-                  className={`mt-3 rounded-xl border px-3.5 py-2.5 text-xs ${message.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800'}`}
-                >
-                  {message.text}
-                </div>
-              )}
-            </form>
-
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 lg:justify-start">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 lg:justify-start">
               <Shield className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
-              <span>{t('trustProtected')}</span>
-              <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:block" aria-hidden="true" />
-              <span>{t('trustSchedule')}</span>
+              <span>Diseñada considerando la normativa chilena de protección de datos y derechos del paciente.</span>
             </div>
           </div>
 
-          {/* ── Columna derecha: foto con marco sobrio y datos informativos ── */}
+          {/* ── Columna derecha: foto con marco neutro ── */}
           <div className="order-1 flex justify-center lg:order-2">
             <div className="relative w-full max-w-sm sm:max-w-md">
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
@@ -119,44 +79,44 @@ export function HeroSection() {
                   />
                 </div>
 
-                {/* Pie de imagen: texto descriptivo sobrio sin atribuciones equívocas */}
+                {/* Pie de imagen: texto descriptivo neutro */}
                 <div className="flex items-center justify-between border-t border-slate-100 bg-white px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-teal-600" aria-hidden="true" />
-                    <span className="text-xs font-medium text-slate-700">Espacio de atención online</span>
+                    <span className="text-xs font-medium text-slate-700">Atención online, a tu ritmo</span>
                   </div>
                   <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">Todo Chile</span>
                 </div>
 
-                {/* Métricas discretas */}
-                <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100 bg-slate-50/70">
+                {/* Métricas discretas y neutrales */}
+                <div className="grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100 bg-slate-50/70">
                   <div className="flex flex-col items-center py-2.5">
                     <span className="text-sm font-semibold text-slate-800">Online</span>
-                    <span className="text-[10px] text-slate-500">videollamada</span>
+                    <span className="text-[10px] text-slate-500">videollamada segura</span>
                   </div>
                   <div className="flex flex-col items-center py-2.5">
-                    <span className="text-sm font-semibold text-slate-800">100%</span>
-                    <span className="text-[10px] text-slate-500">confidencial</span>
-                  </div>
-                  <div className="flex flex-col items-center py-2.5">
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-teal-700" aria-hidden="true" />
-                      <span className="text-sm font-semibold text-slate-800">Boleta</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500">reembolsable</span>
+                    <span className="text-sm font-semibold text-slate-800">Boleta</span>
+                    <span className="text-[10px] text-slate-500">para reembolso Isapre</span>
                   </div>
                 </div>
               </div>
 
-              {/* Nota de privacidad al pie sin flotantes distractores */}
+              {/* Nota de privacidad al pie */}
               <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-500">
                 <Shield className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
-                <span>Datos protegidos bajo Ley 19.628 (adaptada a Ley 21.719)</span>
+                <span>Cifrado en tránsito (TLS) y en reposo (AES-256)</span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <PatientWaitlistModal
+        isOpen={isWaitlistOpen}
+        onClose={() => setIsWaitlistOpen(false)}
+        title="Lista de espera de pacientes"
+        subtitle="Déjanos tus datos y te avisaremos cuando abramos disponibilidad en tu zona."
+      />
     </section>
   )
 }

@@ -12,11 +12,11 @@ interface FAQItem {
 const FAQS: FAQItem[] = [
     {
         question: '¿Cuándo estará disponible la atención en PsyDoctor?',
-        answer: 'Estamos actualmente en proceso de validación y acreditación de los primeros profesionales fundadores. Quienes se inscriban en esta lista de espera recibirán acceso anticipado prioritario y notificaciones escalonadas antes del lanzamiento abierto.',
+        answer: 'Estamos actualmente en proceso de registro de los primeros profesionales fundadores. Quienes se inscriban en esta lista de espera recibirán acceso anticipado prioritario y notificaciones escalonadas antes del lanzamiento abierto.',
     },
     {
         question: '¿Cómo funciona la cobertura y reembolso (Isapres, seguros y Fonasa)?',
-        answer: 'Los profesionales emiten boleta electrónica de honorarios para que reembolses en tu Isapre o seguro de salud complementario. En Fonasa, la cobertura aplica mediante bono según los profesionales inscritos en Modalidad Libre Elección (MLE) o arancel institucional.',
+        answer: 'Los profesionales emiten boleta electrónica de honorarios para que reembolses en tu Isapre o seguro de salud complementario. En Fonasa, la cobertura aplica mediante bono según los profesionales inscritos en Modalidad Libre Elección (MLE) con convenio vigente.',
     },
     {
         question: '¿Tiene algún costo inscribirse en la lista de espera?',

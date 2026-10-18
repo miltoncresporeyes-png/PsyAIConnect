@@ -1,313 +1,285 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { landingConfig } from '@/config/landing.config'
-import { track } from '@/lib/track'
-import { CheckCircle2, AlertCircle, Loader2, Share2 } from 'lucide-react'
+import React, { useState } from 'react'
+import Link from 'next/link'
+import { CheckCircle2, Loader2, Sparkles, AlertCircle } from 'lucide-react'
+import { CHILE_REGIONS } from '@/constants/chile-data'
 
-export function PatientWaitlistForm() {
-    const [name, setName] = useState('')
+interface PatientWaitlistFormProps {
+    className?: string
+    onSuccess?: () => void
+    title?: string
+    subtitle?: string
+    compact?: boolean
+}
+
+export function PatientWaitlistForm({
+    className = '',
+    onSuccess,
+    title = 'Lista de espera de pacientes',
+    subtitle = 'Déjanos tus datos y te avisaremos cuando abramos disponibilidad en tu zona.',
+    compact = false,
+}: PatientWaitlistFormProps) {
     const [email, setEmail] = useState('')
-    const [whatsapp, setWhatsapp] = useState('')
     const [comuna, setComuna] = useState('')
-    const [motivoCategoria, setMotivoCategoria] = useState<string>('')
-    const [prevision, setPrevision] = useState<string>('FONASA')
-    const [consentAccepted, setConsentAccepted] = useState(false)
-    const [websiteHoneypot, setWebsiteHoneypot] = useState('')
-    const [renderedAt, setRenderedAt] = useState<number>(0)
+    const [careType, setCareType] = useState<'psicologia' | 'psiquiatria' | 'no_estoy_seguro'>('psicologia')
+    const [modality, setModality] = useState<'online' | 'presencial' | 'ambas'>('online')
+    const [consent, setConsent] = useState(false)
+    const [honeypot, setHoneypot] = useState('')
+    const [renderedAt] = useState(() => Date.now())
 
-    const [utm, setUtm] = useState({
-        utmSource: '',
-        utmMedium: '',
-        utmCampaign: '',
-        referrer: '',
-    })
-
-    const [loading, setLoading] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
-    const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [isSuccess, setIsSuccess] = useState(false)
+    const [successMessage, setSuccessMessage] = useState('')
 
-    useEffect(() => {
-        setRenderedAt(Date.now())
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search)
-            setUtm({
-                utmSource: params.get('utm_source') || '',
-                utmMedium: params.get('utm_medium') || '',
-                utmCampaign: params.get('utm_campaign') || '',
-                referrer: document.referrer || '',
-            })
-        }
+    // Flatten Chilean comunas for quick selection / autocomplete
+    const allComunas = React.useMemo(() => {
+        const set = new Set<string>()
+        CHILE_REGIONS.forEach((r) => {
+            r.comunas.forEach((c) => set.add(`${c} (${r.nombre})`))
+        })
+        return Array.from(set).sort()
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setErrorMessage(null)
 
-        if (!consentAccepted) {
-            setErrorMessage('Debes aceptar los términos y el consentimiento informado.')
+        if (!email.trim()) {
+            setErrorMessage('Ingresa tu correo electrónico.')
             return
         }
 
-        setLoading(true)
+        if (!comuna.trim()) {
+            setErrorMessage('Indica tu comuna o región.')
+            return
+        }
+
+        if (!consent) {
+            setErrorMessage('Debes aceptar la Política de Privacidad para continuar.')
+            return
+        }
+
+        setIsSubmitting(true)
 
         try {
             const res = await fetch('/api/waitlist/patient', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name,
-                    email,
-                    whatsapp: whatsapp || undefined,
-                    comuna,
-                    motivoCategoria: motivoCategoria || undefined,
-                    prevision,
-                    consentAccepted,
-                    consentVersion: landingConfig.versionConsentimiento,
-                    website: websiteHoneypot,
+                    email: email.trim().toLowerCase(),
+                    comuna: comuna.trim(),
+                    careType,
+                    modality,
+                    consentAccepted: true,
+                    consentVersion: '2.0',
+                    website: honeypot,
                     renderedAt,
-                    utmSource: utm.utmSource,
-                    utmMedium: utm.utmMedium,
-                    utmCampaign: utm.utmCampaign,
-                    referrer: utm.referrer,
                 }),
             })
 
             const data = await res.json()
 
             if (!res.ok) {
-                setErrorMessage(data.error || 'Ocurrió un error al procesar tu solicitud.')
+                setErrorMessage(data.error || 'Ocurrió un error. Por favor intenta más tarde.')
+                setIsSubmitting(false)
                 return
             }
 
-            setSuccessMessage(data.message || '¡Te has unido con éxito a la lista de espera!')
-            track('form_paciente_enviado', { prevision, comuna })
+            setIsSuccess(true)
+            setSuccessMessage(data.message || 'Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.')
+            if (onSuccess) onSuccess()
         } catch {
-            setErrorMessage('No pudimos conectar con el servidor. Revisa tu conexión a internet.')
+            setErrorMessage('Error de conexión. Intenta nuevamente en unos instantes.')
         } finally {
-            setLoading(false)
+            setIsSubmitting(false)
         }
     }
 
-    const handleShareWhatsapp = () => {
-        const text = encodeURIComponent(
-            '¡Me acabo de anotar en la lista de espera de PsyDoctor! Una nueva forma de atenderse con psicólogos y psiquiatras habilitados en la Superintendencia de Salud con boleta para reembolso: https://psydoctor.cl'
-        )
-        track('click_whatsapp', { source: 'share_waitlist_success' })
-        window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
-    }
-
-    if (successMessage) {
+    if (isSuccess) {
         return (
-            <div className="rounded-2xl border border-pino/30 bg-niebla p-6 md:p-8 text-center text-tinta">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pino/10 text-pino">
-                    <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
+            <div className={`rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 text-center text-slate-800 ${className}`}>
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
+                    <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
                 </div>
-                <h3 className="text-xl font-bold font-serif-warm text-tinta mb-2">
-                    ¡Registro confirmado!
-                </h3>
-                <p className="text-tinta/80 mb-6 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+                <h3 className="text-xl font-bold text-emerald-950 mb-2">¡Solicitud recibida!</h3>
+                <p className="text-sm text-emerald-900 leading-relaxed max-w-md mx-auto">
                     {successMessage}
                 </p>
-
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <button
-                        type="button"
-                        onClick={handleShareWhatsapp}
-                        className="inline-flex items-center gap-2 rounded-xl bg-pino px-5 py-3 text-sm font-semibold text-white shadow-xs hover:bg-[#185752] transition-colors w-full sm:w-auto justify-center"
-                    >
-                        <Share2 className="h-4 w-4" aria-hidden="true" />
-                        Compartir por WhatsApp
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setSuccessMessage(null)
-                            setName('')
-                            setEmail('')
-                            setWhatsapp('')
-                            setComuna('')
-                            setMotivoCategoria('')
-                            setConsentAccepted(false)
-                        }}
-                        className="text-xs text-tinta/60 underline hover:text-tinta py-2"
-                    >
-                        Inscribir a otra persona
-                    </button>
-                </div>
+                <p className="mt-4 text-xs text-emerald-700">
+                    Tus datos están protegidos bajo la ley chilena y no serán compartidos con terceros.
+                </p>
             </div>
         )
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
-            {errorMessage && (
-                <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700" role="alert">
-                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                    <span>{errorMessage}</span>
+        <form
+            onSubmit={handleSubmit}
+            className={`rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-sm text-left ${className}`}
+        >
+            {!compact && (
+                <div className="mb-5">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-200/80 px-3 py-1 text-xs font-semibold text-teal-800 mb-2">
+                        <Sparkles className="h-3 w-3 text-teal-600" aria-hidden="true" />
+                        <span>Pre-lanzamiento exclusivo</span>
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">{title}</h3>
+                    <p className="text-xs sm:text-sm text-[#374151] mt-1">{subtitle}</p>
                 </div>
             )}
 
-            {/* Honeypot field (invisible to legitimate users) */}
-            <div className="hidden" aria-hidden="true">
-                <label htmlFor="patient-website">No llenar este campo</label>
-                <input
-                    id="patient-website"
-                    type="text"
-                    name="website"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={websiteHoneypot}
-                    onChange={(e) => setWebsiteHoneypot(e.target.value)}
-                />
-            </div>
+            {/* Honeypot anti-bot */}
+            <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+                aria-hidden="true"
+            />
 
-            <div>
-                <label htmlFor="patient-name" className="block text-sm font-semibold text-tinta mb-1.5">
-                    Nombre completo <span className="text-pino">*</span>
-                </label>
-                <input
-                    id="patient-name"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    enterKeyHint="next"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Ej. Constanza Silva"
-                    className="w-full min-h-[48px] rounded-xl border border-bruma bg-white px-4 py-3 text-base sm:text-sm text-tinta placeholder:text-tinta/40 focus:border-pino focus:outline-none focus:ring-2 focus:ring-pino/20 shadow-2xs transition-colors"
-                />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-4">
+                {/* Email */}
                 <div>
-                    <label htmlFor="patient-email" className="block text-sm font-semibold text-tinta mb-1.5">
-                        Correo electrónico <span className="text-pino">*</span>
+                    <label htmlFor="patient-waitlist-email" className="block text-xs font-semibold text-slate-700 mb-1">
+                        Correo electrónico <span className="text-rose-600">*</span>
                     </label>
                     <input
-                        id="patient-email"
+                        id="patient-waitlist-email"
                         type="email"
-                        required
-                        autoComplete="email"
-                        inputMode="email"
-                        enterKeyHint="next"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="tu@correo.cl"
-                        className="w-full min-h-[48px] rounded-xl border border-bruma bg-white px-4 py-3 text-base sm:text-sm text-tinta placeholder:text-tinta/40 focus:border-pino focus:outline-none focus:ring-2 focus:ring-pino/20 shadow-2xs transition-colors"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="patient-whatsapp" className="block text-sm font-semibold text-tinta mb-1.5">
-                        WhatsApp (opcional)
-                    </label>
-                    <input
-                        id="patient-whatsapp"
-                        type="tel"
-                        autoComplete="tel"
-                        inputMode="tel"
-                        enterKeyHint="next"
-                        value={whatsapp}
-                        onChange={(e) => setWhatsapp(e.target.value)}
-                        placeholder="+56912345678"
-                        className="w-full min-h-[48px] rounded-xl border border-bruma bg-white px-4 py-3 text-base sm:text-sm text-tinta placeholder:text-tinta/40 focus:border-pino focus:outline-none focus:ring-2 focus:ring-pino/20 shadow-2xs transition-colors"
-                    />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label htmlFor="patient-comuna" className="block text-sm font-semibold text-tinta mb-1.5">
-                        Comuna de residencia <span className="text-pino">*</span>
-                    </label>
-                    <input
-                        id="patient-comuna"
-                        type="text"
                         required
-                        autoComplete="address-level2"
-                        enterKeyHint="next"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-700 focus:bg-white focus:ring-1 focus:ring-teal-700"
+                    />
+                </div>
+
+                {/* Comuna o región */}
+                <div>
+                    <label htmlFor="patient-waitlist-comuna" className="block text-xs font-semibold text-slate-700 mb-1">
+                        Comuna o región <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                        id="patient-waitlist-comuna"
+                        type="text"
+                        list="comunas-list"
                         value={comuna}
                         onChange={(e) => setComuna(e.target.value)}
-                        placeholder="Ej. Providencia, Valparaíso, Concepción..."
-                        className="w-full min-h-[48px] rounded-xl border border-bruma bg-white px-4 py-3 text-base sm:text-sm text-tinta placeholder:text-tinta/40 focus:border-pino focus:outline-none focus:ring-2 focus:ring-pino/20 shadow-2xs transition-colors"
+                        placeholder="Ej: Providencia, Concepción, Temuco..."
+                        required
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-700 focus:bg-white focus:ring-1 focus:ring-teal-700"
                     />
+                    <datalist id="comunas-list">
+                        {allComunas.slice(0, 80).map((c) => (
+                            <option key={c} value={c} />
+                        ))}
+                    </datalist>
                 </div>
+
+                {/* Tipo de atención */}
                 <div>
-                    <label htmlFor="patient-prevision" className="block text-sm font-semibold text-tinta mb-1.5">
-                        Previsión de salud <span className="text-pino">*</span>
-                    </label>
-                    <select
-                        id="patient-prevision"
-                        value={prevision}
-                        onChange={(e) => setPrevision(e.target.value)}
-                        className="w-full min-h-[48px] rounded-xl border border-bruma bg-white px-3.5 py-3 text-base sm:text-sm text-tinta focus:border-pino focus:outline-none focus:ring-2 focus:ring-pino/20 shadow-2xs"
-                    >
-                        <option value="FONASA">Fonasa (Tramos B, C, D)</option>
-                        <option value="ISAPRE">Isapre (Con reembolso)</option>
-                        <option value="PARTICULAR">Particular</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <label htmlFor="patient-motivo" className="block text-xs font-semibold text-tinta mb-1.5">
-                    Motivo principal de consulta (opcional)
-                </label>
-                <select
-                    id="patient-motivo"
-                    value={motivoCategoria}
-                    onChange={(e) => setMotivoCategoria(e.target.value)}
-                    className="w-full rounded-xl border border-bruma bg-white px-3 py-2.5 text-sm text-tinta focus:border-pino focus:outline-none focus:ring-1 focus:ring-pino shadow-2xs"
-                >
-                    <option value="">Prefiero no especificar aún</option>
-                    <option value="ANSIEDAD">Ansiedad o crisis de pánico</option>
-                    <option value="ANIMO">Estado de ánimo o depresión</option>
-                    <option value="ESTRES_LABORAL">Estrés laboral o burnout</option>
-                    <option value="PAREJA">Terapia de pareja o familiar</option>
-                    <option value="OTRO">Otro motivo personal</option>
-                </select>
-                <p className="text-[11px] text-tinta/50 mt-1">
-                    Por tu privacidad, no registramos detalles clínicos en esta etapa preliminar.
-                </p>
-            </div>
-
-            {/* Checkbox de consentimiento explícito no premarcado */}
-            <div className="pt-2">
-                <label className="flex items-start gap-2.5 text-xs text-tinta/80 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={consentAccepted}
-                        onChange={(e) => setConsentAccepted(e.target.checked)}
-                        className="h-4 w-4 rounded border-bruma text-pino focus:ring-pino mt-0.5"
-                    />
-                    <span>
-                        Acepto los{' '}
-                        <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-pino underline font-medium hover:text-teal-800">
-                            términos y condiciones
-                        </a>{' '}
-                        y la{' '}
-                        <a href="/privacidad" target="_blank" rel="noopener noreferrer" className="text-pino underline font-medium hover:text-teal-800">
-                            política de privacidad
-                        </a>{' '}
-                        para recibir aviso cuando se habilite la atención.
+                    <span className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Tipo de atención buscada
                     </span>
-                </label>
-            </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {[
+                            { id: 'psicologia', label: 'Psicología' },
+                            { id: 'psiquiatria', label: 'Psiquiatría' },
+                            { id: 'no_estoy_seguro', label: 'No estoy seguro/a' },
+                        ].map((item) => (
+                            <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => setCareType(item.id as any)}
+                                className={`rounded-xl border px-3 py-2 text-xs font-medium transition text-center ${
+                                    careType === item.id
+                                        ? 'border-teal-700 bg-teal-50/90 text-teal-900 font-semibold shadow-2xs'
+                                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                }`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-pino px-6 py-3.5 text-sm font-semibold text-white shadow-xs transition-all hover:bg-[#185752] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pino focus-visible:ring-offset-2 disabled:opacity-50 mt-3"
-            >
-                {loading ? (
-                    <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Inscribiendo...
-                    </>
-                ) : (
-                    'Unirme a la lista de espera'
+                {/* Modalidad */}
+                <div>
+                    <span className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Modalidad preferida
+                    </span>
+                    <div className="grid grid-cols-3 gap-2">
+                        {[
+                            { id: 'online', label: 'Online' },
+                            { id: 'presencial', label: 'Presencial' },
+                            { id: 'ambas', label: 'Ambas' },
+                        ].map((item) => (
+                            <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => setModality(item.id as any)}
+                                className={`rounded-xl border px-3 py-2 text-xs font-medium transition text-center ${
+                                    modality === item.id
+                                        ? 'border-teal-700 bg-teal-50/90 text-teal-900 font-semibold shadow-2xs'
+                                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                }`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Consent checkbox */}
+                <div className="pt-1">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={consent}
+                            onChange={(e) => setConsent(e.target.checked)}
+                            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-600"
+                            required
+                        />
+                        <span className="text-xs text-[#374151] leading-relaxed">
+                            Acepto que PsyDoctor use mis datos para avisarme del lanzamiento, según la{' '}
+                            <Link href="/privacidad" target="_blank" className="font-semibold text-teal-800 underline hover:text-teal-900">
+                                Política de Privacidad
+                            </Link>
+                            .
+                        </span>
+                    </label>
+                </div>
+
+                {errorMessage && (
+                    <div
+                        role="alert"
+                        className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 flex items-start gap-2"
+                    >
+                        <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
+                        <span>{errorMessage}</span>
+                    </div>
                 )}
-            </button>
+
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-teal-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-900 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Enviando...</span>
+                        </>
+                    ) : (
+                        <span>Avísame cuando abran</span>
+                    )}
+                </button>
+            </div>
         </form>
     )
 }

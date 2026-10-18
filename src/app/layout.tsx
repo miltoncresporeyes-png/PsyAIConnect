@@ -16,10 +16,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
     title: {
-        default: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras',
+        default: 'PsyDoctor | Psicólogos y psiquiatras online en Chile',
         template: '%s | PsyDoctor',
     },
-    description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online en todo Chile con precios claros y boleta para reembolso según tu plan.',
+    description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
     keywords: [
         // Búsquedas principales
         'psicólogo Chile',
@@ -45,7 +45,6 @@ export const metadata: Metadata = {
         'reembolso psicólogo Isapre',
         'boleta honorarios psicólogo',
         'psicólogo seguro complementario',
-        'psicólogo arancel fonasa',
         // Reserva y plataforma
         'reservar hora psicólogo',
         'agenda online psicólogo',
@@ -84,8 +83,8 @@ export const metadata: Metadata = {
     },
     metadataBase: new URL('https://psydoctor.cl'),
     openGraph: {
-        title: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras',
-        description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online en todo Chile, boleta para reembolso según tu plan.',
+        title: 'PsyDoctor | Psicólogos y psiquiatras online en Chile',
+        description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
         url: 'https://psydoctor.cl',
         siteName: 'PsyDoctor',
         locale: 'es_CL',
@@ -101,8 +100,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'PsyDoctor | Psicólogos y Psiquiatras en Chile | Boleta para Reembolso',
-        description: 'Psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Precios claros y boleta para reembolso según tu plan.',
+        title: 'PsyDoctor | Psicólogo online en Chile',
+        description: 'Plataforma chilena para conectar con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud. Atención online, precios claros y boleta para reembolso. Únete a la lista de espera.',
         images: ['/images/og-homepage.png'],
         site: '@psydoctor_cl',
         creator: '@psydoctor_cl',
@@ -177,7 +176,7 @@ export default async function RootLayout({
                                     name: 'PsyDoctor',
                                     legalName: 'PsyDoctor SpA',
                                     description:
-                                        'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras habilitados en la Superintendencia de Salud, con boleta para reembolso.',
+                                        'Plataforma de intermediación tecnológica para salud mental en Chile. Conecta pacientes con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud, con boleta para reembolso.',
                                     url: 'https://psydoctor.cl',
                                     logo: 'https://psydoctor.cl/icon.svg',
                                     image: 'https://psydoctor.cl/images/hero-illustration.png',
