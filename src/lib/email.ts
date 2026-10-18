@@ -253,7 +253,8 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
                 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: process.env.EMAIL_FROM || 'PsyDoctor <noreply@psydoctor.cl>',
+                from: process.env.EMAIL_FROM || 'PsyDoctor <contacto@psydoctor.cl>',
+                reply_to: 'contacto@psydoctor.cl',
                 to: [to],
                 subject,
                 html,
