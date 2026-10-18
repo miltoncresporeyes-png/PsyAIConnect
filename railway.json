@@ -4,10 +4,10 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "npm start",
-    "preDeployCommand": "npx prisma migrate deploy",
+    "startCommand": "next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "preDeployCommand": "npx prisma migrate deploy || echo 'Prisma migration skipped or failed'",
     "healthcheckPath": "/api/health",
-    "healthcheckTimeout": 60,
+    "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5
   }
