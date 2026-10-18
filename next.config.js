@@ -1,15 +1,16 @@
-const createNextIntlPlugin = require('next-intl/plugin')
-
-const nextConfigI18n = {
-  locales: ['es', 'en', 'fr', 'pt'],
-  defaultLocale: 'es',
-}
-
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
+const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@': path.resolve(__dirname, 'src'),
+    };
+    return config;
+  },
 
   experimental: {
     optimizePackageImports: ['lucide-react', '@formatjs/react-intl'],
@@ -20,9 +21,9 @@ const nextConfig = {
   },
 
   async redirects() {
-    const isWaitlistMode = process.env.WAITLIST_MODE === 'true'
+    const isWaitlistMode = process.env.WAITLIST_MODE === 'true';
     if (!isWaitlistMode) {
-      return []
+      return [];
     }
 
     return [
@@ -61,12 +62,12 @@ const nextConfig = {
         destination: '/#lista-espera',
         permanent: false,
       },
-    ]
+    ];
   },
 
   async headers() {
     if (process.env.NODE_ENV !== 'production') {
-      return []
+      return [];
     }
 
     return [
@@ -79,8 +80,11 @@ const nextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
-}
+};
 
-module.exports = withNextIntl(nextConfig)
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+module.exports = withNextIntl(nextConfig);
