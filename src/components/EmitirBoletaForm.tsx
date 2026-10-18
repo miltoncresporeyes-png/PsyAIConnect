@@ -108,6 +108,26 @@ export default function EmitirBoletaForm() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      {/* Banner de Estado: En etapa de implementación */}
+      <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5 text-amber-950">
+        <div className="flex items-start gap-3">
+          <span className="text-xl">⚠️</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-amber-900">
+                Módulo en etapa de implementación (Próximamente)
+              </h2>
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900">
+                Pronto a liberar
+              </span>
+            </div>
+            <p className="mt-1 text-xs sm:text-sm text-amber-800 leading-relaxed">
+              La conexión directa para la emisión automática de Boletas de Honorarios Electrónicas ante el Servicio de Impuestos Internos (SII) se encuentra actualmente en fase de pruebas e integración técnica. Estará disponible para todos los profesionales una vez finalizadas las certificaciones correspondientes.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <h1 className="text-3xl font-bold text-gray-900 mb-8">
         Emitir Boleta Electrónica
       </h1>

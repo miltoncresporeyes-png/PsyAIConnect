@@ -362,11 +362,27 @@ export default function MonthlyReportViewer() {
 
                     {/* Estado de Boletas */}
                     <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                             <h2 className="text-xl font-bold">📄 Estado de Boletas ({report.invoices.length})</h2>
-                            <span className="text-[11px] bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full font-semibold self-start sm:self-auto">
-                                Emisión automática directa al SII: Próximamente
+                            <span className="inline-flex items-center gap-1.5 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-medium self-start sm:self-auto">
+                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                Emisión automática de boletas: Próximamente
                             </span>
+                        </div>
+
+                        {/* Observación informativa de etapa de implementación */}
+                        <div className="mb-6 rounded-xl border border-amber-200/80 bg-amber-50/60 p-4 text-xs text-amber-900 leading-relaxed">
+                            <div className="flex items-start gap-2.5">
+                                <span className="text-base leading-none">ℹ️</span>
+                                <div>
+                                    <p className="font-semibold text-amber-950">
+                                        Observación sobre emisión de boleta electrónica al SII:
+                                    </p>
+                                    <p className="mt-0.5 text-amber-800">
+                                        La función de emisión automática de boletas de honorarios electrónicas directas al SII se encuentra actualmente en <strong>etapa de implementación y pruebas técnicas</strong>, próxima a ser liberada para todos los profesionales. Durante esta fase previa, puedes registrar y descargar tus respaldos o emitir la boleta de manera regular en el portal del SII.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <TableContainer>
