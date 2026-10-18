@@ -230,6 +230,29 @@ const EMAIL_TEMPLATES = {
     },
 }
 
+function getNormalizedFromEmail(): string {
+    const raw = (process.env.EMAIL_FROM || '').trim()
+    if (!raw) {
+        return 'PsyDoctor <onboarding@resend.dev>'
+    }
+
+    // Si ya tiene el formato correcto "Nombre <email@dominio.cl>" o "email@dominio.cl"
+    const namedMatch = raw.match(/^([^<]+)<([^>]+)>$/)
+    if (namedMatch) {
+        const name = namedMatch[1].trim()
+        const addr = namedMatch[2].trim()
+        return `${name} <${addr}>`
+    }
+
+    // Si viene solo como email
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
+        return `PsyDoctor <${raw}>`
+    }
+
+    // Si viene solo el nombre sin email o un valor corrupto
+    return 'PsyDoctor <onboarding@resend.dev>'
+}
+
 /**
  * Send email using Resend API or console log in development
  */
@@ -247,6 +270,8 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
         return { success: true, messageId: 'simulated-' + Date.now() }
     }
 
+    const fromAddress = getNormalizedFromEmail()
+
     try {
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -255,7 +280,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
                 'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-                from: process.env.EMAIL_FROM || 'PsyDoctor <contacto@psydoctor.cl>',
+                from: fromAddress,
                 reply_to: 'contacto@psydoctor.cl',
                 to: [to],
                 subject,
