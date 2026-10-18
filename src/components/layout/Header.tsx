@@ -27,10 +27,9 @@ export function Header() {
               { name: 'Preguntas frecuentes', href: '/#faq' },
           ]
         : [
-              { name: 'Buscar Profesional', href: '/buscar' },
-              { name: 'Soy Profesional (Fundadores)', href: '/profesionales' },
-              { name: t('planes'),       href: '/planes' },
-              { name: t('howItWorks'),   href: '/#como-funciona' },
+              { name: 'Buscar profesional', href: '/buscar' },
+              { name: 'Cómo funciona', href: '/#como-funciona' },
+              { name: 'Para profesionales', href: '/profesionales' },
           ]
 
     return (
@@ -68,26 +67,16 @@ export function Header() {
                             </span>
                         </Link>
 
-                        {/* Desktop nav links */}
-                        <div className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
+                        <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
                             {navigation.map((item) => (
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-150 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap"
+                                    className="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition-all duration-150 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap"
                                 >
                                     {item.name}
                                 </Link>
                             ))}
-                            {!isWaitlist && (
-                                <Link
-                                    href="/buscar"
-                                    className="ml-1.5 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-teal-700 transition-all duration-150 hover:bg-teal-50 whitespace-nowrap"
-                                >
-                                    {t('trySearch')}
-                                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-                                </Link>
-                            )}
                         </div>
 
                         {/* Desktop CTA */}
@@ -203,16 +192,6 @@ export function Header() {
                                         {item.name}
                                     </Link>
                                 ))}
-                                {!isWaitlist && (
-                                    <Link
-                                        href="/buscar"
-                                        className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-50"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    >
-                                        {t('trySearch')}
-                                        <ArrowRight className="h-3.5 w-3.5" />
-                                    </Link>
-                                )}
                             </div>
 
                             <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4">
