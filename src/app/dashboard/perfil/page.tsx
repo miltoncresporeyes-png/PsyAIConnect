@@ -474,31 +474,68 @@ export default function PerfilPage() {
                                 </div>
                             </div>
 
-                            {/* Professional Credentials */}
-                            <div className="card p-6">
+                            {/* Professional Credentials & Verification */}
+                            <div id="verificacion" className="card p-6 scroll-mt-6">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <Shield className="w-5 h-5 text-gray-600" />
+                                    <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center text-teal-700">
+                                        <Shield className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Credenciales y Verificación</h2>
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-gray-900">Credenciales y Verificación</h2>
+                                        <p className="text-xs text-slate-500">
+                                            Requisito obligatorio para aparecer visible en el buscador público
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg">
-                                        <span className="text-sm text-gray-500">Registro SIS / Licencia</span>
-                                        <span className="font-mono text-sm font-semibold">{professionalData.licenseNumber || 'Pendiente'}</span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div className="flex flex-col justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-xs font-semibold text-slate-600">Registro Superintendencia de Salud</span>
+                                            <a
+                                                href="https://rnpi.superdesalud.gob.cl/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[11px] text-teal-700 hover:underline flex items-center gap-1 font-medium"
+                                            >
+                                                <span>Verificar RNPI</span>
+                                                <ExternalLink className="w-3 h-3" />
+                                            </a>
+                                        </div>
+                                        <span className="font-mono text-sm font-bold text-slate-900">
+                                            {professionalData.licenseNumber || 'Pendiente de registrar'}
+                                        </span>
                                     </div>
-                                    <div className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg">
-                                        <span className="text-sm text-gray-500">Estado de Verificación</span>
-                                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${professionalData.verificationStatus === 'VERIFIED' ? 'bg-green-100 text-green-700' :
-                                            professionalData.verificationStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                                                'bg-red-100 text-red-700'
-                                            }`}>
-                                            {professionalData.verificationStatus === 'VERIFIED' ? 'VERIFICADO' :
-                                                professionalData.verificationStatus === 'PENDING' ? 'EN REVISIÓN' : 'RECHAZADO'}
+
+                                    <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                        <div>
+                                            <span className="text-xs font-semibold text-slate-600 block">Estado de Verificación</span>
+                                            <span className="text-[11px] text-slate-500">Asignado manualmente por administración</span>
+                                        </div>
+                                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                            professionalData.verificationStatus === 'VERIFIED'
+                                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                                : professionalData.verificationStatus === 'PENDING'
+                                                ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                                : 'bg-rose-100 text-rose-800 border border-rose-200'
+                                        }`}>
+                                            {professionalData.verificationStatus === 'VERIFIED'
+                                                ? 'VERIFICADO'
+                                                : professionalData.verificationStatus === 'PENDING'
+                                                ? 'EN REVISIÓN'
+                                                : 'OBSERVADO'}
                                         </span>
                                     </div>
                                 </div>
+
+                                {professionalData.verificationStatus !== 'VERIFIED' && (
+                                    <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+                                        <p className="font-semibold mb-0.5">Tu perfil no es visible para pacientes hasta completar la verificación.</p>
+                                        <p className="text-amber-800/90 leading-relaxed">
+                                            Para verificar tu cuenta, nuestro equipo valida tu inscripción vigente en el Registro Nacional de Prestadores Individuales (RNPI). Si necesitas adjuntar constancia o título, puedes enviarlo a <strong>contacto@psydoctor.cl</strong>.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Contact Info (Common) */}

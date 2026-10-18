@@ -396,6 +396,11 @@ export default function VirtualWaitingRoom({
         </div>
       )}
 
+      {/* Backup Channel Notice */}
+      <div className="p-3.5 bg-teal-50/70 border border-teal-200/80 rounded-xl text-xs text-teal-900 leading-relaxed text-center">
+        💡 <strong>Canal de respaldo:</strong> Si falla la conexión, tu profesional podrá contactarte directamente al número o correo registrado en tu perfil.
+      </div>
+
       <div className="text-center">
         <div className="w-24 h-24 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
           <Clock className="w-12 h-12 text-sky-600 animate-pulse" />

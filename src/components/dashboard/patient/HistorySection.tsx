@@ -25,8 +25,8 @@ export function HistorySection({ hasHistory }: HistorySectionProps) {
                             <FileText className="w-4 h-4 text-teal-600" />
                         </div>
                         <div>
-                            <span className="text-sm font-medium text-gray-800">Diagnósticos e Indicaciones</span>
-                            <span className="block text-[11px] text-teal-600 font-normal">Ficha clínica Ley 20.584</span>
+                            <span className="text-sm font-medium text-gray-800">Indicaciones de mi profesional</span>
+                            <span className="block text-[11px] text-teal-600 font-normal">Acompañamiento clínico</span>
                         </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-teal-600 transition-colors" />

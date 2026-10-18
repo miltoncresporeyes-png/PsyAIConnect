@@ -8,6 +8,7 @@ import { Menu, X, User, LogOut, LayoutDashboard, UserCircle, ArrowRight } from '
 import { Logo } from './Logo'
 import { CrisisBanner } from './CrisisBanner'
 import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
+import { ImmediateHelpModal } from '@/components/dashboard/ImmediateHelpModal'
 
 export function Header() {
     const { data: session, status } = useSession()
@@ -56,8 +57,9 @@ export function Header() {
                             ))}
                         </div>
 
-                        {/* Desktop CTA: Iniciar sesión + único botón principal 'Avísame cuando abran' */}
+                        {/* Desktop CTA: Iniciar sesión + Ayuda Inmediata + único botón principal 'Avísame cuando abran' */}
                         <div className="hidden lg:flex items-center gap-2 shrink-0">
+                            <ImmediateHelpModal />
                             {isLoggedIn ? (
                                 <div className="relative">
                                     <button
@@ -130,8 +132,9 @@ export function Header() {
                             )}
                         </div>
 
-                        {/* Mobile hamburger */}
+                        {/* Mobile hamburger & Immediate Help */}
                         <div className="flex items-center gap-2 lg:hidden shrink-0">
+                            <ImmediateHelpModal />
                             <button
                                 className="rounded-xl border border-slate-200 p-2 text-slate-600 transition-colors hover:bg-slate-50"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}

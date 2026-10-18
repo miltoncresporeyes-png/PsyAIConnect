@@ -17,7 +17,8 @@ import {
 import { MetricsCards } from '@/components/dashboard/patient/MetricsCards'
 import { PrimaryAction } from '@/components/dashboard/patient/PrimaryAction'
 import { HistorySection } from '@/components/dashboard/patient/HistorySection'
-import { EmotionalCheckIn } from '@/components/dashboard/patient/EmotionalCheckIn'
+import EmotionalCheckInCard from '@/components/dashboard/EmotionalCheckInCard'
+import PatientOnboardingChecklist from '@/components/dashboard/PatientOnboardingChecklist'
 import { BreathingResource } from '@/components/dashboard/patient/BreathingResource'
 import { SafetyMicroCopy } from '@/components/dashboard/patient/SafetyMicroCopy'
 import { DiagnosisSection, PatientDiagnosis } from '@/components/dashboard/patient/DiagnosisSection'
@@ -259,10 +260,10 @@ export default function DashboardPage() {
                                     <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white mt-1">
                                         Hola, {userName}
                                     </h1>
-                                    <p className="text-xs sm:text-sm text-teal-100/80 truncate">
+                                    <p className="text-xs sm:text-sm text-teal-100/90 truncate">
                                         {isProfessional
                                             ? 'Supervisión clínica, agenda y pacientes en un solo lugar'
-                                            : 'Tu registro de acompañamiento, citas y bienestar emocional'}
+                                            : 'Tu espacio para acompañar tu proceso.'}
                                     </p>
                                 </div>
                             </div>
@@ -433,7 +434,7 @@ export default function DashboardPage() {
                                                 Fichas de Pacientes
                                             </h3>
                                             <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
-                                                Historial protegido Ley N° 20.584
+                                                Historial y notas clínicas reservadas
                                             </p>
                                         </div>
                                     </Link>
@@ -520,14 +521,49 @@ export default function DashboardPage() {
                        ========================================================= */}
                     {!isProfessional && (
                         <div className="space-y-6">
-                            {/* ZONA 1: Métricas de Consulta */}
-                            <MetricsCards
-                                totalSessions={patientData.totalSessions}
-                                lastSessionDate={patientData.lastSessionDaysAgo}
-                                nextSessionDate={patientData.nextSession}
-                                professionalName={patientData.professionalName}
-                                professionalType={patientData.professionalType}
-                            />
+                            {/* Checklist de inicio si no tiene cita ni profesional */}
+                            {!patientData.hasHistory && !patientData.nextSession ? (
+                                <PatientOnboardingChecklist
+                                    hasProfile={!!session.user.name && !!session.user.email}
+                                    hasConsents={true}
+                                    hasProfessional={!!patientData.professionalName}
+                                    hasBookedSession={!!patientData.nextSession}
+                                />
+                            ) : (
+                                <>
+                                    {patientData.nextSession && (
+                                        <div className="bg-white rounded-2xl border border-teal-200/90 p-5 shadow-xs mb-4">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div>
+                                                    <span className="text-[10px] bg-teal-100 text-teal-800 font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Tu próxima sesión
+                                                    </span>
+                                                    <h3 className="text-base font-bold text-slate-900 mt-2">
+                                                        {patientData.professionalName || 'Sesión programada'}
+                                                    </h3>
+                                                    <p className="text-xs text-slate-500 mt-0.5">
+                                                        {patientData.nextSession} • Online por Videollamada
+                                                    </p>
+                                                </div>
+                                                <Link
+                                                    href="/dashboard/citas"
+                                                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-teal-800 hover:bg-teal-900 text-white shadow-xs transition"
+                                                >
+                                                    Entrar a la sesión
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <MetricsCards
+                                        totalSessions={patientData.totalSessions}
+                                        lastSessionDate={patientData.lastSessionDaysAgo}
+                                        nextSessionDate={patientData.nextSession}
+                                        professionalName={patientData.professionalName}
+                                        professionalType={patientData.professionalType}
+                                    />
+                                </>
+                            )}
 
                             {/* ZONA 2: Acción principal (agendar / continuar) */}
                             <PrimaryAction
@@ -539,18 +575,12 @@ export default function DashboardPage() {
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                                 {/* Columna Principal */}
                                 <div className="lg:col-span-7 space-y-5 min-w-0">
-                                    <div id="diagnosticos-clinicos" className="scroll-mt-6">
-                                        <DiagnosisSection
-                                            diagnoses={diagnoses}
-                                            loading={diagnosesLoading}
-                                        />
-                                    </div>
+                                    <EmotionalCheckInCard />
                                     <HistorySection hasHistory={patientData.hasHistory} />
                                 </div>
 
                                 {/* Columna Lateral */}
                                 <div className="lg:col-span-5 space-y-4 min-w-0">
-                                    <EmotionalCheckIn />
                                     <ReimbursementCard />
                                     <BreathingResource />
                                     <SafetyMicroCopy />

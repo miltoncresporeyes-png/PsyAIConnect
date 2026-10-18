@@ -155,19 +155,25 @@ export default function CitasPage() {
 
                 {/* Appointments List */}
                 {filteredAppointments.length === 0 ? (
-                    <div className="dashboard-panel p-10 text-center">
-                        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            No hay citas {filter === 'upcoming' ? 'próximas' : filter === 'past' ? 'pasadas' : ''}
+                    <div className="bg-white rounded-2xl border border-slate-200/90 p-10 text-center shadow-xs">
+                        <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center mx-auto mb-3">
+                            <Calendar className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-base font-bold text-slate-900 mb-1">
+                            Aún no tienes citas
                         </h3>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-xs text-slate-600 mb-6 max-w-sm mx-auto leading-relaxed">
                             {isProfessional
-                                ? 'Cuando tengas citas agendadas, aparecerán aquí.'
-                                : 'Busca un profesional y agenda tu primera sesión.'}
+                                ? 'No tienes sesiones programadas por ahora. Revisa tu disponibilidad en la agenda.'
+                                : 'Cuando estés listo/a, te ayudamos a encontrar apoyo.'}
                         </p>
-                        {!isProfessional && (
-                            <Link href="/buscar" className="btn-primary">
-                                Buscar profesional
+                        {!isProfessional ? (
+                            <Link href="/buscar" className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-semibold bg-teal-800 hover:bg-teal-900 text-white shadow-xs transition">
+                                Encontrar apoyo
+                            </Link>
+                        ) : (
+                            <Link href="/dashboard/disponibilidad" className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-semibold bg-teal-800 hover:bg-teal-900 text-white shadow-xs transition">
+                                Ver mi agenda
                             </Link>
                         )}
                     </div>

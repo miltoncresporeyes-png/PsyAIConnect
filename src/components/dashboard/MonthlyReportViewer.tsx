@@ -362,7 +362,12 @@ export default function MonthlyReportViewer() {
 
                     {/* Estado de Boletas */}
                     <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="text-xl font-bold mb-6">📄 Estado de Boletas ({report.invoices.length})</h2>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                            <h2 className="text-xl font-bold">📄 Estado de Boletas ({report.invoices.length})</h2>
+                            <span className="text-[11px] bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full font-semibold self-start sm:self-auto">
+                                Emisión automática directa al SII: Próximamente
+                            </span>
+                        </div>
 
                         <TableContainer>
                             <TableHeader>

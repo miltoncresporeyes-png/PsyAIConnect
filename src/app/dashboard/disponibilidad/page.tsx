@@ -253,11 +253,44 @@ export default function DisponibilidadPage() {
                             ))}
                         </div>
 
+                        {/* Política de Cancelación Configurable */}
+                        <div className="mt-8 p-5 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                            <h3 className="text-sm font-bold text-slate-900 mb-2">
+                                Política de cancelación visible para tus pacientes
+                            </h3>
+                            <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                                Los pacientes pueden cancelar o reprogramar sin costo hasta <strong>24 horas antes</strong> de la sesión. Cancelaciones con menor anticipación están sujetas a una retención del 50% según la política estándar.
+                            </p>
+                            <span className="text-[11px] text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 font-medium inline-block">
+                                Política activa: 24h anticipación (reembolso 100%) / &lt;24h (reembolso 50%)
+                            </span>
+                        </div>
+
+                        {/* Sincronización con Google Calendar (Próximamente) */}
+                        <div className="mt-4 p-5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="text-xs font-bold text-slate-800">Sincronización con Google Calendar</h4>
+                                    <span className="text-[10px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-full">
+                                        Próximamente
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-500">
+                                    Exportación bidireccional automática con tu calendario personal.
+                                </p>
+                            </div>
+                            <button
+                                disabled
+                                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 text-slate-400 cursor-not-allowed shrink-0"
+                            >
+                                Conectar
+                            </button>
+                        </div>
+
                         {/* Info */}
-                        <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
+                        <div className="mt-4 p-4 bg-teal-50/70 border border-teal-200/80 rounded-2xl text-xs text-teal-900">
                             <p>
-                                <strong>Tip:</strong> Los pacientes solo podrán agendar en los horarios que definas aquí.
-                                Asegúrate de bloquear los horarios que ya tengas ocupados.
+                                <strong>Nota:</strong> Los pacientes solo podrán agendar en los bloques activos que definas aquí.
                             </p>
                         </div>
                     </div>
