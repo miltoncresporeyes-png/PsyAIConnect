@@ -1,7 +1,7 @@
 'use client'
 
-import { ChatInterface } from '@/components/assistant/ChatInterface'
+import { FloatingWhatsAppButton } from '@/components/waitlist/FloatingWhatsAppButton'
 
 export function WhatsAppAssistant() {
-  return <ChatInterface variant="button" />
+  return <FloatingWhatsAppButton />
 }
