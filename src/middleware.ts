@@ -30,11 +30,11 @@ function applySecurityHeaders(response: NextResponse) {
         response.headers.set(
             'Content-Security-Policy',
             "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline'; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
             "font-src 'self' https://fonts.gstatic.com data:; " +
-            "img-src 'self' data: https: blob:; " +
-            "connect-src 'self' https: wss:; " +
+            "img-src 'self' data: https: blob: https://www.google-analytics.com; " +
+            "connect-src 'self' https: wss: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; " +
             "frame-src 'self' https://www.flow.cl https://sandbox.flow.cl; " +
             "form-action 'self' https://www.flow.cl https://sandbox.flow.cl; " +
             "base-uri 'self'; " +
