@@ -5,18 +5,18 @@ import { ShieldCheck, FileText, UserCheck, Eye } from 'lucide-react'
 const CHECKS = [
   {
     icon: FileText,
-    title: 'Documentación exigida',
+    title: 'Validación de Título e Identidad',
     description:
-      'Para registrarse como profesional se pide RUT, número de licencia o título y el documento digital correspondiente.',
+      'Para registrarse se exige cédula de identidad y título profesional legalizado expedido por una universidad reconocida en Chile.',
     color: 'text-teal-600',
     bg: 'bg-teal-50',
     border: 'border-teal-200',
   },
   {
     icon: Eye,
-    title: 'Revisión manual',
+    title: 'Registro Superintendencia de Salud',
     description:
-      'Cada solicitud es revisada por el equipo de PsyDoctor: comparamos los datos del registro con los documentos entregados.',
+      'Verificamos que cada profesional esté habilitado en el Registro Nacional de Prestadores Individuales de la Superintendencia de Salud.',
     color: 'text-cyan-600',
     bg: 'bg-cyan-50',
     border: 'border-cyan-200',

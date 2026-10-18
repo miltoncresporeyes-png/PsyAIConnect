@@ -14,9 +14,9 @@ import { ProfessionalDirectory } from '@/components/directory/ProfessionalDirect
 import WaitlistLandingPage from '@/components/waitlist/WaitlistLandingPage'
 
 export const metadata: Metadata = {
-    title: { absolute: 'PsyDoctor | Psicólogo Online en Chile | Agenda con Fonasa e Isapre' },
-    description: 'Encuentra psicólogos y psiquiatras verificados en Chile. Agenda sesiones online hoy, con cobertura Fonasa e Isapre, precios transparentes y sin lista de espera.',
-alternates: {
+    title: { absolute: 'PsyDoctor | Psicólogos y Psiquiatras en Chile | Boleta para Reembolso' },
+    description: 'Encuentra psicólogos y psiquiatras registrados en la Superintendencia de Salud. Agenda online según disponibilidad, precios transparentes y boleta para reembolso.',
+    alternates: {
         canonical: 'https://psydoctor.cl',
         languages: {
             'es-CL': 'https://psydoctor.cl',

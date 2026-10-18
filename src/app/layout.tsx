@@ -16,10 +16,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
     title: {
-        default: 'PsyDoctor | Salud Mental Accesible en Chile | psicólogos y psiquiatras',
+        default: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras',
         template: '%s | PsyDoctor',
     },
-    description: 'Conecta con psicólogos y psiquiatras verificados en Chile. Agenda sesiones online en minutos, precios transparentes, y continúa tu proceso terapéutico sin interrupciones.',
+    description: 'Conecta con psicólogos y psiquiatras habilitados en Chile. Reserva online según disponibilidad, boleta para reembolso en Isapre y seguros, y datos protegidos conforme a la Ley 20.584.',
     keywords: [
         // Búsquedas principales
         'psicólogo Chile',
@@ -41,20 +41,17 @@ export const metadata: Metadata = {
         'terapia psicológica Santiago',
         'psicólogo Valparaíso',
         'psicólogo Concepción',
-        // Cobertura previsional (alta intención en Chile)
-        'psicólogo Fonasa',
-        'psicólogo Isapre',
-        'psicólogo bonificación Isapre',
-        'terapia cobertura Fonasa',
+        // Cobertura previsional y reembolso
         'reembolso psicólogo Isapre',
-        'salud mental Fonasa',
+        'boleta honorarios psicólogo',
+        'psicólogo seguro complementario',
+        'psicólogo arancel fonasa',
         // Reserva y plataforma
         'reservar hora psicólogo',
         'agenda online psicólogo',
         'directorio psicólogos Chile',
-        'psicólogos verificados Chile',
+        'psicólogos verificados Superintendencia de Salud',
         'plataforma salud mental Chile',
-        'primera sesión psicólogo',
         'precios transparentes psicólogo',
         // Tipos de terapia
         'terapia cognitivo conductual Chile',
@@ -87,8 +84,8 @@ export const metadata: Metadata = {
     },
     metadataBase: new URL('https://psydoctor.cl'),
     openGraph: {
-        title: 'PsyDoctor | Psicólogo Online en Chile | Agenda tu sesión hoy',
-        description: 'Encuentra psicólogos y psiquiatras verificados en Chile. Agenda con cobertura Fonasa e Isapre. Precios transparentes, sin lista de espera.',
+        title: 'PsyDoctor | Salud Mental en Chile | Psicólogos y Psiquiatras Habilitados',
+        description: 'Encuentra psicólogos y psiquiatras habilitados en el Registro Nacional de Prestadores. Boleta para reembolso en Isapre y seguros complementarios.',
         url: 'https://psydoctor.cl',
         siteName: 'PsyDoctor',
         locale: 'es_CL',
@@ -98,7 +95,7 @@ export const metadata: Metadata = {
                 url: '/images/og-homepage.png',
                 width: 1200,
                 height: 630,
-                alt: 'PsyDoctor: agenda con psicólogos y psiquiatras verificados en Chile',
+                alt: 'PsyDoctor: psicólogos y psiquiatras habilitados en Chile',
             },
         ],
     },

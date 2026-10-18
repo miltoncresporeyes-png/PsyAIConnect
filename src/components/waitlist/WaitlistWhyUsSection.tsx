@@ -29,7 +29,7 @@ export function WaitlistWhyUsSection() {
                             </Heading>
                         </div>
                         <p className="text-sm text-tinta/70 leading-relaxed pl-[3.25rem]">
-                            Cumplimiento estricto de la Ley N° 20.584. Fichas clínicas cifradas de extremo a extremo donde solo tú y tu profesional acceden al contenido.
+                            Cumplimiento estricto de la Ley N° 20.584. Fichas clínicas cifradas con AES-256 en reposo y en tránsito donde solo tú y tu profesional acceden al contenido.
                         </p>
                     </div>
 

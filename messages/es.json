@@ -24,8 +24,8 @@
     "launchAvailable": "Disponible ahora",
     "headline1": "Encuentra el profesional de salud mental que necesitas",
     "headlineHighlight": "verificado, cerca de ti y sin fricción",
-    "description": "PsyDoctor conecta pacientes con psicólogos y psiquiatras verificados en Chile. Orientación personalizada, agenda online, pagos seguros y continuidad de tu proceso: todo en una plataforma que respeta tu privacidad desde el primer clic.",
-    "chipVerified": "Psicólogos y psiquiatras verificados",
+    "description": "PsyDoctor conecta pacientes con psicólogos y psiquiatras habilitados en Chile. Orientación personalizada, reserva online según disponibilidad real, emisión de boleta para reembolso y datos protegidos conforme a la ley.",
+    "chipVerified": "Verificados en la Superintendencia de Salud",
     "chipOnline": "Atención online y presencial",
     "chipPayments": "Pagos seguros en CLP",
     "ctaPatient": "Buscar profesional",
@@ -37,17 +37,17 @@
     "submitSending": "Enviando...",
     "submitBtn": "Quiero acceso",
     "trustProtected": "Tus datos están protegidos. Sin spam.",
-    "trustSchedule": "Agenda en minutos y sin costos ocultos.",
-    "statsProfessionals": "Profesionales verificados",
+    "trustSchedule": "Reserva online sin costos ocultos.",
+    "statsProfessionals": "Superintendencia de Salud",
     "statsBeta": "En línea",
-    "stats24h": "24/7",
-    "statsAgenda": "agenda online",
+    "stats24h": "Plataforma",
+    "statsAgenda": "disponible para agendar",
     "stats100": "100%",
     "statsConfidential": "confidencial",
     "statsCLP": "CLP",
     "statsLocalPayment": "pago local",
     "privacyTitle": "Privacidad garantizada",
-    "privacyLaw": "Ley 19.628 · RGPD"
+    "privacyLaw": "Ley 19.628 · Ley 20.584"
   },
   "adminBanner": {
     "title": "Plataforma creada por expertos en salud mental y tecnología",
@@ -256,11 +256,11 @@
       },
       {
         "question": "¿Cómo sé que los profesionales son confiables?",
-        "answer": "Todos los profesionales de PsyDoctor pasan por un proceso de verificación que incluye validación de su título universitario y registro profesional. Solo trabajan en nuestra plataforma profesionales habilitados para ejercer en Chile."
+        "answer": "Todos los profesionales en PsyDoctor son validados ante el Registro Nacional de Prestadores Individuales de la Superintendencia de Salud de Chile, además de revisar su cédula de identidad y título universitario habilitante."
       },
       {
-        "question": "¿Mis conversaciones son privadas?",
-        "answer": "Absolutamente. Tu privacidad es nuestra prioridad. Toda la información que compartas está protegida por secreto profesional y encriptación de datos. Ni PsyDoctor ni terceros tienen acceso a tus conversaciones con tu profesional."
+        "question": "¿Mis conversaciones y fichas clínicas son privadas?",
+        "answer": "Absolutamente. Tus datos y fichas clínicas se rigen por la Ley N° 20.584 y la Ley N° 19.628, con cifrado AES-256 en reposo y conexiones protegidas TLS en tránsito. Ni PsyDoctor ni terceros acceden a las notas de tu terapeuta."
       },
       {
         "question": "¿Cuánto cuesta una consulta?",

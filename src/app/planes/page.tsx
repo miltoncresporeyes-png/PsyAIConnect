@@ -190,7 +190,7 @@ export default function PlanesPage() {
                         </div>
                         <div className="sm:border-x sm:border-gray-100">
                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Cifrado de Notas</h4>
-                            <p className="text-sm font-semibold text-gray-700">AES-256 de Extremo a Extremo</p>
+                            <p className="text-sm font-semibold text-gray-700">AES-256 en Reposo y Tránsito</p>
                         </div>
                         <div>
                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Emisión Contable</h4>
