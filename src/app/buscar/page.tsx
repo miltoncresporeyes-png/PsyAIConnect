@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import Image from "next/image";
-import SearchBar from "@/components/hero/SearchBar";
-import { MOCK_PROFESSIONALS, filterProfessionals } from "@/data/mock-professionals";
-import { getRegionNombre } from "@/constants/chile-data";
-import { PREVISIONS, MODALIDADES } from "@/constants/chile-data";
+import SearchBar from "../../components/hero/SearchBar";
+import { MOCK_PROFESSIONALS, filterProfessionals } from "../../data/mock-professionals";
+import { getRegionNombre } from "../../constants/chile-data";
+import { PREVISIONS, MODALIDADES } from "../../constants/chile-data";
 import { X, Calendar, MapPin, Clock, ChevronLeft, ChevronRight, Check, Loader2, AlertCircle } from "lucide-react";
-import { ProfessionalCard } from "@/types/search";
-import { Header, Footer } from '@/components/layout';
-import { PageContainer, CardGrid } from '@/components/layout/shell';
+import { ProfessionalCard } from "../../types/search";
+import { Header, Footer } from '../../components/layout';
+import { PageContainer, CardGrid } from '../../components/layout/shell';
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
