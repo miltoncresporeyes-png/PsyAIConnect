@@ -135,6 +135,20 @@ async function handleAcceptedInvoice(
     },
   })
 
+  // Sincronizar estado en tabla Invoice
+  if (invoiceQueue.appointmentId) {
+    try {
+      await prisma.invoice.updateMany({
+        where: { appointmentId: invoiceQueue.appointmentId },
+        data: {
+          status: 'PAID',
+        },
+      })
+    } catch (e) {
+      console.warn('Could not update Invoice status on SII acceptance:', e)
+    }
+  }
+
   console.log(`✅ Invoice ${payload.folio} ACCEPTED by SII`)
 }
 

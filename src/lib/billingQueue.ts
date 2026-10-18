@@ -15,7 +15,7 @@ const invoiceQueueSchema = z.object({
   pacienteEmail: z.string().email().optional(),
   pacienteTelefono: z.string().optional(),
   servicioDescripcion: z.string(),
-  servicioFecha: z.string().datetime(),
+  servicioFecha: z.string(),
   servicioMonto: z.number().int().positive(),
   descuento: z.number().int().default(0),
   profesionalRut: z.string(),
@@ -123,6 +123,62 @@ export async function processInvoiceQueue(): Promise<{
             completedAt: new Date(),
           },
         })
+
+        // Sincronizar o crear registro en la tabla oficial Invoice (para reembolsos y reportes)
+        try {
+          const appointment = await prisma.appointment.findUnique({
+            where: { id: item.appointmentId },
+            include: {
+              patient: {
+                include: {
+                  patientProfile: {
+                    include: {
+                      coverage: {
+                        include: {
+                          isapre: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              payment: true,
+            },
+          })
+
+          if (appointment) {
+            const brutAmount = item.servicioMonto - (item.descuento || 0)
+            const siiRetention = Math.round(brutAmount * 0.1525) // Tasa vigente honorarios 15.25%
+            const netAmount = brutAmount - siiRetention
+            const invoiceNum = emitResult.invoiceNumber || `BH-${item.siiFolio || Date.now()}`
+            const profile = appointment.patient?.patientProfile
+            const isapreName = profile?.coverage?.isapre?.name || null
+
+            await prisma.invoice.upsert({
+              where: { appointmentId: item.appointmentId },
+              update: {
+                invoiceNumber: invoiceNum,
+                status: 'PAID',
+                paidAt: appointment.payment?.paidAt || new Date(),
+              },
+              create: {
+                appointmentId: item.appointmentId,
+                invoiceNumber: invoiceNum,
+                issueDate: new Date(item.servicioFecha),
+                brutAmount,
+                siiRetention,
+                netAmount,
+                healthSystem: profile?.healthSystem || 'PRIVATE',
+                isapre: isapreName,
+                status: 'PAID',
+                paidAt: appointment.payment?.paidAt || new Date(),
+              },
+            })
+          }
+        } catch (invoiceSyncErr) {
+          console.error(`Error syncing Invoice table for appointment ${item.appointmentId}:`, invoiceSyncErr)
+        }
+
         result.succeeded++
       } else {
         // Error - manejar reintento
@@ -200,7 +256,7 @@ async function emitBoletaToSII(item: any): Promise<EmitBoletaResult> {
             resolve({
               success: true,
               invoiceNumber: result.numero_documento,
-              siiFolio: result.folio,
+              siiFolio: result.sii_folio ? String(result.sii_folio) : (result.folio ? String(result.folio) : undefined),
             })
           }
         } catch {
