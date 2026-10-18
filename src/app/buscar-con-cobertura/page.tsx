@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { CoverageFilter, CoverageData } from '@/components/search/CoverageFilter'
-import { ProfessionalCardWithCoverage } from '@/components/search/ProfessionalCardWithCoverage'
+import { CoverageFilter, CoverageData } from '../../components/search/CoverageFilter'
+import { ProfessionalCardWithCoverage } from '../../components/search/ProfessionalCardWithCoverage'
 import { Search, Filter, X } from 'lucide-react'
 
 export default function BuscarConCoberturaPage() {

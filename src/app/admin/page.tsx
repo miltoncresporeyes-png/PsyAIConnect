@@ -11,7 +11,7 @@ import {
     AlertTriangle,
     Loader2
 } from 'lucide-react'
-import { PageContainer, PageHeader, KPIGrid } from '@/components/layout/shell'
+import { PageContainer, PageHeader, KPIGrid } from '../../components/layout/shell'
 
 interface DashboardStats {
     totalUsers: number

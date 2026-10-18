@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader2, DollarSign, TrendingUp, Calendar } from 'lucide-react'
-import { PageContainer, PageHeader, KPIGrid, Grid } from '@/components/layout/shell'
+import { PageContainer, PageHeader, KPIGrid, Grid } from '../../../components/layout/shell'
 
 interface FinanceStats {
     totalRevenue: number
