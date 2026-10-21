@@ -74,13 +74,20 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // 5. Manejo de duplicados: Si ya existe, responder 200 sin duplicar ni revelar
+        // 5. Manejo de duplicados: Si ya existe, avisar amigablemente que ya está registrado
         const existing = await prisma.waitlistProfessional.findUnique({
             where: { email: data.email },
         })
 
-        if (!existing) {
-            await prisma.waitlistProfessional.create({
+        if (existing) {
+            return NextResponse.json({
+                success: true,
+                alreadySubscribed: true,
+                message: 'Ya recibimos previamente una postulación con este correo. Nuestro equipo se contactará contigo.',
+            })
+        }
+
+        await prisma.waitlistProfessional.create({
                 data: {
                     email: data.email,
                     name: data.name,
@@ -135,10 +142,10 @@ export async function POST(req: NextRequest) {
                     leadType: 'professional',
                 })
             })
-        }
 
         return NextResponse.json({
             success: true,
+            alreadySubscribed: false,
             message: SUCCESS_MESSAGE,
         })
     } catch (error) {

@@ -40,6 +40,7 @@ export function ProfessionalWaitlistForm() {
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false)
 
     useEffect(() => {
         setRenderedAt(Date.now())
@@ -108,6 +109,7 @@ export function ProfessionalWaitlistForm() {
                 return
             }
 
+            setIsAlreadySubscribed(Boolean(data.alreadySubscribed))
             setSuccessMessage(data.message || '¡Postulación recibida con éxito!')
             track('form_profesional_enviado', { profesion, ciudad })
         } catch {
@@ -118,6 +120,25 @@ export function ProfessionalWaitlistForm() {
     }
 
     if (successMessage) {
+        if (isAlreadySubscribed) {
+            return (
+                <div className="rounded-2xl border border-amber-300 bg-amber-50/90 p-6 md:p-8 text-center text-tinta">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
+                        <AlertCircle className="h-8 w-8" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-bold font-serif-warm text-amber-950 mb-2">
+                        Postulación registrada previamente
+                    </h3>
+                    <p className="text-amber-900/90 mb-6 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+                        {successMessage}
+                    </p>
+                    <p className="text-xs text-amber-800/70">
+                        Si necesitas actualizar tus datos o número de contacto, escríbenos directamente por WhatsApp.
+                    </p>
+                </div>
+            )
+        }
+
         return (
             <div className="rounded-2xl border border-pino/30 bg-niebla p-6 md:p-8 text-center text-tinta">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pino/10 text-pino">

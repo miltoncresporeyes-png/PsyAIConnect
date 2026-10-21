@@ -76,72 +76,79 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // 5. Manejo de duplicados: Si el correo ya existe, responder 200 sin duplicar ni revelar
+        // 5. Manejo de duplicados: Si el correo ya existe, notificar amigablemente que ya está inscrito
         const existing = await prisma.waitlistPatient.findUnique({
             where: { email: data.email },
         })
 
-        if (!existing) {
-            await prisma.waitlistPatient.create({
-                data: {
-                    email: data.email,
-                    name: data.name || null,
-                    whatsapp: data.whatsapp || null,
-                    comuna: data.comuna,
-                    careType: data.careType || null,
-                    modality: data.modality || null,
-                    motivoCategoria: data.motivoCategoria || null,
-                    prevision: data.prevision || null,
-                    consentAt: new Date(),
-                    consentVersion: data.consentVersion || '1.0',
-                    utmSource: data.utmSource || null,
-                    utmMedium: data.utmMedium || null,
-                    utmCampaign: data.utmCampaign || null,
-                    referrer: data.referrer || referer || null,
-                },
-            })
-
-            // Notificación al equipo operativo sin PII (solo metadata del lead)
-            const webhookUrl = process.env.OPS_ALERT_WEBHOOK_URL
-            if (webhookUrl) {
-                fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        text: `🔔 Nuevo registro en Lista de Espera (Paciente) - Comuna: ${data.comuna} - Tipo: ${data.careType || 'N/A'} - Modalidad: ${data.modality || 'N/A'}`,
-                    }),
-                }).catch(() => {})
-            }
-
-            // Email transaccional de confirmación sin romper el registro si falla
-            const recipientName = data.name ? `¡Hola ${data.name}!` : '¡Hola!'
-            const emailHtml = `
-                <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
-                    <h2 style="color: #0f766e;">${recipientName}</h2>
-                    <p>Confirmamos que te has sumado con éxito a la lista de espera de <strong>PsyDoctor</strong>.</p>
-                    <p>Estamos incorporando a nuestros primeros profesionales inscritos en el Registro de la Superintendencia de Salud para garantizar atención segura, con boleta para reembolso a tu Isapre y precios claros.</p>
-                    <p>Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.</p>
-                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-                    <p style="font-size: 12px; color: #64748b;">
-                        Para cancelar tu suscripción o solicitar la eliminación de tus datos, responde a este correo indicando tu solicitud.
-                        <br />PsyDoctor SpA Chile.
-                    </p>
-                </div>
-            `
-
-            sendEmail({
-                to: data.email,
-                subject: 'Confirmación: Estás en la lista de espera de PsyDoctor',
-                html: emailHtml,
-            }).catch((err) => {
-                captureApiError('/api/waitlist/patient:sendEmail', err, requestId, {
-                    leadType: 'patient',
-                })
+        if (existing) {
+            return NextResponse.json({
+                success: true,
+                alreadySubscribed: true,
+                message: 'Este correo ya se encuentra registrado en nuestra lista de espera. Te avisaremos apenas tengamos novedades en tu zona.',
             })
         }
 
+        await prisma.waitlistPatient.create({
+            data: {
+                email: data.email,
+                name: data.name || null,
+                whatsapp: data.whatsapp || null,
+                comuna: data.comuna,
+                careType: data.careType || null,
+                modality: data.modality || null,
+                motivoCategoria: data.motivoCategoria || null,
+                prevision: data.prevision || null,
+                consentAt: new Date(),
+                consentVersion: data.consentVersion || '1.0',
+                utmSource: data.utmSource || null,
+                utmMedium: data.utmMedium || null,
+                utmCampaign: data.utmCampaign || null,
+                referrer: data.referrer || referer || null,
+            },
+        })
+
+        // Notificación al equipo operativo sin PII (solo metadata del lead)
+        const webhookUrl = process.env.OPS_ALERT_WEBHOOK_URL
+        if (webhookUrl) {
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: `🔔 Nuevo registro en Lista de Espera (Paciente) - Comuna: ${data.comuna} - Tipo: ${data.careType || 'N/A'} - Modalidad: ${data.modality || 'N/A'}`,
+                }),
+            }).catch(() => {})
+        }
+
+        // Email transaccional de confirmación sin romper el registro si falla
+        const recipientName = data.name ? `¡Hola ${data.name}!` : '¡Hola!'
+        const emailHtml = `
+            <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
+                <h2 style="color: #0f766e;">${recipientName}</h2>
+                <p>Confirmamos que te has sumado con éxito a la lista de espera de <strong>PsyDoctor</strong>.</p>
+                <p>Estamos incorporando a nuestros primeros profesionales inscritos en el Registro de la Superintendencia de Salud para garantizar atención segura, con boleta para reembolso a tu Isapre y precios claros.</p>
+                <p>Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+                <p style="font-size: 12px; color: #64748b;">
+                    Para cancelar tu suscripción o solicitar la eliminación de tus datos, responde a este correo indicando tu solicitud.
+                    <br />PsyDoctor SpA Chile.
+                </p>
+            </div>
+        `
+
+        sendEmail({
+            to: data.email,
+            subject: 'Confirmación: Estás en la lista de espera de PsyDoctor',
+            html: emailHtml,
+        }).catch((err) => {
+            captureApiError('/api/waitlist/patient:sendEmail', err, requestId, {
+                leadType: 'patient',
+            })
+        })
+
         return NextResponse.json({
             success: true,
+            alreadySubscribed: false,
             message: SUCCESS_MESSAGE,
         })
     } catch (error) {

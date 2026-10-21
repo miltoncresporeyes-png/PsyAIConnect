@@ -31,6 +31,7 @@ export function PatientWaitlistForm({
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false)
     const [successMessage, setSuccessMessage] = useState('')
 
     // Flatten Chilean comunas for quick selection / autocomplete
@@ -87,6 +88,7 @@ export function PatientWaitlistForm({
                 return
             }
 
+            setIsAlreadySubscribed(Boolean(data.alreadySubscribed))
             setIsSuccess(true)
             setSuccessMessage(data.message || 'Gracias. Te avisaremos cuando haya profesionales disponibles en tu zona.')
             if (onSuccess) onSuccess()
@@ -98,6 +100,23 @@ export function PatientWaitlistForm({
     }
 
     if (isSuccess) {
+        if (isAlreadySubscribed) {
+            return (
+                <div className={`rounded-2xl border border-amber-200 bg-amber-50/80 p-6 sm:p-8 text-center text-slate-800 ${className}`}>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-white shadow-md shadow-amber-500/20">
+                        <AlertCircle className="h-6 w-6" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-bold text-amber-950 mb-2">¡Ya estás en la lista de espera!</h3>
+                    <p className="text-sm text-amber-900 leading-relaxed max-w-md mx-auto">
+                        {successMessage}
+                    </p>
+                    <p className="mt-4 text-xs text-amber-700">
+                        No te preocupes: tus datos ya están registrados y recibirás nuestras novedades prioritarias.
+                    </p>
+                </div>
+            )
+        }
+
         return (
             <div className={`rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 text-center text-slate-800 ${className}`}>
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
