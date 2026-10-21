@@ -57,11 +57,21 @@ export async function POST(req: NextRequest) {
         }
 
         // 3. Verificación de origen legítimo (Origin / Referer)
+        // En plataformas como Railway/Vercel el host externo viene en x-forwarded-host
         const origin = req.headers.get('origin')
         const referer = req.headers.get('referer')
-        const host = req.headers.get('host')
-        if (origin && host && !origin.includes(host)) {
-            return NextResponse.json({ success: true, message: SUCCESS_MESSAGE })
+        const host = req.headers.get('x-forwarded-host') || req.headers.get('host')
+        if (origin && host) {
+            try {
+                const originHost = new URL(origin).host
+                // Si el origin es cross-site y no coincide con el host servido
+                if (originHost !== host && !origin.includes(host) && !host.includes(originHost)) {
+                    return NextResponse.json({ success: true, message: SUCCESS_MESSAGE })
+                }
+            } catch {
+                // Si la URL de origin está malformada
+                return NextResponse.json({ success: true, message: SUCCESS_MESSAGE })
+            }
         }
 
         // 4. Rate limit por email normalizado (máximo 3 envíos por hora)
