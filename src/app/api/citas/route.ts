@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
-import { UserRole } from '@prisma/client'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
                 guestUser = await prisma.user.create({
                     data: {
                         email: data.guestEmail.toLowerCase(),
-                        role: UserRole.PATIENT,
+                        role: 'PATIENT',
                         emailVerified: null,
                         profileCompleted: false,
                     },
