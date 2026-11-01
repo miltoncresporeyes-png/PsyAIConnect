@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Sparkles, ShieldCheck, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
+import { analyticsEvents } from '@/lib/analytics'
 
 export function FounderRegistrationForm() {
     const [nombreCompleto, setNombreCompleto] = useState('')
@@ -13,6 +14,7 @@ export function FounderRegistrationForm() {
     const [telefono, setTelefono] = useState('')
     const [modalidadAtencion, setModalidadAtencion] = useState<'online' | 'presencial' | 'ambas'>('online')
     const [comunaRegion, setComunaRegion] = useState('')
+    const [descripcionConsulta, setDescripcionConsulta] = useState('')
     const [declaracionAceptada, setDeclaracionAceptada] = useState(false)
     const [website, setWebsite] = useState('') // Honeypot anti-bot
 
@@ -45,6 +47,7 @@ export function FounderRegistrationForm() {
                     telefono,
                     modalidadAtencion,
                     comunaRegion,
+                    descripcionConsulta,
                     declaracionVigente: declaracionAceptada,
                     versionTerminos: '1.0',
                     website,
@@ -58,6 +61,7 @@ export function FounderRegistrationForm() {
             }
 
             setIsSuccess(true)
+            analyticsEvents.professionalRegistration('form_founder')
             setSuccessMessage(
                 data.message ||
                 'Recibimos tu postulación. Verificaremos tu inscripción en el Registro de la Superintendencia de Salud y te escribiremos en un plazo estimado de 3 a 5 días hábiles.'
@@ -262,6 +266,20 @@ export function FounderRegistrationForm() {
                         className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition"
                     />
                 </div>
+            </div>
+
+            <div>
+                <label htmlFor="founder-descripcion" className="block text-xs font-semibold text-slate-700 mb-1">
+                    Breve descripción de tu consulta <span className="text-slate-400 font-normal">(Opcional)</span>
+                </label>
+                <textarea
+                    id="founder-descripcion"
+                    rows={2}
+                    value={descripcionConsulta}
+                    onChange={(e) => setDescripcionConsulta(e.target.value)}
+                    placeholder="Ej. Atención de adultos en enfoque cognitivo conductual, terapia de pareja..."
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition"
+                />
             </div>
 
             {/* Checkbox obligatorio sin marcar por defecto */}

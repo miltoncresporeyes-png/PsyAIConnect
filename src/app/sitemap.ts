@@ -49,6 +49,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.8,
         },
         {
+            url: `${BASE_URL}/software-para-psicologos`,
+            lastModified: now,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/agenda-online-psicologos`,
+            lastModified: now,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/software-para-psiquiatras`,
+            lastModified: now,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
             url: `${BASE_URL}/orientador`,
             lastModified: now,
             changeFrequency: 'weekly',

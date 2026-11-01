@@ -69,6 +69,9 @@ export default function ReservarPage({ params }: Props) {
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
     const [selectedModality, setSelectedModality] = useState<'ONLINE' | 'IN_PERSON'>('ONLINE')
     const [consultationReason, setConsultationReason] = useState('')
+    const [availableSlots, setAvailableSlots] = useState<string[]>([])
+    const [slotsLoading, setSlotsLoading] = useState(false)
+    const [guestEmail, setGuestEmail] = useState('')
 
     // Consent state
     const [requiresConsent, setRequiresConsent] = useState(false)
@@ -145,6 +148,35 @@ export default function ReservarPage({ params }: Props) {
         return days
     }
 
+    const fetchAvailableSlots = useCallback(async (date: Date) => {
+        if (!professional) return
+        setSlotsLoading(true)
+        try {
+            const dateStr = date.toISOString().split('T')[0]
+            const res = await fetch(
+                `/api/professionals/${professional.slug}/availability?date=${dateStr}`,
+            )
+            if (!res.ok) {
+                setAvailableSlots([])
+                return
+            }
+            const data = await res.json()
+            setAvailableSlots(data.slots || [])
+        } catch {
+            setAvailableSlots([])
+        } finally {
+            setSlotsLoading(false)
+        }
+    }, [professional])
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchAvailableSlots(selectedDate)
+        } else {
+            setAvailableSlots([])
+        }
+    }, [selectedDate, fetchAvailableSlots])
+
     const isDateAvailable = (date: Date) => {
         if (!professional) return false
 
@@ -157,31 +189,6 @@ export default function ReservarPage({ params }: Props) {
         // Check if professional works on this day
         const dayOfWeek = date.getDay()
         return professional.availability.some(a => a.dayOfWeek === dayOfWeek)
-    }
-
-    const getAvailableTimeSlots = (date: Date) => {
-        if (!professional) return []
-
-        const dayOfWeek = date.getDay()
-        const dayAvailability = professional.availability.filter(a => a.dayOfWeek === dayOfWeek)
-
-        const slots: string[] = []
-
-        dayAvailability.forEach(({ startTime, endTime }) => {
-            let [startHour, startMin] = startTime.split(':').map(Number)
-            const [endHour] = endTime.split(':').map(Number)
-
-            while (startHour < endHour) {
-                slots.push(`${startHour.toString().padStart(2, '0')}:${startMin.toString().padStart(2, '0')}`)
-                startMin += 30
-                if (startMin >= 60) {
-                    startMin = 0
-                    startHour++
-                }
-            }
-        })
-
-        return slots.sort()
     }
 
     const handleDateSelect = (date: Date) => {
@@ -219,8 +226,8 @@ export default function ReservarPage({ params }: Props) {
     }
 
     const handleBooking = async () => {
-        if (!session) {
-            router.push(`/login?callbackUrl=/reservar/${params.slug}`)
+        if (!session && !guestEmail) {
+            setError('Ingresa tu correo electrónico para continuar como invitado')
             return
         }
 
@@ -243,6 +250,7 @@ export default function ReservarPage({ params }: Props) {
                     scheduledAt: scheduledAt.toISOString(),
                     modality: selectedModality,
                     consultationReason,
+                    ...(!session && { guestEmail }),
                 }),
             })
 
@@ -272,7 +280,6 @@ export default function ReservarPage({ params }: Props) {
     if (!professional) return null
 
     const calendarDays = getDaysInMonth(currentMonth)
-    const availableSlots = selectedDate ? getAvailableTimeSlots(selectedDate) : []
 
     return (
         <>
@@ -416,7 +423,12 @@ export default function ReservarPage({ params }: Props) {
                                             </p>
 
                                             <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                                                {availableSlots.length === 0 ? (
+                                                {slotsLoading ? (
+                                                    <p className="col-span-full text-gray-500 flex items-center justify-center gap-2">
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        Cargando horarios disponibles...
+                                                    </p>
+                                                ) : availableSlots.length === 0 ? (
                                                     <p className="col-span-full text-gray-500">
                                                         No hay horarios disponibles para esta fecha
                                                     </p>
@@ -428,7 +440,7 @@ export default function ReservarPage({ params }: Props) {
                                                             className={`py-3 px-4 rounded-lg border-2 text-sm font-medium transition-colors ${selectedTime === time
                                                                 ? 'border-primary-500 bg-primary-50 text-primary-700'
                                                                 : 'border-gray-200 hover:border-gray-300'
-                                                                }`}
+                                                            }`}
                                                         >
                                                             {time}
                                                         </button>
@@ -553,6 +565,25 @@ export default function ReservarPage({ params }: Props) {
                                                 </p>
                                             </div>
 
+                                            {/* Guest email (only when not authenticated) */}
+                                            {!session && (
+                                                <div className="mb-5">
+                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                        Correo electrónico <span className="text-rose-600">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="email"
+                                                        value={guestEmail}
+                                                        onChange={(e) => setGuestEmail(e.target.value)}
+                                                        placeholder="tu@correo.cl"
+                                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-700 focus:bg-white focus:ring-1 focus:ring-teal-700"
+                                                    />
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        Se creará una cuenta de invitado asociada a este correo.
+                                                    </p>
+                                                </div>
+                                            )}
+
                                             {/* Confirm Button */}
                                             <button
                                                 onClick={handleBooking}
@@ -564,7 +595,7 @@ export default function ReservarPage({ params }: Props) {
                                                 ) : (
                                                     <>
                                                         <Calendar className="w-5 h-5" />
-                                                        {session ? 'Confirmar reserva' : 'Iniciar sesión para reservar'}
+                                                        {session ? 'Confirmar reserva' : 'Continuar como invitado'}
                                                     </>
                                                 )}
                                             </button>

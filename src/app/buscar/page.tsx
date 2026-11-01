@@ -94,39 +94,56 @@ function SearchContent() {
               <p className="mt-4 text-sm text-slate-600">Buscando profesionales inscritos...</p>
             </div>
           ) : professionals.length === 0 ? (
-            /* Estado Sin Profesionales Reales Aprobados: Pre-lanzamiento */
-            <div className="mx-auto max-w-2xl text-center py-6">
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-800 border border-teal-100">
-                  <MapPin className="h-7 w-7 text-teal-700" aria-hidden="true" />
+            /* Estado Sin Profesionales Reales Aprobados: Página de conversión */
+            <div className="mx-auto max-w-2xl text-center py-12">
+              <div className="rounded-3xl border border-teal-100 bg-teal-50 p-6 sm:p-10 shadow-sm text-center">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-teal-700 border border-teal-200">
+                  <MapPin className="h-8 w-8 text-teal-600" aria-hidden="true" />
                 </div>
 
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3">
-                  Estamos incorporando a nuestros primeros profesionales
+                  Pronto tendremos profesionales en tu zona
                 </h2>
 
                 <p className="text-sm sm:text-base text-[#374151] mb-8 leading-relaxed max-w-lg mx-auto">
-                  Déjanos tus datos y te avisamos cuando haya disponibilidad en tu comuna.
+                  Estamos incorporando profesionales verificados en el Registro de la Superintendencia de Salud. Déjanos tus datos y te avisamos en cuanto haya disponibilidad en tu comuna.
                 </p>
 
-                {/* Formulario de Lista de Espera */}
-                <div className="text-left max-w-md mx-auto">
-                  <PatientWaitlistForm
+                {/* Formulario de Lista de Espera destacado */}
+                <div className="mb-10">
+                <PatientWaitlistForm
                     compact
-                    title="Lista de espera de pacientes"
-                    subtitle="Déjanos tus datos y te avisamos cuando haya disponibilidad en tu comuna."
-                  />
+                    title="Únete a la lista de espera"
+                    subtitle="Te avisamos cuando haya profesionales disponibles en tu comuna."
+                />
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <span className="text-xs text-slate-500">¿Eres psicólogo o psiquiatra?</span>
+                <div className="mt-10 pt-8 border-t border-teal-100 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <span className="text-sm text-slate-600">
+                    ¿Eres psicólogo o psiquiatra?
+                  </span>
                   <Link
                     href="/registro?tipo=profesional"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-800 hover:text-teal-900 underline"
+                    className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 transition-colors shadow-sm"
                   >
-                    <UserPlus className="h-3.5 w-3.5" />
+                    <UserPlus className="h-4 w-4" />
                     <span>Únete como Profesional Fundador</span>
                   </Link>
+                </div>
+
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a
+                    href="/faq"
+                    className="text-xs text-slate-500 hover:text-teal-600 underline underline-offset-2"
+                  >
+                    Preguntas frecuentes
+                  </a>
+                  <a
+                    href="/contacto"
+                    className="text-xs text-slate-500 hover:text-teal-600 underline underline-offset-2"
+                  >
+                    Contactar con nosotros
+                  </a>
                 </div>
               </div>
             </div>

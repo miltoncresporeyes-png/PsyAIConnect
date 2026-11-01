@@ -46,9 +46,14 @@ function applySecurityHeaders(response: NextResponse) {
     return response
 }
 
+const isDev = process.env.NODE_ENV === 'development'
+function log(...args: unknown[]) {
+    if (isDev) console.log(...args)
+}
+
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
-    console.log(`[Middleware] Incoming request for: ${pathname}`)
+    log(`[Middleware] Incoming request for: ${pathname}`)
 
     // ── 0. Rewrite locale-prefixed paths to base routes when needed ─────────
     const localeMatch = pathname.match(/^\/(en|fr|pt)(\/.*)?$/)
@@ -60,7 +65,7 @@ export async function middleware(request: NextRequest) {
         if (!shouldStayLocalizedRoute) {
             const redirectUrl = request.nextUrl.clone()
             redirectUrl.pathname = restPath
-            console.log(`[Middleware] Section 0: Redirecting from ${pathname} to ${redirectUrl.pathname}`)
+            log(`[Middleware] Section 0: Redirecting from ${pathname} to ${redirectUrl.pathname}`)
 
             const redirectResponse = NextResponse.redirect(redirectUrl)
             redirectResponse.cookies.set('NEXT_LOCALE', locale, { path: '/' })
@@ -80,12 +85,12 @@ export async function middleware(request: NextRequest) {
         if (!token) {
             const loginUrl = new URL('/login', request.url)
             loginUrl.searchParams.set('callbackUrl', pathname)
-            console.log(`[Middleware] Admin Guard: Redirecting to login: ${loginUrl.toString()}`)
+            log(`[Middleware] Admin Guard: Redirecting to login: ${loginUrl.toString()}`)
             return NextResponse.redirect(loginUrl)
         }
 
         if (token.role !== 'ADMIN') {
-            console.log(`[Middleware] Admin Guard: Redirecting to 403`)
+            log(`[Middleware] Admin Guard: Redirecting to 403`)
             return NextResponse.redirect(new URL('/403', request.url))
         }
     }
@@ -96,12 +101,12 @@ export async function middleware(request: NextRequest) {
 
     if (isLocalizedRoot || isLocalizedDebug) {
         const response = intlMiddleware(request)
-        console.log(`[Middleware] Section 2 response: status=${response.status}, location=${response.headers.get('location')}, x-middleware-rewrite=${response.headers.get('x-middleware-rewrite')}`)
+        log(`[Middleware] Section 2 response: status=${response.status}, location=${response.headers.get('location')}, x-middleware-rewrite=${response.headers.get('x-middleware-rewrite')}`)
         const locationHeader = response.headers.get('location')
         if (locationHeader) {
-            console.log(`[Middleware] Section 2: intlMiddleware redirecting to ${locationHeader}`)
+            log(`[Middleware] Section 2: intlMiddleware redirecting to ${locationHeader}`)
         } else {
-            console.log(`[Middleware] Section 2: intlMiddleware processing route without redirect`)
+            log(`[Middleware] Section 2: intlMiddleware processing route without redirect`)
         }
         return applySecurityHeaders(response)
     }
@@ -119,7 +124,7 @@ export async function middleware(request: NextRequest) {
         },
     })
 
-    console.log(`[Middleware] Passthrough for: ${pathname}`)
+    log(`[Middleware] Passthrough for: ${pathname}`)
     return applySecurityHeaders(passthrough)
 }
 

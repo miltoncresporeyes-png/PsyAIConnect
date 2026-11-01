@@ -12,431 +12,614 @@ import {
     Calendar,
     BarChart3,
     Users,
-    AlertCircle
+    AlertCircle,
+    Video,
+    Lock,
+    HelpCircle,
+    Sparkles,
 } from 'lucide-react'
 import { Header, Footer } from '@/components/layout'
+import { ProfessionalPageViewTracker } from '@/components/analytics/ProfessionalPageViewTracker'
+import { analyticsEvents } from '@/lib/analytics'
 
 export default function SoyProfesionalPage() {
     return (
         <div className="min-h-screen bg-[linear-gradient(180deg,_#f7fbfa_0%,_#ffffff_24%,_#ffffff_100%)] flex flex-col">
+            <ProfessionalPageViewTracker pageName="/profesionales" />
             <Header />
+
             <main className="flex-1">
-            {/* Hero Section */}
-            <section className="relative py-10 md:py-14 bg-gradient-to-br from-secondary-50 via-white to-primary-50/30 overflow-hidden">
-                <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+                {/* 1. HERO B2B */}
+                <section className="relative py-12 md:py-18 bg-gradient-to-br from-teal-50/60 via-white to-slate-50 overflow-hidden border-b border-slate-200/60">
+                    <div className="container-wide relative">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-100/80 border border-teal-200 mb-5 shadow-2xs">
+                                <Shield className="w-4 h-4 text-teal-700" />
+                                <span className="text-xs font-semibold uppercase tracking-wider text-teal-800">Software para Especialistas en Chile</span>
+                            </span>
 
-                <div className="container-wide relative">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-5 shadow-sm">
-                            <Shield className="w-4 h-4 text-primary-600" />
-                            <span className="text-sm font-medium text-primary-700">Creado por expertos en gestión y finanzas</span>
-                        </span>
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-bold text-slate-900 mb-6 leading-tight tracking-tight">
+                                Dedícate a tus pacientes. <span className="text-teal-800">PsyDoctor te ayuda a gestionar tu consulta.</span>
+                            </h1>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-gray-900 mb-5 leading-tight">
-                            Tu consulta merece la misma <span className="text-primary-700">estructura financiera</span> que una empresa profesional
-                        </h1>
+                            <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+                                Organiza tu agenda, administra tu consulta y desarrolla tu presencia profesional con una plataforma diseñada para especialistas en salud mental.
+                            </p>
 
-                        <p className="text-xl md:text-2xl text-gray-600 mb-7 leading-relaxed max-w-3xl mx-auto">
-                            Dedica menos tiempo a la administración. <strong className="text-gray-900">Convierte tu práctica en un negocio rentable</strong> con infraestructura tributaria automatizada.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                            <Link
-                                href="/registro?tipo=profesional"
-                                className="btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-shadow"
-                            >
-                                Profesionalizar mi consulta
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                            </Link>
-                            <Link
-                                href="#beneficios"
-                                className="btn-outline text-lg px-8 py-4"
-                            >
-                                Ver cómo funciona
-                            </Link>
-                        </div>
-
-                        {/* Trust Stats */}
-                        <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto pt-6 border-t border-gray-200/80">
-                            <div>
-                                <div className="text-3xl font-bold text-primary-700">Web</div>
-                                <div className="text-sm text-gray-600">Sin instalar software</div>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+                                <Link
+                                    href="/registro?tipo=profesional&programa=fundador"
+                                    onClick={() => analyticsEvents.founderCtaClick('profesionales_hero')}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-800 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-teal-950/15 hover:bg-teal-900 transition-all"
+                                >
+                                    <span>Postula al Programa Fundadores</span>
+                                    <ArrowRight className="w-5 h-5 ml-1" />
+                                </Link>
+                                <Link
+                                    href="#funcionalidades"
+                                    className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-8 py-4 text-base font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-slate-900 transition-all"
+                                >
+                                    Ver funcionalidades
+                                </Link>
                             </div>
-                            <div>
-                                <div className="text-3xl font-bold text-primary-700">CLP</div>
-                                <div className="text-sm text-gray-600">Cobros en pesos chilenos</div>
-                            </div>
-                            <div>
-                                <div className="text-3xl font-bold text-primary-700">Boleta</div>
-                                <div className="text-sm text-gray-600">Electrónica por sesión</div>
+
+                            {/* Trust Stats */}
+                            <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto pt-6 border-t border-slate-200/80">
+                                <div>
+                                    <div className="text-2xl sm:text-3xl font-bold text-teal-800">100% Web</div>
+                                    <div className="text-xs sm:text-sm text-slate-600">Sin instalar programas</div>
+                                </div>
+                                <div>
+                                    <div className="text-2xl sm:text-3xl font-bold text-teal-800">CLP</div>
+                                    <div className="text-xs sm:text-sm text-slate-600">Cobros en moneda local</div>
+                                </div>
+                                <div>
+                                    <div className="text-2xl sm:text-3xl font-bold text-teal-800">Ley 20.584</div>
+                                    <div className="text-xs sm:text-sm text-slate-600">Fichas clínicas seguras</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* Pain Points Section */}
-            <section className="py-10 md:py-12 bg-gray-50">
-                <div className="container-wide">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-8">
-                            <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
-                                ¿Te identificas con esto?
+                {/* 2. PROBLEMAS COTIDIANOS DE PROFESIONALES INDEPENDIENTES */}
+                <section className="py-12 md:py-16 bg-slate-50 border-b border-slate-200/60">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="text-center mb-10">
+                                <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-900 mb-3">
+                                    Los desafíos cotidianos de la consulta independiente
+                                </h2>
+                                <p className="text-base text-slate-600">
+                                    La carga administrativa que resta tiempo al ejercicio clínico en Chile
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <div className="bg-white rounded-2xl p-6 border-l-4 border-amber-500 shadow-sm">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                            <Calendar className="w-5 h-5 text-amber-700" />
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 text-lg">Caos en agendamiento</h3>
+                                    </div>
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                        Coordinar horas por WhatsApp, cancelaciones de último minuto sin aviso y pacientes que olvidan su sesión por falta de confirmación automática.
+                                    </p>
+                                    <div className="text-xs text-amber-700 font-semibold">
+                                        Pérdida de horas clínicas cada semana
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 border-l-4 border-rose-500 shadow-sm">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center shrink-0">
+                                            <CreditCard className="w-5 h-5 text-rose-700" />
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 text-lg">Incomodidad al cobrar</h3>
+                                    </div>
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                        Tener que solicitar transferencias dentro de la sesión o recordar pagos pendientes afecta el encuadre terapéutico y la relación profesional.
+                                    </p>
+                                    <div className="text-xs text-rose-700 font-semibold">
+                                        Fricción en la relación con el paciente
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 border-l-4 border-blue-500 shadow-sm">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                            <FileText className="w-5 h-5 text-blue-700" />
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 text-lg">Dispersión de registros</h3>
+                                    </div>
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                        Notas clínicas en cuadernos o procesadores de texto, boletas emitidas manualmente en el portal del SII y datos desordenados a fin de mes.
+                                    </p>
+                                    <div className="text-xs text-blue-700 font-semibold">
+                                        Riesgo de incumplimiento normativo
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 3. BENEFICIOS CONCRETOS DE PSYDOCTOR */}
+                <section className="py-12 md:py-16 bg-white border-b border-slate-200/60">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto text-center mb-12">
+                            <h2 className="text-3xl font-heading font-bold text-slate-900 mb-4">
+                                Beneficios concretos para tu práctica clínica
                             </h2>
-                            <p className="text-lg text-gray-600">
-                                La realidad administrativa de la práctica privada en Chile
+                            <p className="text-lg text-slate-600">
+                                Diseñado para resolver la gestión cotidiana de psicólogos y psiquiatras
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-5">
-                            {/* Pain Point 1 */}
-                            <div className="bg-white rounded-2xl p-6 border-l-4 border-red-500 shadow-sm">
-                                <div className="flex items-start gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
-                                        <AlertCircle className="w-5 h-5 text-red-600" />
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 text-lg">Carga tributaria del SII</h3>
-                                </div>
-                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                    "Cada mes debo generar manualmente boletas de honorarios, llevar un Excel de ingresos y rezar para que no haya errores en abril."
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Preserva el encuadre</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    El agendamiento y confirmación de pago se resuelven antes de la consulta, protegiendo el espacio terapéutico.
                                 </p>
-                                <div className="text-xs text-red-700 font-semibold">
-                                    ⏱️ Ejemplo: ~3 horas/mes
-                                </div>
                             </div>
 
-                            {/* Pain Point 2 */}
-                            <div className="bg-white rounded-2xl p-6 border-l-4 border-amber-500 shadow-sm">
-                                <div className="flex items-start gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                                        <CreditCard className="w-5 h-5 text-amber-600" />
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 text-lg">Incomodidad al cobrar</h3>
-                                </div>
-                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                    "Termino la sesión y tengo que pedirle el pago al paciente. Es incómodo, afecta el encuadre terapéutico y me genera ansiedad."
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Reduce el ausentismo</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Notificaciones y confirmaciones por correo para que cada paciente asista a tiempo a su cita programada.
                                 </p>
-                                <div className="text-xs text-amber-700 font-semibold">
-                                    😓 Ejemplo: ~1.5 horas/mes
-                                </div>
                             </div>
 
-                            {/* Pain Point 3 */}
-                            <div className="bg-white rounded-2xl p-6 border-l-4 border-orange-500 shadow-sm">
-                                <div className="flex items-start gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                                        <Calendar className="w-5 h-5 text-orange-600" />
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 text-lg">Caos en agendamiento</h3>
-                                </div>
-                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                    "Mensajes de WhatsApp a cualquier hora, confirmaciones manuales, cancelaciones de último minuto sin aviso."
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Seguridad y confidencialidad</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Fichas clínicas con acceso restringido, cifrado de datos y apego a la Ley 20.584 de Derechos del Paciente.
                                 </p>
-                                <div className="text-xs text-orange-700 font-semibold">
-                                    📱 Ejemplo: ~1.5 horas/mes
-                                </div>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Perfil verificado</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Presencia digital destacada en el directorio, validada con el Registro de Prestadores Individuales de la Superintendencia de Salud.
+                                </p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Simplicidad tributaria</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Control claro de tus sesiones y cálculo de honorarios actualizado a la retención vigente del 15,25% (2026).
+                                </p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50/50 hover:border-teal-300 transition-all">
+                                <CheckCircle2 className="w-6 h-6 text-teal-700 mb-3" />
+                                <h3 className="font-bold text-slate-900 text-lg mb-2">Soporte directo</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Acompañamiento personalizado en la configuración inicial de tus horarios, tarifas y modalidades de atención.
+                                </p>
                             </div>
                         </div>
+                    </div>
+                </section>
 
-                        <div className="mt-7 bg-primary-900 rounded-[28px] p-7 text-white text-center shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
-                            <p className="text-2xl font-bold mb-2">Ejemplo de tiempo administrativo al mes:</p>
-                            <p className="text-5xl font-bold text-primary-300 mb-3">6 horas</p>
-                            <p className="text-lg opacity-90">
-                                Si dedicas 6 horas a tareas administrativas y cobras $35.000 por sesión, eso equivale a
-                                unas 6 sesiones: <strong className="text-primary-200">~$210.000</strong> de costo de
-                                oportunidad. Cifra ilustrativa, no un promedio medido.
+                {/* 4. FUNCIONALIDADES DISPONIBLES */}
+                <section id="funcionalidades" className="py-12 md:py-16 bg-slate-50 border-b border-slate-200/60">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto text-center mb-12">
+                            <h2 className="text-3xl font-heading font-bold text-slate-900 mb-4">
+                                Funcionalidades disponibles en la plataforma
+                            </h2>
+                            <p className="text-lg text-slate-600">
+                                Herramientas reales implementadas para optimizar tu jornada profesional
                             </p>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Three Pillars Section */}
-            <section id="beneficios" className="py-12 md:py-14 bg-white">
-                <div className="container-wide">
-                    <div className="text-center mb-10">
-                        <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
-                            La solución: Tres pilares de eficiencia operativa
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Infraestructura administrativa diseñada por especialistas en finanzas para profesionales de la salud
-                        </p>
-                    </div>
-
-                    {/* Pilar 1: Automatización Tributaria */}
-                    <div className="mb-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[30px] p-6 md:p-10 border border-emerald-200 shadow-[0_18px_50px_rgba(16,185,129,0.08)]">
-                        <div className="grid lg:grid-cols-2 gap-8 items-center">
-                            <div>
-                                <div className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full mb-4">
-                                    <FileText className="w-4 h-4" />
-                                    <span className="text-sm font-bold uppercase tracking-wider">Pilar 1</span>
+                        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                            {/* Funcionalidad 1 */}
+                            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="h-10 w-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800">
+                                        <Calendar className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Agenda Médica y Reservas Online</h3>
                                 </div>
-                                <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
-                                    Automatización Tributaria Completa
-                                </h3>
-                                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                                    <strong>Acabamos con la pesadilla del SII.</strong> Cada sesión confirmada genera automáticamente su boleta electrónica validada por el Servicio de Impuestos Internos.
+                                <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                                    Configura tus bloques horarios de atención (online y presencial). Tus pacientes reservan según tu disponibilidad real en tiempo real.
                                 </p>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Emisión automática al SII</p>
-                                            <p className="text-sm text-gray-600">Boleta electrónica 29 generada y timbrada sin intervención manual</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Libro de honorarios digital</p>
-                                            <p className="text-sm text-gray-600">Registro cronológico automático de todos tus ingresos con detalle por paciente</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Declaración de renta lista en 1 clic</p>
-                                            <p className="text-sm text-gray-600">Exportación de certificados anuales y resumen de ingresos para el Formulario 22</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ul className="text-xs text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Control de disponibilidad por días y horarios</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Confirmaciones automáticas por correo electrónico</span>
+                                    </li>
+                                </ul>
                             </div>
 
-                            <div className="bg-white rounded-2xl p-6 shadow-xl border border-emerald-200">
-                                <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Dashboard Tributario (datos de ejemplo)</div>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center pb-2 border-b">
-                                        <span className="text-sm text-gray-700">Ingresos enero 2026</span>
-                                        <span className="font-bold text-gray-900">$2.450.000</span>
+                            {/* Funcionalidad 2 */}
+                            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="h-10 w-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800">
+                                        <Lock className="h-5 w-5" />
                                     </div>
-                                    <div className="flex justify-between items-center pb-2 border-b">
-                                        <span className="text-sm text-gray-700">Boletas emitidas</span>
-                                        <span className="font-bold text-emerald-700">70/70 ✓</span>
-                                    </div>
-                                    <div className="flex justify-between items-center pb-2 border-b">
-                                        <span className="text-sm text-gray-700">Retención PPM (10.75%)</span>
-                                        <span className="font-bold text-gray-900">$263.375</span>
-                                    </div>
-                                    <div className="bg-emerald-50 rounded-lg p-4 mt-4">
-                                        <div className="text-xs text-emerald-700 font-semibold mb-1">AHORRO DE TIEMPO</div>
-                                        <div className="text-2xl font-bold text-emerald-900">3 horas/mes</div>
-                                        <div className="text-xs text-gray-600 mt-1">≈ $105.000 recuperados en facturación</div>
-                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Fichas Clínicas Protegidas</h3>
                                 </div>
+                                <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                                    Módulo de notas de evolución, antecedentes clínicos y seguimiento de sesiones resguardado conforme a la Ley N° 20.584.
+                                </p>
+                                <ul className="text-xs text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Acceso exclusivo para el profesional tratante</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Historial ordenado cronológicamente por paciente</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Funcionalidad 3 */}
+                            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="h-10 w-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800">
+                                        <Video className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Teleconsulta Segura Integrada</h3>
+                                </div>
+                                <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                                    Salas de videollamada cifradas directamente en el navegador mediante Daily.co, sin necesidad de enlaces externos como Zoom o Meet.
+                                </p>
+                                <ul className="text-xs text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Acceso con un clic desde el dashboard del profesional</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Cifrado en tránsito y privacidad de sala</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Funcionalidad 4 */}
+                            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="h-10 w-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800">
+                                        <BarChart3 className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Control de Sesiones e Ingresos</h3>
+                                </div>
+                                <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                                    Visualización de sesiones atendidas, montos acumulados y cálculo de retención tributaria estimada aplicable en Chile (15,25% vigente en 2026).
+                                </p>
+                                <ul className="text-xs text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Reporte claro para conciliación con boletas de honorarios</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                        <span>Transparencia en cobros y pagos en moneda local (CLP)</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* Pilar 2: Gestión de Adherencia */}
-                    <div className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-[30px] p-6 md:p-10 border border-blue-200 shadow-[0_18px_50px_rgba(59,130,246,0.08)]">
-                        <div className="grid lg:grid-cols-2 gap-8 items-center">
-                            <div className="order-2 lg:order-1">
-                                <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-200">
-                                    <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Vista Previa: Panel de Adherencia (datos de ejemplo)</div>
-                                    <div className="space-y-4">
-                                        <div className="border-l-4 border-blue-500 pl-4">
-                                            <div className="text-sm text-gray-600">Paciente: María A.</div>
-                                            <div className="font-semibold text-gray-900">Asistencia: 12/12 sesiones</div>
-                                            <div className="text-xs text-blue-700 mt-1">✓ Adherencia excelente</div>
-                                        </div>
-                                        <div className="border-l-4 border-amber-500 pl-4">
-                                            <div className="text-sm text-gray-600">Paciente: Carlos R.</div>
-                                            <div className="font-semibold text-gray-900">Faltas: 2 últimas sesiones</div>
-                                            <div className="text-xs text-amber-700 mt-1">⚠️ Recordatorio automático enviado</div>
-                                        </div>
-                                        <div className="bg-blue-50 rounded-lg p-4">
-                                            <div className="text-xs text-blue-700 font-semibold mb-1">TU TASA DE RETENCIÓN</div>
-                                            <div className="text-2xl font-bold text-blue-900">89%</div>
-                                            <div className="text-xs text-gray-600 mt-1">Ejemplo ilustrativo con datos de muestra</div>
-                                        </div>
-                                    </div>
+                {/* 5. CÓMO FUNCIONA LA PLATAFORMA */}
+                <section className="py-12 md:py-16 bg-white border-b border-slate-200/60">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto text-center mb-12">
+                            <h2 className="text-3xl font-heading font-bold text-slate-900 mb-4">
+                                ¿Cómo comenzar a operar en PsyDoctor?
+                            </h2>
+                            <p className="text-lg text-slate-600">
+                                Tres pasos simples para digitalizar y ordenar tu consulta
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="h-14 w-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold text-xl text-teal-800 mb-4 shadow-2xs">
+                                    1
                                 </div>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">Postulación y Validación</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Completas tus datos profesionales. Verificamos tu registro ante la Superintendencia de Salud para resguardar la seriedad de la red.
+                                </p>
                             </div>
 
-                            <div className="order-1 lg:order-2">
-                                <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full mb-4">
-                                    <Users className="w-4 h-4" />
-                                    <span className="text-sm font-bold uppercase tracking-wider">Pilar 2</span>
+                            <div className="flex flex-col items-center text-center">
+                                <div className="h-14 w-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold text-xl text-teal-800 mb-4 shadow-2xs">
+                                    2
                                 </div>
-                                <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
-                                    Gestión de Adherencia Terapéutica
-                                </h3>
-                                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                                    <strong>Tus pacientes no abandonan por accidente.</strong> Sistema inteligente de seguimiento que identifica patrones de deserción antes de que ocurran.
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">Configuración de Consulta</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Defines tus valores de sesión, días y horarios de atención, modalidades (online o presencial) y datos de contacto.
                                 </p>
+                            </div>
 
-                                <div className="space-y-4">
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Alertas de riesgo de abandono</p>
-                                            <p className="text-sm text-gray-600">Notificaciones cuando un paciente cancela 2+ veces seguidas o no reagenda</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Recordatorios automáticos empáticos</p>
-                                            <p className="text-sm text-gray-600">Mensajes personalizados 24h antes de cada sesión para reducir inasistencias</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Dashboard de progreso compartido</p>
-                                            <p className="text-sm text-gray-600">El paciente visualiza su camino terapéutico, reforzando compromiso</p>
-                                        </div>
-                                    </div>
+                            <div className="flex flex-col items-center text-center">
+                                <div className="h-14 w-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold text-xl text-teal-800 mb-4 shadow-2xs">
+                                    3
                                 </div>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">Gestión y Atención</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Recibes reservas, atiendes tus teleconsultas con videollamada cifrada y mantienes las notas clínicas protegidas en un solo lugar.
+                                </p>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* Pilar 3: Cero Fricción en Cobranza */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-[30px] p-6 md:p-10 border border-purple-200 shadow-[0_18px_50px_rgba(168,85,247,0.08)]">
-                        <div className="grid lg:grid-cols-2 gap-8 items-center">
-                            <div>
-                                <div className="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-full mb-4">
-                                    <CreditCard className="w-4 h-4" />
-                                    <span className="text-sm font-bold uppercase tracking-wider">Pilar 3</span>
+                {/* 6. PROGRAMA FUNDADORES */}
+                <section className="py-12 md:py-16 bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 text-white">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-teal-200 mb-5 border border-white/15">
+                                <Sparkles className="w-4 h-4 text-teal-300" />
+                                <span>Convocatoria Especial · Cupos limitados a 20 profesionales</span>
+                            </span>
+
+                            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-5 leading-tight">
+                                Conviértete en uno de los primeros profesionales que impulsen PsyDoctor en Chile
+                            </h2>
+
+                            <p className="text-base md:text-lg text-slate-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+                                Únete como Profesional Fundador y accede a condiciones preferentes diseñadas para co-construir la mejor plataforma de salud mental en el país.
+                            </p>
+
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left max-w-4xl mx-auto mb-10">
+                                <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                                    <div className="font-semibold text-teal-300 text-sm mb-1">12 Meses sin Costo</div>
+                                    <p className="text-xs text-slate-300">Exención total del costo de suscripción mensual durante el primer año.</p>
                                 </div>
-                                <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
-                                    Cero Fricción en Cobranza
-                                </h3>
-                                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                                    <strong>Nunca más pidas el pago dentro de la sesión.</strong> Procesamiento automático seguro que preserva el encuadre terapéutico.
-                                </p>
-
-                                <div className="space-y-4 mb-6">
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Pago anticipado opcional</p>
-                                            <p className="text-sm text-gray-600">El paciente paga al agendar. Tú solo te enfocas en la terapia</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Recordatorios de pago automáticos</p>
-                                            <p className="text-sm text-gray-600">Sistema envía recordatorios empáticos sin tu intervención</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Depósito directo en 48 horas</p>
-                                            <p className="text-sm text-gray-600">Transferencia a tu cuenta sin intermediarios ni retenciones inesperadas</p>
-                                        </div>
-                                    </div>
+                                <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                                    <div className="font-semibold text-teal-300 text-sm mb-1">Perfil Destacado</div>
+                                    <p className="text-xs text-slate-300">Insignia distintiva de Profesional Fundador en el directorio público.</p>
                                 </div>
-
-                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-purple-200">
-                                    <div className="flex items-start gap-3">
-                                        <Shield className="w-6 h-6 text-purple-600 flex-shrink-0" />
-                                        <div>
-                                            <p className="font-semibold text-gray-900 mb-1">Seguridad bancaria certificada</p>
-                                            <p className="text-sm text-gray-600">
-                                                Integración con Webpay Plus de Transbank. Tus pacientes pagan con la misma seguridad que en cualquier e-commerce chileno.
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                                    <div className="font-semibold text-teal-300 text-sm mb-1">Acompañamiento VIP</div>
+                                    <p className="text-xs text-slate-300">Contacto directo con el equipo fundador para sugerir mejoras y adaptar el producto.</p>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-2xl p-6 shadow-xl border border-purple-200">
-                                <div className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-wider">Flujo de Pago Automatizado</div>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 font-bold text-purple-700">
-                                            1
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900 text-sm">Paciente agenda sesión</p>
-                                            <p className="text-xs text-gray-600">Pago procesado automáticamente</p>
-                                        </div>
-                                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 font-bold text-purple-700">
-                                            2
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900 text-sm">Boleta generada al SII</p>
-                                            <p className="text-xs text-gray-600">Sin intervención manual</p>
-                                        </div>
-                                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 font-bold text-purple-700">
-                                            3
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900 text-sm">Depósito en tu cuenta</p>
-                                            <p className="text-xs text-gray-600">Dentro de 48 horas hábiles</p>
-                                        </div>
-                                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <div className="bg-purple-50 rounded-lg p-4 mt-4">
-                                        <div className="text-xs text-purple-700 font-semibold mb-1">TIEMPO INVOLUCRADO</div>
-                                        <div className="text-3xl font-bold text-purple-900">0 minutos</div>
-                                        <div className="text-xs text-gray-600 mt-1">Todo sucede en segundo plano</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-12 md:py-14 bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-
-                <div className="container-wide relative">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">
-                            Profesionaliza tu consulta hoy
-                        </h2>
-                        <p className="text-xl md:text-2xl mb-7 opacity-90 leading-relaxed">
-                            Recupera tiempo cada mes con agenda, boletas electrónicas y reembolsos en un solo lugar
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
                             <Link
-                                href="/registro?tipo=profesional"
-                                className="bg-white text-primary-900 hover:bg-gray-100 inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl"
+                                href="/registro?tipo=profesional&programa=fundador"
+                                onClick={() => analyticsEvents.founderCtaClick('profesionales_founders_section')}
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-bold text-teal-950 shadow-xl hover:bg-slate-100 transition-all"
                             >
-                                Comenzar gratis
-                                <ArrowRight className="w-5 h-5 ml-2" />
+                                <span>Quiero ser Profesional Fundador</span>
+                                <ArrowRight className="w-5 h-5 ml-1" />
                             </Link>
-                            <a
-                                href="mailto:contacto@psydoctor.cl?subject=Quiero%20una%20demo%20de%20PsyDoctor"
-                                className="btn-outline-light text-lg px-8 py-4"
-                            >
-                                Agendar demo personalizada
-                            </a>
+
+                            <p className="mt-4 text-xs text-slate-400">
+                                Sujeto a validación de antecedentes en el Registro de Prestadores de la Superintendencia de Salud.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 7. PLANES Y PRECIOS */}
+                <section className="py-12 md:py-16 bg-white border-b border-slate-200/60">
+                    <div className="container-wide">
+                        <div className="max-w-4xl mx-auto text-center mb-10">
+                            <h2 className="text-3xl font-heading font-bold text-slate-900 mb-3">
+                                Planes transparentes, sin contratos forzosos
+                            </h2>
+                            <p className="text-base text-slate-600">
+                                Comienza hoy como Fundador y escala según las necesidades de tu práctica
+                            </p>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-4 pt-6 border-t border-white/20">
-                            <div className="flex items-center gap-3 justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-primary-300" />
-                                <span className="text-sm opacity-90">Sin compromiso de permanencia</span>
+                        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+                            {/* Plan Fundador */}
+                            <div className="rounded-2xl border-2 border-teal-600 bg-white p-7 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md">
+                                        Fase Actual
+                                    </span>
+                                    <h3 className="text-xl font-bold text-slate-900 mt-3 mb-1">Programa Fundadores</h3>
+                                    <div className="text-3xl font-bold text-teal-900 mb-1">$0</div>
+                                    <div className="text-xs text-slate-500 mb-4">por 12 meses (20 cupos)</div>
+                                    <ul className="text-xs text-slate-600 space-y-2.5 border-t border-slate-100 pt-4">
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Suscripción bonificada por 1 año</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Insignia de Profesional Fundador</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Agenda médica y fichas clínicas seguras</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Teleconsulta cifrada incluida</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <Link
+                                    href="/registro?tipo=profesional&programa=fundador"
+                                    className="mt-6 block w-full text-center rounded-xl bg-teal-800 py-3 text-sm font-semibold text-white hover:bg-teal-900 transition-colors"
+                                >
+                                    Postular al cupo
+                                </Link>
                             </div>
-                            <div className="flex items-center gap-3 justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-primary-300" />
-                                <span className="text-sm opacity-90">Configuración en 15 minutos</span>
+
+                            {/* Plan Pro */}
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-7 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-1 rounded-md">
+                                        Profesional
+                                    </span>
+                                    <h3 className="text-xl font-bold text-slate-900 mt-3 mb-1">Plan PRO</h3>
+                                    <div className="text-3xl font-bold text-slate-900 mb-1">$29.000</div>
+                                    <div className="text-xs text-slate-500 mb-4">mensual / sin permanencia</div>
+                                    <ul className="text-xs text-slate-600 space-y-2.5 border-t border-slate-200 pt-4">
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Citas y agenda online ilimitadas</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Ficha clínica protegida (Ley 20.584)</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Teleconsulta integrada Daily.co</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Soporte prioritario</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <Link
+                                    href="/planes"
+                                    className="mt-6 block w-full text-center rounded-xl border border-slate-300 bg-white py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                                >
+                                    Ver detalles del plan
+                                </Link>
                             </div>
-                            <div className="flex items-center gap-3 justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-primary-300" />
-                                <span className="text-sm opacity-90">Soporte técnico incluido</span>
+
+                            {/* Plan Premium */}
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-7 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-1 rounded-md">
+                                        Avanzado
+                                    </span>
+                                    <h3 className="text-xl font-bold text-slate-900 mt-3 mb-1">Plan PREMIUM</h3>
+                                    <div className="text-3xl font-bold text-slate-900 mb-1">$59.000</div>
+                                    <div className="text-xs text-slate-500 mb-4">mensual / para consultas consolidadas</div>
+                                    <ul className="text-xs text-slate-600 space-y-2.5 border-t border-slate-200 pt-4">
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Todo lo incluido en el plan PRO</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Múltiples sucursales y ubicaciones</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Estadísticas avanzadas de atención</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-700 shrink-0" />
+                                            <span>Asistente de onboarding y soporte VIP</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <Link
+                                    href="/planes"
+                                    className="mt-6 block w-full text-center rounded-xl border border-slate-300 bg-white py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                                >
+                                    Ver detalles del plan
+                                </Link>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+
+                {/* 8. PREGUNTAS FRECUENTES B2B */}
+                <section className="py-12 md:py-16 bg-slate-50 border-b border-slate-200/60">
+                    <div className="container-wide max-w-4xl mx-auto">
+                        <div className="text-center mb-10">
+                            <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-900 mb-3">
+                                Preguntas frecuentes de profesionales
+                            </h2>
+                            <p className="text-base text-slate-600">
+                                Respuestas claras sobre el funcionamiento del software y el Programa Fundadores
+                            </p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="rounded-xl border border-slate-200 bg-white p-5">
+                                <h3 className="font-bold text-slate-900 text-base mb-2">
+                                    ¿Qué requisitos debo cumplir para participar del Programa Fundadores?
+                                </h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Debes contar con título profesional de psicólogo/a o médico psiquiatra y registro activo y verificable en la Superintendencia de Salud de Chile.
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-slate-200 bg-white p-5">
+                                <h3 className="font-bold text-slate-900 text-base mb-2">
+                                    ¿Existe algún compromiso de permanencia o cobro oculto?
+                                </h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    No. Los 12 meses de suscripción del Programa Fundadores son 100% bonificados. Cualquier costo de pasarela de pago bancario de terceros aplica directamente sobre las transacciones procesadas. Al término de los 12 meses, se avisa con 60 días de anticipación sin cobros automáticos sorpresivos.
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-slate-200 bg-white p-5">
+                                <h3 className="font-bold text-slate-900 text-base mb-2">
+                                    ¿Cómo se garantiza la confidencialidad de las fichas clínicas?
+                                </h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Las fichas clínicas están diseñadas bajo el estricto mandato de la Ley 20.584. Sólo el profesional tratante tiene acceso a la información confidencial de sus pacientes mediante autenticación cifrada.
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-slate-200 bg-white p-5">
+                                <h3 className="font-bold text-slate-900 text-base mb-2">
+                                    ¿Puedo atender tanto pacientes online como presenciales?
+                                </h3>
+                                <p className="text-sm text-slate-600 leading-relaxed">
+                                    Sí. La plataforma te permite habilitar ambas modalidades según tus horarios y preferencias de consulta.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 9. CTA FINAL */}
+                <section className="py-14 md:py-20 bg-teal-900 text-white relative overflow-hidden">
+                    <div className="container-wide relative">
+                        <div className="max-w-3xl mx-auto text-center">
+                            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                                Simplifica la gestión de tu consulta hoy
+                            </h2>
+                            <p className="text-lg md:text-xl text-teal-100 mb-8 leading-relaxed">
+                                Organiza tu agenda médica, ahorra tiempo administrativo y brinda una experiencia confiable a tus pacientes.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link
+                                    href="/registro?tipo=profesional&programa=fundador"
+                                    onClick={() => analyticsEvents.founderCtaClick('profesionales_cta_final')}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-bold text-teal-900 shadow-xl hover:bg-slate-100 transition-all"
+                                >
+                                    <span>Postula al Programa Fundadores</span>
+                                    <ArrowRight className="w-5 h-5 ml-1" />
+                                </Link>
+                                <a
+                                    href="mailto:contacto@psydoctor.cl?subject=Consulta%20Profesional%20PsyDoctor"
+                                    onClick={() => analyticsEvents.demoRequested('email_profesionales')}
+                                    className="inline-flex items-center justify-center rounded-xl border border-teal-300/40 bg-teal-800/50 px-8 py-4 text-base font-semibold text-white hover:bg-teal-800 transition-all"
+                                >
+                                    Contactar al equipo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
+
             <Footer />
         </div>
     )

@@ -19,9 +19,11 @@ export function Header() {
     const isLoggedIn = status === 'authenticated' && session?.user
 
     const navigation = [
-        { name: 'Cómo funciona', href: '/#como-funciona' },
-        { name: 'Para profesionales', href: '/profesionales' },
+        { name: 'Profesionales', href: '/profesionales' },
+        { name: 'Funcionalidades', href: '/profesionales#funcionalidades' },
         { name: 'Planes', href: '/planes' },
+        { name: 'Buscar especialista', href: '/buscar' },
+        { name: 'Cómo funciona', href: '/#como-funciona' },
     ]
 
     return (
@@ -120,14 +122,13 @@ export function Header() {
                                     >
                                         Iniciar sesión
                                     </Link>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsWaitlistModalOpen(true)}
-                                        className="inline-flex items-center gap-1.5 rounded-xl bg-teal-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-900 whitespace-nowrap cursor-pointer"
+                                    <Link
+                                        href="/registro?tipo=profesional&programa=fundador"
+                                        className="inline-flex items-center gap-1.5 rounded-xl bg-teal-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-900 whitespace-nowrap"
                                     >
-                                        Avísame cuando abran
+                                        <span>Soy Profesional</span>
                                         <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-                                    </button>
+                                    </Link>
                                 </>
                             )}
                         </div>
@@ -188,16 +189,13 @@ export function Header() {
                                         >
                                             Iniciar sesión
                                         </Link>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setIsMenuOpen(false)
-                                                setIsWaitlistModalOpen(true)
-                                            }}
+                                        <Link
+                                            href="/registro?tipo=profesional&programa=fundador"
+                                            onClick={() => setIsMenuOpen(false)}
                                             className="rounded-xl bg-teal-800 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-900"
                                         >
-                                            Avísame cuando abran
-                                        </button>
+                                            Postula al Programa Fundadores
+                                        </Link>
                                     </>
                                 )}
                             </div>

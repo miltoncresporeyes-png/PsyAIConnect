@@ -48,6 +48,10 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Usuario no encontrado")
                 }
 
+                if (user.isActive === false) {
+                    throw new Error("Tu cuenta se encuentra suspendida. Contacta a soporte.")
+                }
+
                 const isPasswordValid = await bcrypt.compare(
                     credentials.password,
                     user.password
@@ -80,7 +84,7 @@ export const authOptions: NextAuthOptions = {
             if (trigger === "update" && token.id) {
                 const dbUser = await prisma.user.findUnique({
                     where: { id: token.id as string },
-                    select: { role: true },
+                    select: { role: true, isActive: true },
                 })
                 if (dbUser) {
                     token.role = dbUser.role

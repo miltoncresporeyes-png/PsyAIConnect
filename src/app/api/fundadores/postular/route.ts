@@ -47,6 +47,12 @@ const founderApplicationSchema = z.object({
         .trim()
         .min(2, 'Ingresa una comuna o región válida')
         .max(100, 'La comuna o región no puede exceder 100 caracteres'),
+    descripcionConsulta: z
+        .string()
+        .trim()
+        .max(500, 'La descripción no puede exceder 500 caracteres')
+        .optional()
+        .or(z.literal('')),
     declaracionVigente: z
         .boolean()
         .refine((val) => val === true, 'Debes aceptar la declaración y los términos para continuar'),
@@ -165,6 +171,7 @@ export async function POST(req: NextRequest) {
                 <li><strong>N° Registro Superintendencia:</strong> ${data.registroSuperintendencia}</li>
                 <li><strong>Modalidad:</strong> ${data.modalidadAtencion}</li>
                 <li><strong>Comuna/Región:</strong> ${data.comunaRegion}</li>
+                ${data.descripcionConsulta ? `<li><strong>Descripción consulta:</strong> ${data.descripcionConsulta}</li>` : ''}
                 <li><strong>Términos aceptados:</strong> Versión ${data.versionTerminos || '1.0'}</li>
                 <li><strong>Estado de la postulación:</strong> Pendiente de verificación</li>
             </ul>

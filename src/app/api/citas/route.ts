@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
+import { UserRole } from '@prisma/client'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -14,6 +15,7 @@ const appointmentSchema = z.object({
     scheduledAt: z.string().datetime(),
     modality: z.enum(['ONLINE', 'IN_PERSON']),
     consultationReason: z.string().optional(),
+    guestEmail: z.string().email().optional(),
 })
 
 export async function POST(request: Request) {
@@ -45,6 +47,35 @@ export async function POST(request: Request) {
 
         const body = await request.json()
         const data = appointmentSchema.parse(body)
+
+        // Resolve patient: authenticated user or guest (email-based)
+        let patientId: string | null = session?.user?.id ?? null
+
+        if (!patientId) {
+            if (!data.guestEmail) {
+                return NextResponse.json(
+                    { error: 'Ingresa tu correo electrónico para reservar como invitado' },
+                    { status: 400 }
+                )
+            }
+
+            let guestUser = await prisma.user.findUnique({
+                where: { email: data.guestEmail.toLowerCase() },
+            })
+
+            if (!guestUser) {
+                guestUser = await prisma.user.create({
+                    data: {
+                        email: data.guestEmail.toLowerCase(),
+                        role: UserRole.PATIENT,
+                        emailVerified: null,
+                        profileCompleted: false,
+                    },
+                })
+            }
+
+            patientId = guestUser.id
+        }
 
         // Get professional
         const professional = await prisma.professional.findUnique({
@@ -85,7 +116,7 @@ export async function POST(request: Request) {
         // Create appointment
         const appointment = await prisma.appointment.create({
             data: {
-                patientId: session.user.id,
+                patientId: patientId!,
                 professionalId: data.professionalId,
                 scheduledAt,
                 duration: professional.sessionDuration,
