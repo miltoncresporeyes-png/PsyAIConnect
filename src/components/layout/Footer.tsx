@@ -20,6 +20,8 @@ export function Footer() {
             { name: 'Para profesionales', href: '/profesionales' },
             { name: 'Preguntas Frecuentes', href: '/faq' },
             { name: 'Cómo Funciona', href: '/#como-funciona' },
+            { name: 'Psicólogo con Fonasa', href: '/psicologo-con/fonasa' },
+            { name: 'Psicólogo para ansiedad', href: '/psicologo-online/ansiedad' },
         ],
         legal: [
             { name: 'Términos de Uso', href: '/terminos' },

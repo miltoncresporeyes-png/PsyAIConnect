@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
+import { PREVISION_LANDINGS, SPECIALTY_LANDINGS } from '@/lib/seoLandings'
 
 const BASE_URL = 'https://psydoctor.cl'
 
@@ -73,6 +74,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.8,
         },
         {
+            url: `${BASE_URL}/fundadores`,
+            lastModified: now,
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
             url: `${BASE_URL}/planes`,
             lastModified: now,
             changeFrequency: 'monthly',
@@ -96,6 +103,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'yearly',
             priority: 0.2,
         },
+        ...SPECIALTY_LANDINGS.map((s) => ({
+            url: `${BASE_URL}/psicologo-online/${s.slug}`,
+            lastModified: now,
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+        })),
+        ...PREVISION_LANDINGS.map((p) => ({
+            url: `${BASE_URL}/psicologo-con/${p.slug}`,
+            lastModified: now,
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+        })),
         ...(['en', 'fr', 'pt'] as const).map((locale) => ({
             url: `${BASE_URL}/${locale}`,
             lastModified: now,
