@@ -156,6 +156,7 @@ function VerifyCodeContent() {
                     name: pendingRegistration.name,
                     password: pendingRegistration.password,
                     userType,
+                    completionToken: data.completionToken,
                 }),
             })
 

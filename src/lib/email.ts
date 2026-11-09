@@ -394,7 +394,7 @@ export async function sendAppointmentReminderEmail(
  * Generate a 6-digit verification code using cryptographically secure random
  */
 export function generateVerificationCode(): string {
-    return crypto.randomInt(100000, 999999).toString()
+    return crypto.randomInt(100000, 1000000).toString()
 }
 
 /**

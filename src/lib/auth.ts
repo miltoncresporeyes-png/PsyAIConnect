@@ -40,12 +40,18 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Email y contraseña son requeridos")
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email },
+                const user = await prisma.user.findFirst({
+                    where: { email: { equals: credentials.email.trim(), mode: "insensitive" } },
                 })
 
                 if (!user || !user.password) {
                     throw new Error("Usuario no encontrado")
+                }
+
+                // El segundo paso (código por correo) se exige aquí, en el
+                // servidor, y no solo en la interfaz de registro.
+                if (!user.emailVerified) {
+                    throw new Error("Debes verificar tu correo antes de iniciar sesión. Completa el registro para recibir un código.")
                 }
 
                 if (user.isActive === false) {
