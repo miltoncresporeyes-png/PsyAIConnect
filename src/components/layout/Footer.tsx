@@ -36,9 +36,8 @@ export function Footer() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 lg:gap-10">
                     {/* Brand */}
                     <div className="col-span-1 sm:col-span-2 md:col-span-1">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <Logo variant="icon" size={32} />
-                            <span className="font-heading font-semibold text-xl text-white">PsyDoctor</span>
+                        <div className="mb-4">
+                            <Logo variant="full" size={36} tone="dark" />
                         </div>
                         <p className="text-sm text-gray-400 mb-4">
                             Conectamos pacientes con psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud.

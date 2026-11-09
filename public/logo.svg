@@ -1,82 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <title>PsyDoctor</title>
   <defs>
-    <!-- Gradiente de fondo cálido y orgánico -->
-    <linearGradient id="bgShield" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#F8FAFC"/>
-      <stop offset="100%" stop-color="#EBF4F6"/>
+    <linearGradient id="bg" x1="8" y1="0" x2="92" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F8B80"/>
+      <stop offset="1" stop-color="#0B4F4A"/>
     </linearGradient>
-
-    <!-- Gradiente de trazo / borde exterior -->
-    <linearGradient id="borderGrad" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#CBD5E1"/>
-      <stop offset="50%" stop-color="#94A3B8" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="#64748B" stop-opacity="0.3"/>
+    <linearGradient id="shine" x1="50" y1="0" x2="50" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-
-    <!-- Gradiente Clínico Primario (Verde Bosque / Esmeralda Profundo a Verde Salvia) -->
-    <linearGradient id="psiEmerald" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0F766E"/>
-      <stop offset="60%" stop-color="#0D9488"/>
-      <stop offset="100%" stop-color="#14B8A6"/>
-    </linearGradient>
-
-    <!-- Gradiente Clínico Secundario (Azul Marino Médico / Confianza y Rigor) -->
-    <linearGradient id="medNavy" x1="30" y1="20" x2="70" y2="85" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#1E3A5F"/>
-    </linearGradient>
-
-    <!-- Sombra suave y distinguida -->
-    <filter id="softShadow" x="-10%" y="-10%" width="125%" height="125%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="2.5" stdDeviation="3.5" flood-color="#0F172A" flood-opacity="0.08"/>
-    </filter>
   </defs>
-
-  <!-- Superficie base: squircle suave, limpio y luminoso -->
-  <rect x="6" y="6" width="88" height="88" rx="26" fill="url(#bgShield)" stroke="url(#borderGrad)" stroke-width="1.2" filter="url(#softShadow)"/>
-
-  <!-- Cruz Médica Integrada (Centro armónico sutil que ancla la base de salud) -->
-  <g opacity="0.14">
-    <rect x="44.5" y="27" width="11" height="46" rx="5.5" fill="#0F766E"/>
-    <rect x="27" y="44.5" width="46" height="11" rx="5.5" fill="#0F766E"/>
-  </g>
-
-  <!-- Cáliz / Alas de la letra Psi (Ψ): curvas continuas de acogida, mente y bienestar -->
-  <path
-    d="M 27 34
-       C 27 57, 40 68, 50 68
-       C 60 68, 73 57, 73 34"
-    fill="none"
-    stroke="url(#psiEmerald)"
-    stroke-width="6.5"
-    stroke-linecap="round"
-  />
-
-  <!-- Columna Central Médica (Eje de equilibrio, sostén y presencia profesional) -->
-  <path
-    d="M 50 21
-       L 50 78"
-    fill="none"
-    stroke="url(#medNavy)"
-    stroke-width="6.5"
-    stroke-linecap="round"
-  />
-
-  <!-- Remate Superior: Núcleo de claridad / sinapsis consciente -->
-  <circle cx="50" cy="21" r="4.8" fill="#0F766E"/>
-
-  <!-- Nodos de equilibrio en las cúspides de la mente -->
-  <circle cx="27" cy="34" r="3.2" fill="#0D9488"/>
-  <circle cx="73" cy="34" r="3.2" fill="#0D9488"/>
-
-  <!-- Barra transversal médica equilibrada en el eje central -->
-  <path
-    d="M 37.5 49
-       L 62.5 49"
-    fill="none"
-    stroke="url(#medNavy)"
-    stroke-width="5"
-    stroke-linecap="round"
-    stroke-opacity="0.88"
-  />
+  <rect width="100" height="100" rx="28" fill="url(#bg)"/>
+  <rect width="100" height="100" rx="28" fill="url(#shine)"/>
+  <path d="M30 34 V47 C30 61 38 68 50 68 C62 68 70 61 70 47 V34" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M50 36 V80" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round"/>
+  <circle cx="50" cy="21" r="7.5" fill="#99F6E4"/>
 </svg>

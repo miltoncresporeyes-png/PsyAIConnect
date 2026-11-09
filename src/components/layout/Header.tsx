@@ -37,13 +37,8 @@ export function Header() {
                     <div className="flex h-[62px] items-center justify-between gap-4 w-full max-w-full min-w-0">
 
                         {/* Logo */}
-                        <Link href="/" className="group flex shrink-0 items-center gap-2.5 py-1">
-                            <div className="relative flex items-center justify-center rounded-xl p-0.5 transition-transform duration-200 group-hover:scale-105">
-                                <Logo variant="icon" size={38} className="transition-transform duration-200" />
-                            </div>
-                            <span className="font-heading text-lg sm:text-[20px] font-bold tracking-tight text-slate-900 inline">
-                                Psy<span className="text-teal-800">Doctor</span>
-                            </span>
+                        <Link href="/" aria-label="PsyDoctor, ir al inicio" className="group flex shrink-0 items-center py-1 transition-opacity hover:opacity-90">
+                            <Logo variant="full" size={36} />
                         </Link>
 
                         {/* Desktop Navigation */}
