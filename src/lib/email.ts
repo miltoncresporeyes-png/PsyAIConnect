@@ -231,7 +231,8 @@ const EMAIL_TEMPLATES = {
 }
 
 function getNormalizedFromEmail(): string {
-    const raw = (process.env.EMAIL_FROM || '').trim()
+    // Tolera comillas sobrantes en la variable ("Nombre <a@b.cl>"" o '...').
+    const raw = (process.env.EMAIL_FROM || '').trim().replace(/^["']+|["']+$/g, '').trim()
     if (!raw) {
         return 'PsyDoctor <onboarding@resend.dev>'
     }
@@ -249,7 +250,9 @@ function getNormalizedFromEmail(): string {
         return `PsyDoctor <${raw}>`
     }
 
-    // Si viene solo el nombre sin email o un valor corrupto
+    // Si viene solo el nombre sin email o un valor corrupto. El remitente de
+    // prueba de Resend solo entrega a la cuenta dueña de la clave, por eso se avisa.
+    console.error('[EMAIL SERVICE] EMAIL_FROM inválido, se usa el remitente de prueba de Resend. Revisa la variable:', raw)
     return 'PsyDoctor <onboarding@resend.dev>'
 }
 
@@ -264,6 +267,11 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 
     // In development or when API key is a dummy placeholder, log to console
     if (isPlaceholder) {
+        // En producción un envío "simulado" haría creer que el correo salió.
+        if (process.env.NODE_ENV === 'production') {
+            console.error('[EMAIL SERVICE] RESEND_API_KEY no está configurada en producción. No se envió el correo a:', to)
+            return { success: false, error: 'Servicio de correo no configurado' }
+        }
         console.warn('📧 [EMAIL SERVICE] RESEND_API_KEY no está configurada o es un placeholder. Simulando envío para:', to)
         console.log('Subject:', subject)
         console.log('---')

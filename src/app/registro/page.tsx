@@ -314,8 +314,8 @@ function RegistroContent() {
   const CurrentIcon = userType ? currentContent.icon : null
 
   return (
-    <div className="w-full max-w-md">
-      <div className="flex items-center justify-between mb-6">
+    <div className={`w-full ${isFounderFlow && step === 'form' ? 'max-w-3xl' : 'max-w-md'}`}>
+      <div className="flex items-center justify-between mb-4">
         <Link href="/" className="inline-flex items-center gap-2 group">
           <Logo variant="full" size={38} />
         </Link>
@@ -377,10 +377,10 @@ function RegistroContent() {
 
             {isFounderFlow ? (
               <div>
-                <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-2">
+                <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-1">
                   Registro de Profesionales Fundadores
                 </h1>
-                <p className="text-sm text-gray-600 text-center mb-6">
+                <p className="text-sm text-gray-600 text-center mb-4">
                   Convocatoria inicial · Primeros 20 cupos con 12 meses sin costo de suscripción.
                 </p>
                 <FounderRegistrationForm />

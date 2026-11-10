@@ -4,12 +4,23 @@ import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateL
 import { sendEmail } from '@/lib/email'
 import { captureApiError, getRequestId } from '@/lib/observability'
 import { z } from 'zod'
+import { formatRut, isValidRut } from '@/lib/rut'
+import { COMUNAS_POR_REGION } from '@/lib/comunas-chile'
 
 export const dynamic = 'force-dynamic'
 
+// Destino por defecto de los avisos internos si no se define ADMIN_NOTIFICATION_EMAIL.
+const DEFAULT_ADMIN_EMAIL = 'contacto@psydoctor.cl'
+
+function esc(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+}
+
 const phoneRegex = /^(\+?56)?(\s?)(0?9)(\s?)[0-9]{8}$/
-// Formato RUT chileno: 12.345.678-9 o 12345678-k
-const rutRegex = /^(\d{1,2}(?:\.?\d{3}){2}-[\dkK])$/
 
 const founderApplicationSchema = z.object({
     nombreCompleto: z
@@ -20,7 +31,8 @@ const founderApplicationSchema = z.object({
     rut: z
         .string({ required_error: 'El RUT es requerido' })
         .trim()
-        .regex(rutRegex, 'Ingresa un RUT válido (ej. 12.345.678-9 o 12345678-K)'),
+        .refine(isValidRut, 'El RUT no es válido. Revisa el número y el dígito verificador.')
+        .transform(formatRut),
     profesion: z.enum(['psicologo', 'psiquiatra', 'psicologa'], {
         errorMap: () => ({ message: 'Selecciona una profesión válida (psicólogo/a o psiquiatra)' }),
     }),
@@ -42,11 +54,14 @@ const founderApplicationSchema = z.object({
     modalidadAtencion: z.enum(['online', 'presencial', 'ambas'], {
         errorMap: () => ({ message: 'Selecciona una modalidad válida (online, presencial o ambas)' }),
     }),
-    comunaRegion: z
-        .string({ required_error: 'La comuna o región es requerida' })
+    region: z
+        .string({ required_error: 'La región es requerida' })
         .trim()
-        .min(2, 'Ingresa una comuna o región válida')
-        .max(100, 'La comuna o región no puede exceder 100 caracteres'),
+        .refine((value) => Object.prototype.hasOwnProperty.call(COMUNAS_POR_REGION, value), 'Selecciona una región válida'),
+    comuna: z
+        .string({ required_error: 'La comuna es requerida' })
+        .trim()
+        .min(2, 'Selecciona una comuna válida'),
     descripcionConsulta: z
         .string()
         .trim()
@@ -59,6 +74,9 @@ const founderApplicationSchema = z.object({
     versionTerminos: z.string().default('1.0'),
     // Honeypot anti-bot
     website: z.string().max(0, 'Bot detected').optional().or(z.literal('')),
+}).refine((data) => COMUNAS_POR_REGION[data.region]?.includes(data.comuna), {
+    message: 'La comuna seleccionada no pertenece a la región indicada',
+    path: ['comuna'],
 })
 
 export async function POST(req: NextRequest) {
@@ -135,7 +153,7 @@ export async function POST(req: NextRequest) {
                 email: data.email,
                 telefono: data.telefono,
                 modalidadAtencion: data.modalidadAtencion,
-                comunaRegion: data.comunaRegion,
+                comunaRegion: `${data.comuna}, ${data.region}`,
                 declaracionVigente: true,
                 fechaAceptacion: new Date(),
                 versionTerminos: data.versionTerminos || '1.0',
@@ -159,7 +177,7 @@ export async function POST(req: NextRequest) {
         <p style="color: #ccfbf1; margin: 8px 0 0 0; font-size: 14px;">Programa Profesionales Fundadores</p>
     </div>
     <div style="background: #ffffff; padding: 36px 28px; border: 1px solid #e2e8f0; border-top: none;">
-        <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Estimado/a ${data.nombreCompleto}:</h2>
+        <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Estimado/a ${esc(data.nombreCompleto)}:</h2>
         <p style="color: #334155; font-size: 15px;">
             Recibimos tu postulación. Verificaremos tu inscripción en el Registro de la Superintendencia de Salud y te escribiremos en un plazo estimado de 3 a 5 días hábiles.
         </p>
@@ -168,10 +186,10 @@ export async function POST(req: NextRequest) {
             <p style="margin: 0; font-size: 13px; color: #134e4a; font-weight: 600;">Resumen de antecedentes registrados:</p>
             <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 13px; color: #115e59;">
                 <li><strong>Profesión:</strong> ${normalizedProfesion === 'psicologo' ? 'Psicología' : 'Psiquiatría'}</li>
-                <li><strong>N° Registro Superintendencia:</strong> ${data.registroSuperintendencia}</li>
+                <li><strong>N° Registro Superintendencia:</strong> ${esc(data.registroSuperintendencia)}</li>
                 <li><strong>Modalidad:</strong> ${data.modalidadAtencion}</li>
-                <li><strong>Comuna/Región:</strong> ${data.comunaRegion}</li>
-                ${data.descripcionConsulta ? `<li><strong>Descripción consulta:</strong> ${data.descripcionConsulta}</li>` : ''}
+                <li><strong>Comuna/Región:</strong> ${data.comuna}, ${data.region}</li>
+                ${data.descripcionConsulta ? `<li><strong>Descripción consulta:</strong> ${esc(data.descripcionConsulta)}</li>` : ''}
                 <li><strong>Términos aceptados:</strong> Versión ${data.versionTerminos || '1.0'}</li>
                 <li><strong>Estado de la postulación:</strong> Pendiente de verificación</li>
             </ul>
@@ -193,15 +211,52 @@ export async function POST(req: NextRequest) {
 </html>
 `
 
-        sendEmail({
-            to: data.email,
-            subject: emailSubject,
-            html: emailHtml,
-        }).catch((err) => {
-            captureApiError('/api/fundadores/postular:sendEmail', err, requestId, {
-                applicantEmail: data.email,
-            })
-        })
+        // Aviso al equipo para que revise la postulación. El RUT no se envía por
+        // correo: se consulta en el panel de administración.
+        const adminTo = (process.env.ADMIN_NOTIFICATION_EMAIL || DEFAULT_ADMIN_EMAIL).trim()
+        const adminHtml = `
+<div style="font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; max-width: 560px;">
+    <h2 style="margin: 0 0 12px 0;">Nueva postulación de Profesional Fundador</h2>
+    <ul style="padding-left: 18px; line-height: 1.7;">
+        <li><strong>Nombre:</strong> ${esc(data.nombreCompleto)}</li>
+        <li><strong>Profesión:</strong> ${normalizedProfesion === 'psicologo' ? 'Psicología' : 'Psiquiatría'}</li>
+        <li><strong>N° Registro:</strong> ${esc(data.registroSuperintendencia)}</li>
+        <li><strong>Correo:</strong> ${esc(data.email)}</li>
+        <li><strong>Teléfono:</strong> ${esc(data.telefono)}</li>
+        <li><strong>Modalidad:</strong> ${esc(data.modalidadAtencion)}</li>
+        <li><strong>Comuna:</strong> ${esc(data.comuna)}, ${esc(data.region)}</li>
+    </ul>
+    <p><a href="https://psydoctor.cl/admin/fundadores">Revisar en el panel de administración</a></p>
+</div>`
+
+        const [applicantMail, adminMail] = await Promise.allSettled([
+            sendEmail({ to: data.email, subject: emailSubject, html: emailHtml }),
+            sendEmail({
+                to: adminTo,
+                subject: `Nueva postulación fundador: ${data.nombreCompleto}`,
+                html: adminHtml,
+            }),
+        ])
+
+        // sendEmail informa los fallos con { success: false } y no lanza, por
+        // eso se revisa el resultado además del rechazo de la promesa.
+        const mailTargets = [
+            { label: 'applicant', to: data.email, outcome: applicantMail },
+            { label: 'admin', to: adminTo, outcome: adminMail },
+        ]
+        for (const { label, to, outcome } of mailTargets) {
+            const failure =
+                outcome.status === 'rejected'
+                    ? outcome.reason
+                    : outcome.value.success
+                        ? null
+                        : new Error(outcome.value.error || 'Fallo desconocido al enviar el correo')
+            if (failure) {
+                await captureApiError(`/api/fundadores/postular:sendEmail:${label}`, failure, requestId, {
+                    recipient: to,
+                })
+            }
+        }
 
         return NextResponse.json({
             success: true,
