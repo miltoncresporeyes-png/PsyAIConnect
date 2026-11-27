@@ -60,9 +60,18 @@ curl.exe -s -H "Authorization: Bearer TU_CLAVE" https://TU-DOMINIO/api/cron/reco
 Respuesta esperada: `{"ok":true,"reminded24h":0,"reminded2h":0,"released":0,"expiredPending":0}`. Sin la cabecera debe
 responder 401. En los registros del servicio cron debe haber una ejecución cada 10 minutos con código de salida 0.
 
-**Alternativa sin servicio en Railway:** un servicio externo (p. ej. cron-job.org) que llame a la misma URL cada
-10 minutos con la cabecera `Authorization: Bearer <CRON_SECRET>`. Debe mantenerse siempre activo: sin él no hay
-recordatorios ni liberación de horarios.
+**Alternativa recomendada: GitHub Actions** (`.github/workflows/cron-recordatorios.yml`). Evita depender de un
+contenedor en Railway y deja los registros visibles en GitHub:
+1. GitHub → Settings → Secrets and variables → Actions → **New repository secret**:
+   - `APP_URL`: dominio exacto y sin `/` final (ej. `https://www.psydoctor.cl`).
+   - `CRON_SECRET`: el mismo valor que la variable de la app en Railway.
+2. El flujo corre cada 10 minutos (GitHub puede retrasarlo unos minutos) y solo desde la rama `master`.
+3. Probar a mano: Actions → «Cron de recordatorios de citas» → **Run workflow**. Debe terminar en verde y mostrar
+   `HTTP 200` con el JSON `{"ok":true,...}`. Un 401 indica un `CRON_SECRET` distinto; un 404 o 3xx, un `APP_URL` incorrecto.
+4. Si usas este camino, elimina el servicio `cron-recordatorios` de Railway para no duplicar ejecuciones.
+
+**Otra alternativa:** un servicio externo (p. ej. cron-job.org) que llame a la misma URL cada 10 minutos con la
+cabecera `Authorization: Bearer <CRON_SECRET>`.
 
 ## 6. Datos de prueba
 Registra desde la web: una **profesional**, un **paciente** y un **administrador** (el rol admin se asigna por SQL):
