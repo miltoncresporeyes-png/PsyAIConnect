@@ -1,0 +1,53 @@
+name: Cron de recordatorios de citas
+
+# Llama cada 10 minutos a GET /api/cron/recordatorios-citas, que envía recordatorios (24 h y 2 h),
+# libera horarios sin reconfirmar y caduca solicitudes sin respuesta.
+#
+# Secretos del repositorio (Settings -> Secrets and variables -> Actions -> New repository secret):
+#   APP_URL      Dominio de produccion, exacto y sin "/" final (ej. https://www.psydoctor.cl)
+#   CRON_SECRET  El mismo valor que la variable CRON_SECRET de la app en Railway
+#
+# Nota: GitHub puede retrasar unos minutos las ejecuciones programadas y solo ejecuta los horarios
+# de la rama por defecto. Para probar a mano: Actions -> este flujo -> Run workflow.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+# Si una ejecucion tarda mas de lo normal, no se solapan.
+concurrency:
+  group: cron-recordatorios
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  recordatorios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Llamar al endpoint de recordatorios
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::Faltan los secretos APP_URL y/o CRON_SECRET en el repositorio."
+            exit 1
+          fi
+
+          status=$(curl -sS -m 60 --retry 2 --retry-delay 5 \
+            -o response.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${APP_URL%/}/api/cron/recordatorios-citas")
+
+          echo "HTTP ${status}"
+          cat response.json || true
+          echo
+
+          if [ "${status}" != "200" ]; then
+            echo "::error::El cron respondio HTTP ${status} (401 = CRON_SECRET distinto al de la app; 404 = ruta o dominio incorrectos; 3xx = APP_URL redirige: usa el dominio final exacto)."
+            exit 1
+          fi
