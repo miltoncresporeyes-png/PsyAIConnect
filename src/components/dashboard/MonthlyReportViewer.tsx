@@ -253,10 +253,6 @@ export default function MonthlyReportViewer() {
                                 <span>- Retención SII (15.25%)</span>
                                 <span className="font-semibold">-{formatCurrency(report.financialSummary.totalSiiRetention)}</span>
                             </div>
-                            <div className="flex justify-between text-sm text-indigo-600">
-                                <span>- Comisión Plataforma</span>
-                                <span className="font-semibold">-{formatCurrency(report.financialSummary.totalCommission)}</span>
-                            </div>
                             <div className="border-t pt-2 mt-2">
                                 <div className="flex justify-between items-center">
                                     <span className="font-bold text-gray-900">Monto Líquido</span>

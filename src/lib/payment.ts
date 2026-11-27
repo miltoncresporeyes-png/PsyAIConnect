@@ -6,6 +6,7 @@
  */
 
 import crypto from 'crypto'
+import { SESSION_COMMISSION_RATE } from '@/lib/plans'
 
 // Payment status enum matching our Prisma schema
 export enum PaymentStatus {
@@ -38,11 +39,11 @@ interface FlowPaymentStatusResponse {
     }
 }
 
-// Commission rates by subscription tier (as percentage)
+// Sin comision por sesion en ningun plan (el ingreso de PsyDoctor es la suscripcion)
 const COMMISSION_RATES = {
-    STARTER: 0.12,  // 12%
-    PRO: 0.08,      // 8%
-    PREMIUM: 0.05,  // 5%
+    STARTER: SESSION_COMMISSION_RATE,
+    PRO: SESSION_COMMISSION_RATE,
+    PREMIUM: SESSION_COMMISSION_RATE,
 } as const
 
 interface CreatePaymentParams {

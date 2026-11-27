@@ -29,12 +29,12 @@ export function WaitlistFoundersProgramSection() {
                                 <Award className="h-5 w-5" aria-hidden="true" />
                             </div>
                             <Heading level={3} className="text-base sm:text-lg font-semibold text-white mb-2">
-                                Comisión 0% de Lanzamiento
+                                Sin comisión por sesión
                             </Heading>
                             <p className="text-sm text-slate-300 leading-relaxed">
                                 {landingConfig.beneficioFundadores !== 'PENDIENTE'
                                     ? landingConfig.beneficioFundadores
-                                    : 'Accede a condiciones preferentes sin cobro de comisión durante los primeros meses para que impulses tu consulta online.'}
+                                    : 'PsyDoctor no cobra comisión sobre tus sesiones: tú defines tu valor y cómo cobrar. Solo pagas la suscripción, y los fundadores la tienen sin costo por 12 meses.'}
                             </p>
                         </div>
                     </div>

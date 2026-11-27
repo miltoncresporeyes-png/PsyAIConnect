@@ -1,3 +1,4 @@
+import { SESSION_COMMISSION_RATE } from '@/lib/plans'
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -135,9 +136,7 @@ export async function POST(request: Request) {
         },
       });
 
-      const commissionRate = preReservation.professional.subscriptionTier === 'PREMIUM' ? 0.05 :
-        preReservation.professional.subscriptionTier === 'PRO' ? 0.08 : 0.12
-      const commission = Math.round(preReservation.professional.sessionPrice * commissionRate)
+      const commission = Math.round(preReservation.professional.sessionPrice * SESSION_COMMISSION_RATE)
 
       await prisma.payment.create({
         data: {

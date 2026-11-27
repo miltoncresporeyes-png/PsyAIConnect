@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
             })
 
             // Crear pago
-            const commission = Math.round(session.amount * 0.05) // 5% comisión
+            const commission = 0 // sin comisión por sesión
             const netAmount = session.amount - commission
 
             await prisma.payment.create({
