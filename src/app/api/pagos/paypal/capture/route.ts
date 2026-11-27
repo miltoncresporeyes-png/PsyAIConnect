@@ -27,7 +27,8 @@ export async function GET(request: Request) {
                 where: {
                     OR: [
                         { externalOrderId: token },
-                        ...(appointmentId ? [{ appointmentId }] : []),
+                        // Solo un pago aun sin orden asociada: evita confirmar otra cita con una orden ajena.
+                        ...(appointmentId ? [{ appointmentId, externalOrderId: null }] : []),
                     ],
                 },
                 include: {

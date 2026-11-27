@@ -271,7 +271,9 @@ function LoginForm({ userType, onBack }: { userType: 'patient' | 'professional';
           setFormError(result.error)
         }
       } else {
+        // El middleware reenvia a /verificar-2fa si el codigo esta pendiente.
         router.push(callbackUrl)
+        router.refresh()
       }
     } catch {
       setFormError(copy.genericLoginError)
@@ -282,6 +284,7 @@ function LoginForm({ userType, onBack }: { userType: 'patient' | 'professional';
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true)
+    document.cookie = `pendingUserType=${userType}; path=/; max-age=600; SameSite=Lax`
     await signIn('google', { callbackUrl })
   }
 
@@ -316,7 +319,9 @@ function LoginForm({ userType, onBack }: { userType: 'patient' | 'professional';
 
       {(error || formError) && !wrongTypeError && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
-          {formError || (error === 'CredentialsSignin' ? copy.invalidCredentials : copy.genericLoginError)}
+          {formError || (error === 'cuenta_profesional'
+            ? 'Ese correo tiene una cuenta de profesional. Inicia sesión desde "Cuenta Profesional".'
+            : error === 'CredentialsSignin' ? copy.invalidCredentials : copy.genericLoginError)}
         </div>
       )}
 

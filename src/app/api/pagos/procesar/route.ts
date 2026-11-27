@@ -1,3 +1,4 @@
+import { getEffectiveTier } from '@/lib/plans'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
     // Calcular comisión
     const { commission, netAmount } = calculateCommission(
       sessionPrice,
-      appointment.professional.subscriptionTier
+      getEffectiveTier(appointment.professional)
     )
 
     // Crear registro de pago
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
       patientEmail: appointment.patient.email,
       patientName: appointment.patient.name || 'Paciente',
       professionalName: appointment.professional.user.name || 'Profesional',
-      subscriptionTier: appointment.professional.subscriptionTier,
+      subscriptionTier: getEffectiveTier(appointment.professional),
     })
 
     if (!paymentResult.success) {

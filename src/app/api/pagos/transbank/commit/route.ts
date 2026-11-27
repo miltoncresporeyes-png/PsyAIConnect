@@ -34,7 +34,8 @@ async function handleWebpayReturn(request: Request) {
                 where: {
                     OR: [
                         { externalToken: token },
-                        ...(appointmentId ? [{ appointmentId }] : []),
+                        // Solo un pago aun sin token asociado: evita confirmar otra cita con un token ajeno.
+                        ...(appointmentId ? [{ appointmentId, externalToken: null }] : []),
                     ],
                 },
                 include: {

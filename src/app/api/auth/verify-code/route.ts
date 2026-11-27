@@ -394,9 +394,17 @@ export async function POST(request: Request) {
                 // Cuenta sin verificar: quien acaba de probar que controla el
                 // correo es el dueño real, por lo que su contraseña reemplaza
                 // cualquiera que se hubiera fijado antes sin verificación.
+                // Una cuenta sin verificar no tiene historial: el tipo elegido ahora
+                // manda (antes un alta previa como paciente dejaba al profesional
+                // registrado como PATIENT).
+                const requestedRole = userType === 'professional' ? 'PROFESSIONAL' : 'PATIENT'
                 const updatedUser = await prisma.user.update({
                     where: { id: existingUser.id },
-                    data: { emailVerified: new Date(), password: hashedPassword },
+                    data: {
+                        emailVerified: new Date(),
+                        password: hashedPassword,
+                        ...(existingUser.role !== 'ADMIN' ? { role: requestedRole } : {}),
+                    },
                 })
 
                 if (updatedUser.role === 'PROFESSIONAL') {

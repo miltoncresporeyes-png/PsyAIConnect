@@ -459,5 +459,76 @@ export async function sendVerificationCodeEmail(
     })
 }
 
+/**
+ * Codigo del segundo paso de inicio de sesion
+ */
+export async function sendLoginCodeEmail(
+    email: string,
+    name: string,
+    code: string
+): Promise<EmailResult> {
+    const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
+    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: 24px; border-radius: 16px 16px 0 0; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 26px;">PsyDoctor</h1>
+    </div>
+    <div style="background: #ffffff; padding: 32px 30px; border: 1px solid #e5e7eb; border-top: none;">
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(name || '')}</h2>
+        <p style="color: #4b5563;">Usa este código para confirmar tu inicio de sesión:</p>
+        <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+            <div style="font-size: 38px; font-weight: 700; color: #0f766e; letter-spacing: 8px; font-family: 'Courier New', monospace;">${code}</div>
+        </div>
+        <p style="color: #6b7280; font-size: 14px; text-align: center;">Expira en <strong>10 minutos</strong>.</p>
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+        <p style="color: #9ca3af; font-size: 12px; margin: 0; text-align: center;">Si no fuiste tú, cambia tu contraseña: alguien podría estar intentando entrar a tu cuenta.</p>
+    </div>
+</body>
+</html>`
+
+    return sendEmail({
+        to: email,
+        subject: 'Tu código de acceso - PsyDoctor',
+        html,
+    })
+}
+
+/**
+ * Aviso de mensaje nuevo en el chat interno. Nunca incluye el contenido.
+ */
+export async function sendNewMessageNotificationEmail(
+    email: string,
+    name: string,
+    fromLabel: string
+): Promise<EmailResult> {
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
+    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: 24px; border-radius: 16px 16px 0 0; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 26px;">PsyDoctor</h1>
+    </div>
+    <div style="background: #ffffff; padding: 32px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px;">
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(name || '')}</h2>
+        <p style="color: #4b5563;">Tienes un mensaje nuevo de <strong>${escapeHtml(fromLabel)}</strong> en PsyDoctor.</p>
+        <p style="text-align: center; margin: 28px 0;">
+            <a href="${baseUrl}/dashboard/mensajes" style="background: #0f766e; color: #fff; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600;">Ver mensaje</a>
+        </p>
+        <p style="color: #9ca3af; font-size: 12px; text-align: center;">Por tu privacidad, el contenido solo se muestra dentro de la plataforma. Si necesitas ayuda urgente, llama al *4141.</p>
+    </div>
+</body>
+</html>`
+
+    return sendEmail({
+        to: email,
+        subject: 'Tienes un mensaje nuevo - PsyDoctor',
+        html,
+    })
+}
+
 export { EMAIL_TEMPLATES }
 

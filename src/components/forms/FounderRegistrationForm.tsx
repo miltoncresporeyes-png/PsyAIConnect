@@ -75,6 +75,11 @@ export function FounderRegistrationForm() {
         e.preventDefault()
         setErrorMessage('')
 
+        if (telefono.length !== 8) {
+            setErrorMessage('Ingresa los 8 dígitos de tu celular (después del +56 9).')
+            return
+        }
+
         if (!isValidRut(rut)) {
             setRutError(RUT_ERROR)
             setErrorMessage('Revisa el RUT ingresado.')
@@ -104,7 +109,7 @@ export function FounderRegistrationForm() {
                     profesion,
                     registroSuperintendencia,
                     email,
-                    telefono,
+                    telefono: `+569${telefono}`,
                     modalidadAtencion,
                     region,
                     comuna,
@@ -331,16 +336,29 @@ export function FounderRegistrationForm() {
                     <label htmlFor="founder-telefono" className={labelClass}>
                         Teléfono / WhatsApp <span className="text-teal-700">*</span>
                     </label>
-                    <input
-                        id="founder-telefono"
-                        type="tel"
-                        required
-                        autoComplete="tel"
-                        value={telefono}
-                        onChange={(e) => setTelefono(e.target.value)}
-                        placeholder="+56 9 1234 5678"
-                        className={inputClass}
-                    />
+                    <div className="flex items-stretch rounded-xl border border-slate-300 bg-white focus-within:border-teal-600 focus-within:ring-2 focus-within:ring-teal-600/20 transition">
+                        <span className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-l-xl bg-slate-50 px-3 text-sm font-medium text-slate-600 border-r border-slate-300 select-none">
+                            <svg viewBox="0 0 30 20" className="h-4 w-6 shrink-0 rounded-[2px] shadow-sm ring-1 ring-slate-200" role="img" aria-label="Chile">
+                                <rect width="30" height="20" fill="#fff" />
+                                <rect y="10" width="30" height="10" fill="#D52B1E" />
+                                <rect width="10" height="10" fill="#0039A6" />
+                                <polygon fill="#fff" points="5,1.6 5.9,4.2 8.6,4.2 6.4,5.8 7.2,8.4 5,6.8 2.8,8.4 3.6,5.8 1.4,4.2 4.1,4.2" />
+                            </svg>
+                            +56 9
+                        </span>
+                        <input
+                            id="founder-telefono"
+                            type="tel"
+                            inputMode="numeric"
+                            required
+                            autoComplete="tel-national"
+                            value={telefono}
+                            onChange={(e) => setTelefono(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                            placeholder="1234 5678"
+                            maxLength={8}
+                            className="min-w-0 w-full rounded-r-xl bg-transparent px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none"
+                        />
+                    </div>
                 </div>
             </div>
 

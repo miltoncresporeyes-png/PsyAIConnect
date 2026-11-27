@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
@@ -27,8 +27,8 @@ const copy = {
     professionalSubtitle: 'Comienza a recibir pacientes en PsyDoctor',
     selectTitle: 'Crea tu cuenta',
     selectSubtitle: 'Como quieres usar PsyDoctor?',
-    patientOptionTitle: 'Busco un profesional',
-    patientOptionDesc: 'Quiero encontrar un psicologo o psiquiatra para comenzar mi proceso.',
+    patientOptionTitle: 'Soy paciente',
+    patientOptionDesc: 'Busco un psicologo o psiquiatra para comenzar mi proceso.',
     professionalOptionTitle: 'Soy profesional',
     professionalOptionDesc: 'Soy psicologo/a o psiquiatra y quiero ofrecer mis servicios.',
     backHome: 'Volver al inicio',
@@ -65,8 +65,8 @@ const copy = {
     professionalSubtitle: 'Start receiving patients on PsyDoctor',
     selectTitle: 'Create your account',
     selectSubtitle: 'How do you want to use PsyDoctor?',
-    patientOptionTitle: 'I need a professional',
-    patientOptionDesc: 'I want to find a psychologist or psychiatrist to start my process.',
+    patientOptionTitle: 'I am a patient',
+    patientOptionDesc: 'I am looking for a psychologist or psychiatrist to start my process.',
     professionalOptionTitle: 'I am a professional',
     professionalOptionDesc: 'I am a psychologist or psychiatrist and I want to offer my services.',
     backHome: 'Back to home',
@@ -103,8 +103,8 @@ const copy = {
     professionalSubtitle: 'Commencez a recevoir des patients sur PsyDoctor',
     selectTitle: 'Creez votre compte',
     selectSubtitle: 'Comment voulez-vous utiliser PsyDoctor ?',
-    patientOptionTitle: 'Je cherche un professionnel',
-    patientOptionDesc: 'Je veux trouver un psychologue ou un psychiatre pour commencer mon parcours.',
+    patientOptionTitle: 'Je suis patient',
+    patientOptionDesc: 'Je cherche un psychologue ou un psychiatre pour commencer mon parcours.',
     professionalOptionTitle: 'Je suis professionnel',
     professionalOptionDesc: 'Je suis psychologue ou psychiatre et je veux proposer mes services.',
     backHome: "Retour a l'accueil",
@@ -141,8 +141,8 @@ const copy = {
     professionalSubtitle: 'Comece a receber pacientes no PsyDoctor',
     selectTitle: 'Crie sua conta',
     selectSubtitle: 'Como voce quer usar o PsyDoctor?',
-    patientOptionTitle: 'Busco um profissional',
-    patientOptionDesc: 'Quero encontrar um psicologo ou psiquiatra para iniciar meu processo.',
+    patientOptionTitle: 'Sou paciente',
+    patientOptionDesc: 'Busco um psicologo ou psiquiatra para iniciar meu processo.',
     professionalOptionTitle: 'Sou profissional',
     professionalOptionDesc: 'Sou psicologo/a ou psiquiatra e quero oferecer meus servicos.',
     backHome: 'Voltar ao inicio',
@@ -184,6 +184,10 @@ function RegistroContent() {
   const programaParam = searchParams?.get('programa')
   const preReservationToken = searchParams?.get('preReservation')
 
+  const { status: authStatus } = useSession()
+  const authError = searchParams?.get('error')
+  const [pickedFromSelect, setPickedFromSelect] = useState(false)
+
   const [step, setStep] = useState<'select' | 'form'>('select')
   const [userType, setUserType] = useState<UserType | null>(null)
 
@@ -213,10 +217,26 @@ function RegistroContent() {
   const handleTypeSelect = (type: UserType) => {
     setUserType(type)
     setStep('form')
+    setPickedFromSelect(true)
+    // El tipo queda en la URL: recargar o volver de Google no reinicia la elección.
+    router.replace(`/registro?tipo=${type === 'professional' ? 'profesional' : 'paciente'}`)
   }
 
+  // Quien ya tiene sesión no debe ver el alta de cuenta (salvo la postulación de
+  // fundadores, que vuelve aquí tras identificarse con Google).
+  useEffect(() => {
+    if (authStatus === 'authenticated' && !programaParam) {
+      router.replace('/dashboard')
+    }
+  }, [authStatus, programaParam, router])
+
   const handleBack = () => {
-    if (tipoParam) {
+    if (pickedFromSelect) {
+      setPickedFromSelect(false)
+      setUserType(null)
+      setStep('select')
+      router.replace('/registro')
+    } else if (tipoParam) {
       router.push('/')
     } else {
       setStep('select')
@@ -227,6 +247,8 @@ function RegistroContent() {
     setIsGoogleLoading(true)
     if (userType) {
       sessionStorage.setItem('pendingUserType', userType)
+      // Cookie leída por el servidor al crear la cuenta con Google.
+      document.cookie = `pendingUserType=${userType}; path=/; max-age=600; SameSite=Lax`
     }
     await signIn('google', {
       callbackUrl: userType === 'professional' ? '/profesional/completar-perfil' : '/completar-perfil',
@@ -331,6 +353,11 @@ function RegistroContent() {
       <div className="card rounded-[28px] p-6 shadow-[0_24px_70px_rgba(15,23,42,0.08)] md:p-7">
         {step === 'select' ? (
           <>
+            {authError === 'cuenta_paciente' && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg mb-6 text-sm">
+                Ese correo ya tiene una cuenta de <strong>paciente</strong>. Para registrarte como profesional usa otro correo, o inicia sesión como paciente.
+              </div>
+            )}
             <h1 className="text-2xl font-heading font-bold text-center text-gray-900 mb-2">{t.selectTitle}</h1>
             <p className="text-gray-600 text-center mb-8">{t.selectSubtitle}</p>
 

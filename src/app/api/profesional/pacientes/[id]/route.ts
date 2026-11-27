@@ -37,6 +37,9 @@ export async function GET(
             where: {
                 professionalId: professional.id,
                 patientId: params.id,
+                // Igual que la lista de pacientes y el chat: una reserva pendiente o
+                // cancelada no da acceso a los datos del paciente.
+                status: { in: ['CONFIRMED', 'COMPLETED'] },
             },
             include: {
                 clinicalNotes: {
