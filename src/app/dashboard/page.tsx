@@ -11,7 +11,7 @@ import {
     Settings, LogOut, ExternalLink, BarChart3, FileText,
     Sparkles, ArrowRight, CheckCircle2, ShieldCheck, HeartPulse,
     HelpCircle, ChevronRight, AlertCircle, Compass, Zap
-} from 'lucide-react'
+, CreditCard, Video } from 'lucide-react'
 
 // Componentes del dashboard clínico del paciente
 import { MetricsCards } from '@/components/dashboard/patient/MetricsCards'
@@ -31,6 +31,9 @@ interface PatientSummary {
     lastSession?: string
     lastSessionDaysAgo?: string
     nextSession?: string
+    nextAppointmentId?: string
+    nextModality?: string
+    nextStatus?: string
     professionalName?: string
     professionalType?: string
     hasHistory: boolean
@@ -66,6 +69,16 @@ export default function DashboardPage() {
         isSuspended: false,
     })
 
+    // Próxima sesión del profesional (o sesión en curso): entrada directa a la videollamada
+    const [proNext, setProNext] = useState<{
+        id: string
+        patientName: string
+        scheduledAt: string
+        duration: number
+        modality: string
+        status: string
+    } | null>(null)
+
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -83,6 +96,39 @@ export default function DashboardPage() {
                         fetch('/api/profesional/stats'),
                         fetch('/api/usuario/eliminar-cuenta')
                     ])
+
+                    // Citas del profesional: la siguiente confirmada (o en curso) para mostrar el acceso a la sala
+                    try {
+                        const citasRes = await fetch('/api/citas?role=professional')
+                        if (citasRes.ok) {
+                            const citas = await citasRes.json()
+                            const nowMs = Date.now()
+                            const next = (Array.isArray(citas) ? citas : [])
+                                .filter(
+                                    (a: any) =>
+                                        a.status === 'CONFIRMED' &&
+                                        nowMs <= new Date(a.scheduledAt).getTime() + ((a.duration ?? 50) + 30) * 60000
+                                )
+                                .sort(
+                                    (a: any, b: any) =>
+                                        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
+                                )[0]
+                            setProNext(
+                                next
+                                    ? {
+                                          id: next.id,
+                                          patientName: next.patient?.name || next.patient?.email || 'Paciente',
+                                          scheduledAt: next.scheduledAt,
+                                          duration: next.duration ?? 50,
+                                          modality: next.modality,
+                                          status: next.status,
+                                      }
+                                    : null
+                            )
+                        }
+                    } catch {
+                        // la tarjeta es opcional
+                    }
 
                     let isSuspended = false
                     if (accountRes.ok) {
@@ -129,9 +175,12 @@ export default function DashboardPage() {
                             a.status === 'COMPLETED' || new Date(a.scheduledAt) <= now
                         )
 
-                        // Próxima cita
+                        // Próxima cita (o sesión en curso: vigente hasta 30 min después de su término)
                         const upcoming = validAppointments
-                            .filter((a: any) => new Date(a.scheduledAt) > now)
+                            .filter((a: any) =>
+                                ['PENDING', 'CONFIRMED'].includes(a.status) &&
+                                now.getTime() <= new Date(a.scheduledAt).getTime() + ((a.duration ?? 50) + 30) * 60000
+                            )
                             .sort((a: any, b: any) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())[0]
 
                         // Última cita completada
@@ -165,6 +214,9 @@ export default function DashboardPage() {
                                 hour: '2-digit',
                                 minute: '2-digit'
                             }) : undefined,
+                            nextAppointmentId: upcoming?.id,
+                            nextModality: upcoming?.modality,
+                            nextStatus: upcoming?.status,
                             professionalName: currentProf?.user?.name,
                             professionalType: currentProf ? 'Psicólogo/a' : undefined,
                             hasHistory: completedSessions.length > 0
@@ -293,6 +345,53 @@ export default function DashboardPage() {
                        ========================================================= */}
                     {isProfessional && (
                         <div className="space-y-6">
+                            {/* Próxima sesión: acceso directo a la videollamada */}
+                            {proNext && (() => {
+                                const startMs = new Date(proNext.scheduledAt).getTime()
+                                const nowMs = Date.now()
+                                const canStart =
+                                    proNext.modality === 'ONLINE' &&
+                                    nowMs >= startMs - 15 * 60000 &&
+                                    nowMs <= startMs + (proNext.duration + 30) * 60000
+                                const when = new Date(proNext.scheduledAt).toLocaleString('es-CL', {
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false,
+                                })
+                                return (
+                                    <div className="rounded-2xl border border-teal-200/90 bg-white p-5 shadow-xs">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div>
+                                                <span className="text-[10px] bg-teal-100 text-teal-800 font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    {canStart ? 'Sesión disponible ahora' : 'Tu próxima sesión'}
+                                                </span>
+                                                <h3 className="text-base font-bold text-slate-900 mt-2">{proNext.patientName}</h3>
+                                                <p className="text-xs text-slate-500 mt-0.5">
+                                                    {when} hrs · {proNext.duration} min ·{' '}
+                                                    {proNext.modality === 'ONLINE' ? 'Online por videollamada' : 'Presencial'}
+                                                </p>
+                                            </div>
+                                            <Link
+                                                href={`/dashboard/citas/${proNext.id}`}
+                                                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-teal-800 hover:bg-teal-900 text-white shadow-xs transition"
+                                            >
+                                                {canStart ? (
+                                                    <>
+                                                        <Video className="h-4 w-4" />
+                                                        Iniciar sesión
+                                                    </>
+                                                ) : (
+                                                    'Ver cita'
+                                                )}
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )
+                            })()}
+
                             {/* Alerta de Citas Pendientes */}
                             {professionalStats.pendingCount > 0 && (
                                 <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm flex items-center justify-between gap-3 animate-fade-in">
@@ -491,6 +590,23 @@ export default function DashboardPage() {
                                     </Link>
 
                                     <Link
+                                        href="/dashboard/suscripcion"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <CreditCard className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Mi Plan y Suscripción
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Renovar, escalar, pausar o dar de baja
+                                            </p>
+                                        </div>
+                                    </Link>
+
+                                    <Link
                                         href="/profesional/completar-perfil"
                                         className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
                                     >
@@ -542,14 +658,16 @@ export default function DashboardPage() {
                                                         {patientData.professionalName || 'Sesión programada'}
                                                     </h3>
                                                     <p className="text-xs text-slate-500 mt-0.5">
-                                                        {patientData.nextSession} • Online por Videollamada
+                                                        {patientData.nextSession} • {patientData.nextModality === 'IN_PERSON' ? 'Presencial' : 'Online por Videollamada'}
                                                     </p>
                                                 </div>
                                                 <Link
-                                                    href="/dashboard/citas"
+                                                    href={patientData.nextAppointmentId ? `/dashboard/citas/${patientData.nextAppointmentId}` : '/dashboard/citas'}
                                                     className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-teal-800 hover:bg-teal-900 text-white shadow-xs transition"
                                                 >
-                                                    Entrar a la sesión
+                                                    {patientData.nextStatus === 'CONFIRMED' && patientData.nextModality !== 'IN_PERSON'
+                                                        ? 'Entrar a la sesión'
+                                                        : 'Ver mi cita'}
                                                 </Link>
                                             </div>
                                         </div>

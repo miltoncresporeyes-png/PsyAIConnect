@@ -71,6 +71,15 @@ export async function POST(request: Request) {
           },
         })
 
+        // Evidencia de asistencia en la propia cita (usada al registrar una inasistencia)
+        await prisma.appointment.update({
+          where: { id: appointmentId },
+          data: {
+            pacienteOnline: true,
+            patientJoinedAt: appointment.patientJoinedAt ?? new Date(),
+          },
+        })
+
         // Notify via realtime
         await notifyUserJoined(appointmentId, session.user.id, false)
       }
@@ -83,6 +92,14 @@ export async function POST(request: Request) {
             professionalJoinedAt: new Date(),
             professionalNotified: true,
             status: 'READY',
+          },
+        })
+
+        await prisma.appointment.update({
+          where: { id: appointmentId },
+          data: {
+            profesionalOnline: true,
+            professionalJoinedAt: appointment.professionalJoinedAt ?? new Date(),
           },
         })
 
@@ -122,6 +139,13 @@ export async function POST(request: Request) {
           status: 'IN_SESSION',
         },
       })
+      await prisma.appointment.update({
+        where: { id: appointmentId },
+        data: {
+          attendanceStatus: 'EN_SESION',
+          sessionStartedAt: appointment.sessionStartedAt ?? new Date(),
+        },
+      })
     }
 
     if (action === 'end_session') {
@@ -136,6 +160,15 @@ export async function POST(request: Request) {
         where: { id: waitingRoom.id },
         data: {
           status: 'COMPLETED',
+        },
+      })
+      // Cerrar la cita: habilita el historial, el chat posterior y las estadisticas
+      await prisma.appointment.update({
+        where: { id: appointmentId },
+        data: {
+          attendanceStatus: 'FINALIZADA',
+          sessionEndedAt: new Date(),
+          ...(appointment.status === 'CONFIRMED' && { status: 'COMPLETED' }),
         },
       })
     }

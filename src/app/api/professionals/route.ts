@@ -16,11 +16,14 @@ export async function GET(req: NextRequest) {
             verificationStatus: 'VERIFIED',
         }
 
-        if (region) {
-            where.region = region
-        }
-        if (comuna) {
-            where.comuna = { equals: comuna, mode: 'insensitive' }
+        // La atención online no depende de la zona geográfica
+        if (modalidad !== 'online') {
+            if (region) {
+                where.region = region
+            }
+            if (comuna) {
+                where.comuna = { equals: comuna, mode: 'insensitive' }
+            }
         }
         if (modalidad) {
             if (modalidad === 'online') {

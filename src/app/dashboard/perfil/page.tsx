@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 import { ComunaAutocomplete } from '@/components/ui/ComunaAutocomplete'
 import { PhoneInput } from '@/components/ui/PhoneInput'
+import { PaymentPreferencesCard } from '@/components/dashboard/PaymentPreferencesCard'
+import { SessionDurationCard } from '@/components/dashboard/SessionDurationCard'
 
 // Options for select fields (same as completar-perfil)
 const GENDER_OPTIONS = [
@@ -447,6 +449,12 @@ export default function PerfilPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Duración de la sesión */}
+                            <SessionDurationCard />
+
+                            {/* Formas de pago preferidas */}
+                            <PaymentPreferencesCard />
 
                             {/* Marketing & Value Proposition */}
                             <div className="card p-6 border-l-4 border-l-accent-500">

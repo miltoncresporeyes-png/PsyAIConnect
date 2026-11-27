@@ -15,6 +15,7 @@ import {
     Bell,
     AlertCircle,
     Sparkles,
+    Video,
 } from 'lucide-react'
 
 const menuItems = [
@@ -23,6 +24,7 @@ const menuItems = [
     { href: '/admin/validacion-medicos', label: 'Validación Médicos', icon: Stethoscope, alert: true },
     { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
     { href: '/admin/finanzas', label: 'Finanzas', icon: DollarSign },
+    { href: '/admin/salas', label: 'Salas de video', icon: Video },
 ]
 
 interface PendingCount {

@@ -69,6 +69,7 @@ export default function ReservarPage({ params }: Props) {
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
     const [selectedModality, setSelectedModality] = useState<'ONLINE' | 'IN_PERSON'>('ONLINE')
     const [consultationReason, setConsultationReason] = useState('')
+    const [policyAccepted, setPolicyAccepted] = useState(false)
     const [availableSlots, setAvailableSlots] = useState<string[]>([])
     const [slotsLoading, setSlotsLoading] = useState(false)
     const [guestEmail, setGuestEmail] = useState('')
@@ -152,7 +153,7 @@ export default function ReservarPage({ params }: Props) {
         if (!professional) return
         setSlotsLoading(true)
         try {
-            const dateStr = date.toISOString().split('T')[0]
+            const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
             const res = await fetch(
                 `/api/professionals/${professional.slug}/availability?date=${dateStr}`,
             )
@@ -233,6 +234,11 @@ export default function ReservarPage({ params }: Props) {
 
         if (!selectedDate || !selectedTime || !professional) return
 
+        if (!policyAccepted) {
+            setError('Debes aceptar la política de cancelación para reservar')
+            return
+        }
+
         setIsBooking(true)
         setError('')
 
@@ -250,6 +256,7 @@ export default function ReservarPage({ params }: Props) {
                     scheduledAt: scheduledAt.toISOString(),
                     modality: selectedModality,
                     consultationReason,
+                    policyAccepted,
                     ...(!session && { guestEmail }),
                 }),
             })
@@ -584,10 +591,23 @@ export default function ReservarPage({ params }: Props) {
                                                 </div>
                                             )}
 
+                                            {/* Política de cancelación */}
+                                            <label className="flex items-start gap-3 mb-5 rounded-xl border border-slate-200 bg-slate-50/60 p-4 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={policyAccepted}
+                                                    onChange={(e) => setPolicyAccepted(e.target.checked)}
+                                                    className="mt-0.5 h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-600"
+                                                />
+                                                <span className="text-sm text-slate-700 leading-relaxed">
+                                                    Entiendo que el profesional debe aceptar mi solicitud, que debo <strong>reconfirmar mi asistencia 24 horas antes</strong> y que si cancelo con menos de 24 horas o no me conecto, el profesional puede cobrar la sesión y se registrará mi inasistencia.
+                                                </span>
+                                            </label>
+
                                             {/* Confirm Button */}
                                             <button
                                                 onClick={handleBooking}
-                                                disabled={isBooking}
+                                                disabled={isBooking || !policyAccepted}
                                                 className="btn-primary w-full flex items-center justify-center gap-2"
                                             >
                                                 {isBooking ? (

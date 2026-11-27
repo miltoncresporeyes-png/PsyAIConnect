@@ -10,6 +10,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { BackToDashboard } from '@/components/ui/BackToDashboard'
 import type { Metadata } from 'next'
+import { paymentMethodLabels } from '@/lib/paymentMethods'
 
 interface Props {
     params: { slug: string }
@@ -121,6 +122,8 @@ export default async function ProfessionalProfilePage({ params }: Props) {
             sessionDuration: true,
             verificationStatus: true,
             linkedinUrl: true,
+            acceptedPaymentMethods: true,
+            paymentNotes: true,
             profileImageUrl: true,
             comuna: true,
             region: true,
@@ -147,6 +150,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
     const profileUrl = `https://psydoctor.cl/profesional/${professional.slug}`
     const typeLabel = professionalTypeLabels[professional.professionalType] || 'Profesional'
     const isPsychiatrist = professional.professionalType === 'PSYCHIATRIST'
+    const paymentLabels = paymentMethodLabels(professional.acceptedPaymentMethods)
 
     const professionalEntity = isPsychiatrist
         ? {
@@ -354,6 +358,33 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                             </p>
                         </div>
 
+                        {/* Formas de pago */}
+                        {paymentLabels.length > 0 && (
+                            <div className="dashboard-panel p-6 md:p-7">
+                                <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
+                                    Formas de pago
+                                </h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {paymentLabels.map((label) => (
+                                        <span
+                                            key={label}
+                                            className="px-4 py-2 bg-emerald-50 text-emerald-800 rounded-full text-sm font-medium"
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+                                {professional.paymentNotes && (
+                                    <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                                        {professional.paymentNotes}
+                                    </p>
+                                )}
+                                <p className="mt-3 text-xs text-gray-500">
+                                    El pago se coordina directamente con el profesional.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Specialties */}
                         <div className="dashboard-panel p-6 md:p-7">
                             <h2 className="text-xl font-heading font-semibold text-gray-900 mb-4">
@@ -410,7 +441,7 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                                         <Shield className="w-4 h-4 text-green-600" />
                                     </div>
-                                    <span>Pagos seguros con Flow.cl</span>
+                                    <span>Pago coordinado directo con el profesional</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-600">
                                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
