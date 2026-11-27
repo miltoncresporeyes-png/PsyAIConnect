@@ -59,25 +59,32 @@ Usted es responsable de:
 
 ## 4. Reserva y Cancelación de Sesiones
 
-### 4.1 Política de Cancelación
+### 4.1 Solicitud, confirmación y cancelación
+
+#### Solicitud y confirmación:
+- La reserva es una **solicitud** de atención. La cita queda confirmada cuando el profesional la acepta, y el paciente recibe un aviso por correo.
+- Si el profesional no responde a tiempo, la solicitud caduca sin costo para el paciente.
+- **Reconfirmación:** 24 horas antes de la sesión el paciente debe reconfirmar su asistencia. Si no lo hace, el horario podrá liberarse automáticamente hasta 3 horas antes de la sesión.
 
 #### Cancelación por el Paciente:
-- **Con más de 24 horas de anticipación:** Reembolso del 100%.
-- **Entre 24 y 12 horas antes:** Reembolso del 50%.
-- **Menos de 12 horas o no asistencia (no-show):** Sin reembolso.
+- **Hasta 24 horas antes:** puede cancelar o reprogramar sin costo.
+- **Con menos anticipación, o si no se conecta dentro de los 15 minutos siguientes a la hora de inicio:** el profesional podrá cobrar la sesión según la política que informe en su perfil. La inasistencia queda registrada en la cuenta del paciente y, si se repite, PsyDoctor podrá limitar nuevas reservas.
 
 #### Cancelación por el Profesional:
-- El profesional debe cancelar con al menos 24 horas de anticipación.
-- El paciente recibirá reembolso del 100% inmediato.
+- Debe cancelar con al menos 24 horas de anticipación y avisar al paciente.
+- Si ya hubo un pago, el profesional es responsable de devolverlo íntegramente.
+
+#### Rol de PsyDoctor:
+PsyDoctor es una plataforma tecnológica de intermediación y, por ahora, **no recibe, retiene ni devuelve** los pagos de las sesiones. Los cobros y devoluciones se coordinan directamente entre paciente y profesional.
 
 ---
 
 ## 5. Pagos y Tarifas
 
-- Los precios son fijados libremente por cada profesional.
-- PsyDoctor cobra una comisión de servicio sobre cada transacción exitosa.
-- Los pagos son procesados por **pasarelas de pago certificadas PCI-DSS** (ej. Flow.cl, Stripe). PsyDoctor no almacena datos completos de tarjetas de crédito.
-- Los reembolsos se procesan según la política de cancelación establecida en un plazo de 5 a 10 días hábiles.
+- Cada profesional define libremente el valor de su sesión y las formas de pago que acepta, y ambos se muestran en su perfil antes de reservar.
+- El pago se coordina directamente entre paciente y profesional, quien es responsable de emitir su boleta de honorarios.
+- PsyDoctor no procesa pagos de sesiones ni almacena datos de tarjetas.
+- PsyDoctor no gestiona ni garantiza reembolsos de Isapre, Fonasa o seguros complementarios.
 
 ---
 

@@ -13,9 +13,9 @@ const BENEFITS = [
   },
   {
     icon: Receipt,
-    title: 'Boleta electrónica para tu reembolso',
+    title: 'Boleta de honorarios',
     description:
-      'Al completar la sesión recibes una boleta electrónica que puedes adjuntar a tu solicitud de reembolso en Isapre o Fonasa.',
+      'El profesional emite su boleta de honorarios, que puedes presentar a tu Isapre o seguro según las condiciones de tu plan.',
     color: 'text-cyan-600',
     bg: 'bg-cyan-100',
   },

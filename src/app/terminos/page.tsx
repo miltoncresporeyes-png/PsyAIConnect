@@ -182,29 +182,37 @@ export default function TerminosPage() {
 
                             <h2 id="seccion-4" className="legal-section-title">4º Reserva y Cancelación de Sesiones.</h2>
 
-                            <h3 className="legal-subsection-title">4.1 Política de Cancelación</h3>
+                            <h3 className="legal-subsection-title">4.1 Solicitud, confirmación y cancelación</h3>
                             <div className="legal-info-box">
+                                <p className="legal-info-box-title">Solicitud y confirmación:</p>
+                                <ul className="legal-list mb-4">
+                                    <li className="legal-list-item">La reserva es una <strong>solicitud</strong> de atención. La cita queda confirmada cuando el profesional la acepta, y el paciente recibe un aviso por correo.</li>
+                                    <li className="legal-list-item">Si el profesional no responde a tiempo, la solicitud caduca sin costo para el paciente.</li>
+                                    <li className="legal-list-item"><strong>Reconfirmación:</strong> 24 horas antes de la sesión el paciente debe reconfirmar su asistencia. Si no lo hace, el horario podrá liberarse automáticamente hasta 3 horas antes de la sesión.</li>
+                                </ul>
                                 <p className="legal-info-box-title">Cancelación por el Paciente:</p>
                                 <ul className="legal-list mb-4">
-                                    <li className="legal-list-item"><strong>Con más de 24 horas:</strong> Reembolso del 100%</li>
-                                    <li className="legal-list-item"><strong>Entre 24 y 12 horas:</strong> Reembolso del 50%</li>
-                                    <li className="legal-list-item"><strong>Menos de 12 horas o no asistencia:</strong> Sin reembolso</li>
+                                    <li className="legal-list-item"><strong>Hasta 24 horas antes:</strong> puede cancelar o reprogramar sin costo</li>
+                                    <li className="legal-list-item"><strong>Con menos anticipación, o si no se conecta dentro de los 15 minutos siguientes a la hora de inicio:</strong> el profesional podrá cobrar la sesión según la política que informe en su perfil. La inasistencia queda registrada en la cuenta del paciente y, si se repite, PsyDoctor podrá limitar nuevas reservas.</li>
                                 </ul>
                                 <p className="legal-info-box-title">Cancelación por el Profesional:</p>
-                                <ul className="legal-list mb-0">
-                                    <li className="legal-list-item">Debe cancelar con al menos 24 horas de anticipación</li>
-                                    <li className="legal-list-item">El paciente recibirá reembolso del 100% inmediato</li>
+                                <ul className="legal-list mb-4">
+                                    <li className="legal-list-item">Debe cancelar con al menos 24 horas de anticipación y avisar al paciente</li>
+                                    <li className="legal-list-item">Si ya hubo un pago, el profesional es responsable de devolverlo íntegramente</li>
                                 </ul>
+                                <p className="legal-info-box-title">Rol de PsyDoctor:</p>
+                                <p className="legal-paragraph mb-0">
+                                    PsyDoctor es una plataforma tecnológica de intermediación y, por ahora, <strong>no recibe, retiene ni devuelve</strong> los pagos de las sesiones. Los cobros y devoluciones se coordinan directamente entre paciente y profesional.
+                                </p>
                             </div>
 
                             <h2 id="seccion-5" className="legal-section-title">5º Pagos y Tarifas.</h2>
                             <p className="legal-paragraph">
-                                Los pagos son procesados por <strong>pasarelas de pago certificadas PCI-DSS</strong> (Flow.cl, Stripe). <strong className="text-gray-900">PsyDoctor</strong> no almacena datos completos de tarjetas de crédito.
+                                Cada profesional define libremente el valor de su sesión y las formas de pago que acepta, y ambos se muestran en su perfil antes de reservar. El pago se coordina directamente entre paciente y profesional, quien es responsable de emitir su boleta de honorarios.
                             </p>
                             <ul className="legal-list">
-                                <li className="legal-list-item">Los precios son fijados libremente por cada profesional</li>
-                                <li className="legal-list-item"><strong className="text-gray-900">PsyDoctor</strong> cobra una comisión de servicio sobre cada transacción</li>
-                                <li className="legal-list-item">Los reembolsos se procesan en 5-10 días hábiles</li>
+                                <li className="legal-list-item"><strong className="text-gray-900">PsyDoctor</strong> no procesa pagos de sesiones ni almacena datos de tarjetas</li>
+                                <li className="legal-list-item"><strong className="text-gray-900">PsyDoctor</strong> no gestiona ni garantiza reembolsos de Isapre, Fonasa o seguros complementarios</li>
                             </ul>
 
                             <h2 id="seccion-6" className="legal-section-title">6º Uso Prohibido y Exclusión de Emergencias.</h2>

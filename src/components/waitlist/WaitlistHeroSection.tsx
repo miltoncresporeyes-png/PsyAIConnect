@@ -72,7 +72,7 @@ export function WaitlistHeroSection() {
                         </div>
                         <div>
                             <h2 className="text-xs font-semibold text-tinta tracking-normal">Boleta para Reembolso</h2>
-                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Boleta de honorarios para reembolso en Isapres y seguros complementarios.</p>
+                            <p className="text-xs text-slate-600 mt-0.5 leading-normal">Boleta de honorarios para presentar a tu Isapre o seguro (el reembolso depende de tu plan).</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 rounded-xl transition-colors">

@@ -139,10 +139,11 @@ export function ClinicalConsentForm({
                     <div className="border-l-4 border-primary-200 pl-4">
                         <h3 className="font-semibold text-gray-900 mb-2">5. Pagos, Cancelaciones y Puntualidad</h3>
                         <ul className="text-sm text-gray-700 space-y-1 ml-4">
-                            <li>• El pago debe realizarse previo a la sesión a través de la plataforma.</li>
-                            <li>• Cancelaciones con más de 24 horas: reembolso del 100%.</li>
-                            <li>• Cancelaciones con menos de 24 horas o inasistencias sin aviso: sin reembolso.</li>
-                            <li>• Me comprometo a llegar puntual a las sesiones programadas.</li>
+                            <li>• El pago se coordina directamente con mi profesional, según las formas de pago que informa en su perfil.</li>
+                            <li>• Puedo cancelar o reprogramar sin costo hasta 24 horas antes de la sesión.</li>
+                            <li>• Debo reconfirmar mi asistencia 24 horas antes; si no lo hago, el horario puede liberarse.</li>
+                            <li>• Si cancelo con menos de 24 horas o no me conecto, mi profesional puede cobrar la sesión según su política, y la inasistencia queda registrada.</li>
+                            <li>• Me comprometo a conectarme puntualmente a las sesiones programadas.</li>
                         </ul>
                     </div>
 
