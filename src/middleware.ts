@@ -73,6 +73,17 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // ── 0b. Segundo paso (OTP) pendiente: solo se permite la pantalla del codigo ──
+    const mfaAllowed = pathname.startsWith('/verificar-2fa') || pathname.startsWith('/login')
+    if (!mfaAllowed) {
+        const mfaToken = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+        if (mfaToken && mfaToken.mfa === false) {
+            const url = new URL('/verificar-2fa', request.url)
+            if (pathname !== '/') url.searchParams.set('next', pathname)
+            return NextResponse.redirect(url)
+        }
+    }
+
     // ── 1. Admin auth guard (before i18n processing) ─────────────
     const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
 

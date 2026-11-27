@@ -4,6 +4,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import {
+    NO_SHOW_WAIT_MINUTES,
+    canMarkNoShow,
+    needsReconfirmation,
+    notifyPatientDecision,
+} from '@/lib/appointmentPolicy'
+import { redactMeetingLinks } from '@/lib/meetingLink'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -14,14 +21,15 @@ const updateAppointmentSchema = z.object({
 })
 
 // Transiciones permitidas según quién realiza la acción.
-// La confirmación (→ CONFIRMED) no se hace por esta vía: ocurre en el flujo de pago.
+// La confirmación (→ CONFIRMED) la hace el profesional al aceptar la solicitud
+// (PsyDoctor no intermedia el pago en esta etapa). El paciente nunca puede confirmar.
 const ALLOWED_TRANSITIONS: Record<'patient' | 'professional', Record<string, string[]>> = {
     patient: {
         PENDING: ['CANCELLED'],
         CONFIRMED: ['CANCELLED'],
     },
     professional: {
-        PENDING: ['CANCELLED', 'NO_SHOW'],
+        PENDING: ['CONFIRMED', 'CANCELLED'],
         CONFIRMED: ['CANCELLED', 'COMPLETED', 'NO_SHOW'],
     },
 }
@@ -54,7 +62,7 @@ export async function GET(
                     },
                 },
                 patient: {
-                    select: { name: true, email: true, image: true },
+                    select: { name: true, email: true, image: true, noShowCount: true },
                 },
                 payment: true,
             },
@@ -80,7 +88,9 @@ export async function GET(
             )
         }
 
-        return NextResponse.json(appointment)
+        // El enlace de videollamada del profesional es privado: el paciente lo obtiene en /unirse
+        const viewerIsProfessional = professional?.id === appointment.professionalId
+        return NextResponse.json(redactMeetingLinks(appointment, viewerIsProfessional))
     } catch (error) {
         console.error('Appointment fetch error:', error)
         return NextResponse.json(
@@ -163,18 +173,84 @@ export async function PATCH(
             )
         }
 
+        const now = new Date()
+
+        // Finalizar la sesion: solo una vez iniciada la hora de la cita
+        if (status === 'COMPLETED' && now.getTime() < appointment.scheduledAt.getTime()) {
+            return NextResponse.json({ error: 'La sesión aún no comienza' }, { status: 400 })
+        }
+
+        // Inasistencia: solo pasado el tiempo de espera, y queda evidencia de asistencia
+        if (status === 'NO_SHOW') {
+            if (!canMarkNoShow(appointment.scheduledAt, now)) {
+                return NextResponse.json(
+                    {
+                        error: `Debes esperar ${NO_SHOW_WAIT_MINUTES} minutos desde la hora de inicio para registrar una inasistencia`,
+                    },
+                    { status: 400 }
+                )
+            }
+            if (appointment.patientJoinedAt) {
+                return NextResponse.json(
+                    { error: 'El paciente sí ingresó a la sala de espera, no se puede registrar como inasistencia' },
+                    { status: 400 }
+                )
+            }
+            const [noShowAppointment] = await prisma.$transaction([
+                prisma.appointment.update({
+                    where: { id: params.id },
+                    data: {
+                        status: 'NO_SHOW',
+                        noShowMarkedAt: now,
+                        noShowEvidence: {
+                            markedBy: session.user.id,
+                            markedAt: now.toISOString(),
+                            scheduledAt: appointment.scheduledAt.toISOString(),
+                            pacienteOnline: appointment.pacienteOnline,
+                            patientJoinedAt: null, // no ingreso a la sala (de lo contrario no se llega aqui)
+                            professionalJoinedAt: appointment.professionalJoinedAt?.toISOString() ?? null,
+                            reconfirmedAt: appointment.patientReconfirmedAt?.toISOString() ?? null,
+                        },
+                    },
+                }),
+                prisma.user.update({
+                    where: { id: appointment.patientId },
+                    data: { noShowCount: { increment: 1 } },
+                }),
+            ])
+            return NextResponse.json(noShowAppointment)
+        }
+
         // Update appointment
         const updatedAppointment = await prisma.appointment.update({
             where: { id: params.id },
             data: {
                 status,
+                ...(status === 'CONFIRMED' && {
+                    professionalConfirmedAt: now,
+                    // Con menos de 24h de anticipacion no hay ventana para reconfirmar
+                    ...(!needsReconfirmation(appointment.scheduledAt, now) && { patientReconfirmedAt: now }),
+                }),
+                ...(status === 'COMPLETED' && {
+                    attendanceStatus: 'FINALIZADA' as const,
+                    sessionEndedAt: now,
+                }),
                 ...(status === 'CANCELLED' && {
-                    cancelledAt: new Date(),
+                    cancelledAt: now,
                     cancelledBy: session.user.id,
                     cancellationReason,
                 }),
             },
         })
+
+        // Avisar al paciente cuando el profesional decide
+        if (actor === 'professional' && (status === 'CONFIRMED' || status === 'CANCELLED')) {
+            void notifyPatientDecision(
+                params.id,
+                status === 'CONFIRMED',
+                status === 'CANCELLED' ? cancellationReason : undefined
+            ).catch((err) => console.error('Notify patient error:', err))
+        }
 
         return NextResponse.json(updatedAppointment)
     } catch (error) {

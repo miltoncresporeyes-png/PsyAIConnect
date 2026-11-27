@@ -1,10 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-import { AlertCircle, Phone, X, ShieldAlert, HeartHandshake } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { Phone, X, ShieldAlert } from 'lucide-react'
 
 export function ImmediateHelpModal() {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  // Cierre con Escape y bloqueo del scroll de la página mientras está abierto
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false)
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isOpen])
 
   return (
     <>
@@ -23,14 +42,17 @@ export function ImmediateHelpModal() {
       </button>
 
       {/* Modal accesible */}
-      {isOpen && (
+      {isOpen && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
           role="dialog"
           aria-modal="true"
           aria-labelledby="emergency-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false)
+          }}
         >
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-100 text-slate-800 relative">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 shadow-2xl border border-rose-100 text-slate-800 relative">
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
@@ -127,10 +149,11 @@ export function ImmediateHelpModal() {
               onClick={() => setIsOpen(false)}
               className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition"
             >
-              Cerrar y volver a mi panel
+              Cerrar
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

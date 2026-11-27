@@ -45,9 +45,6 @@ export default function ReimbursementCard() {
         }).format(amount)
     }
 
-    // Estimación conservadora del 55% de reembolso
-    const estimatedReimbursement = summary ? Math.round(summary.totalAmount * 0.55) : 0
-
     if (loading) {
         return (
             <div className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
@@ -65,12 +62,16 @@ export default function ReimbursementCard() {
                         <DollarSign className="w-6 h-6 text-gray-400" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-gray-900">Solicitar Reembolso</h3>
-                        <p className="text-sm text-gray-500">No hay sesiones elegibles</p>
+                        <h3 className="font-semibold text-gray-900">Documentos para tu reembolso</h3>
+                        <p className="text-sm text-gray-500">Aún no tienes sesiones con boleta</p>
                     </div>
                 </div>
                 <p className="text-sm text-gray-600">
-                    Completa y paga tus sesiones para poder solicitar reembolso a tu Isapre.
+                    Cuando una sesión se realice y el profesional emita su boleta de honorarios, podrás reunir aquí tus
+                    documentos para presentarlos a tu Isapre o seguro.
+                </p>
+                <p className="mt-2 text-xs text-gray-500">
+                    El reembolso lo define tu plan de salud: PsyDoctor no lo gestiona ni lo garantiza.
                 </p>
             </div>
         )
@@ -84,9 +85,9 @@ export default function ReimbursementCard() {
                         <DollarSign className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-gray-900">💰 Solicitar Reembolso</h3>
+                        <h3 className="font-semibold text-gray-900">Documentos para tu reembolso</h3>
                         <p className="text-sm text-green-700">
-                            Tienes {summary.count} {summary.count === 1 ? 'sesión elegible' : 'sesiones elegibles'}
+                            {summary.count} {summary.count === 1 ? 'sesión con boleta disponible' : 'sesiones con boleta disponible'}
                         </p>
                     </div>
                 </div>
@@ -97,18 +98,13 @@ export default function ReimbursementCard() {
                     <span className="text-sm text-gray-600">Monto total:</span>
                     <span className="font-semibold text-gray-900">{formatCurrency(summary.totalAmount)}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Reembolso estimado:</span>
-                    <span className="text-xl font-bold text-green-600">
-                        ~{formatCurrency(estimatedReimbursement)}
-                    </span>
-                </div>
             </div>
 
             <div className="bg-white/50 rounded-lg p-3 mb-4">
                 <p className="text-xs text-gray-600">
                     <FileText className="w-3 h-3 inline mr-1" />
-                    Te ayudaremos a generar todos los documentos necesarios y te guiaremos paso a paso.
+                    Te ayudamos a reunir los documentos de tus sesiones. El monto a reembolsar y su aprobación dependen de tu
+                    Isapre o seguro, según las condiciones de tu plan; PsyDoctor no los gestiona ni los garantiza.
                 </p>
             </div>
 
@@ -116,7 +112,7 @@ export default function ReimbursementCard() {
                 href="/dashboard/reembolsos/nuevo"
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
             >
-                Iniciar Solicitud de Reembolso
+                Preparar mis documentos
                 <ArrowRight className="w-4 h-4" />
             </Link>
         </div>

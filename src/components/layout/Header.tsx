@@ -118,10 +118,10 @@ export function Header() {
                                         Iniciar sesión
                                     </Link>
                                     <Link
-                                        href="/registro?tipo=profesional&programa=fundador"
+                                        href="/registro"
                                         className="inline-flex items-center gap-1.5 rounded-xl bg-teal-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-900 whitespace-nowrap"
                                     >
-                                        <span>Soy Profesional</span>
+                                        <span>Registrarme</span>
                                         <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
                                     </Link>
                                 </>
@@ -185,11 +185,11 @@ export function Header() {
                                             Iniciar sesión
                                         </Link>
                                         <Link
-                                            href="/registro?tipo=profesional&programa=fundador"
+                                            href="/registro"
                                             onClick={() => setIsMenuOpen(false)}
                                             className="rounded-xl bg-teal-800 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-900"
                                         >
-                                            Postula al Programa Fundadores
+                                            Registrarme
                                         </Link>
                                     </>
                                 )}

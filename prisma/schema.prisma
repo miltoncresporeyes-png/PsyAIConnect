@@ -56,6 +56,22 @@ model EmailVerificationCode {
   @@index([email])
 }
 
+// Segundo paso (OTP por correo) de cada inicio de sesion. Se liga al id de la
+// sesion (sid del JWT): el token solo se considera completo cuando existe
+// verifiedAt para su sid.
+model LoginChallenge {
+  id         String    @id @default(cuid())
+  userId     String
+  sessionId  String    @unique
+  codeHash   String
+  expires    DateTime
+  attempts   Int       @default(0)
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
 model User {
   id                    String          @id @default(cuid())
   email                 String          @unique
@@ -68,10 +84,12 @@ model User {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
   profileCompleted      Boolean         @default(false)
+  noShowCount           Int             @default(0) // Inasistencias registradas como paciente (reputacion)
   isActive             Boolean         @default(true)
   adminNotes           String?         // Notas internas del admin
   accounts              Account[]
   appointmentsAsPatient Appointment[]   @relation("PatientAppointments")
+  conversations         Conversation[]  @relation("ConversationPatient")
   consents              ConsentLog[]
   patientProfile        PatientProfile?
   professional          Professional?
@@ -135,6 +153,7 @@ model Professional {
   verifiedAt             DateTime?
   subscriptionTier       SubscriptionTier   @default(STARTER)
   subscriptionEnds       DateTime?
+  subscriptionCancelledAt DateTime? // Baja de la renovacion: conserva el plan hasta subscriptionEnds
   isActive               Boolean            @default(true)
   isPublic               Boolean            @default(false)
   createdAt              DateTime           @default(now())
@@ -142,7 +161,10 @@ model Professional {
   comuna                 String?
   officeAddress          String?
   region                 String?
-  acceptedPaymentMethods String[]
+  acceptedPaymentMethods String[]  // IDs de src/lib/paymentMethods.ts
+  paymentNotes           String?   // Indicaciones de pago del profesional (cuando y como cobra)
+  meetingUrl             String?   // Enlace de videollamada del profesional (Meet/Zoom/Teams). Privado: nunca se expone en listados
+  meetingRoomRestrictedAt DateTime? // El profesional declaro que su sala exige admitir a cada participante (anti ingreso no autorizado)
   linkedinUrl            String?
   // UX Redesign: Human-centered fields
   targetAudience         String?   // "Para quién suele ser útil"
@@ -160,6 +182,8 @@ model Professional {
   fonasaAcceptance       ProfessionalFonasaAcceptance[]
   monthlyReports         MonthlyReport[]
   preReservations        PreReservation[]
+  subscriptionOrders     SubscriptionOrder[]
+  conversations          Conversation[]                  @relation("ConversationProfessional")
   user                   User                            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -225,7 +249,17 @@ model Appointment {
   invoice            Invoice?
   reimbursementRequestId String?
   reimbursementRequest   ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id])
-  
+
+  // Fase 1 anti no-show
+  policyAcceptedAt        DateTime? // El paciente acepto la politica de cancelacion al reservar
+  professionalConfirmedAt DateTime? // El profesional acepto la cita
+  patientReconfirmedAt    DateTime? // El paciente reconfirmo asistencia (24h antes)
+  meetSpaceName           String?   // Sala de Meet creada para esta cita (spaces/xxxx); el enlace va en videoLink
+  reminder24hSentAt       DateTime?
+  reminder2hSentAt        DateTime?
+  noShowMarkedAt          DateTime?
+  noShowEvidence          Json?     // Instantanea de asistencia al marcar la inasistencia
+
   @@index([attendanceStatus])
   @@index([pacienteOnline])
   @@index([profesionalOnline])
@@ -488,6 +522,72 @@ enum VerificationStatus {
   PENDING
   VERIFIED
   REJECTED
+}
+
+enum SubscriptionOrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum SubscriptionOrderKind {
+  RENEW
+  UPGRADE
+}
+
+// Chat interno paciente-profesional. Solo se habilita con una cita confirmada o
+// realizada entre ambos (ver src/lib/chat.ts). Los mensajes se guardan cifrados.
+model Conversation {
+  id                     String       @id @default(cuid())
+  patientId              String
+  professionalId         String
+  lastMessageAt          DateTime?
+  patientNotifiedAt      DateTime?
+  professionalNotifiedAt DateTime?
+  createdAt              DateTime     @default(now())
+  patient                User         @relation("ConversationPatient", fields: [patientId], references: [id], onDelete: Cascade)
+  professional           Professional @relation("ConversationProfessional", fields: [professionalId], references: [id], onDelete: Cascade)
+  messages               Message[]
+
+  @@unique([patientId, professionalId])
+  @@index([professionalId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  encryptedBody  Bytes
+  createdAt      DateTime     @default(now())
+  readAt         DateTime?
+  reportedAt     DateTime?
+  reportedById   String?
+  reportReason   String?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+// Cobro de la suscripcion profesional (Mercado Pago, pago por periodo).
+model SubscriptionOrder {
+  id             String                      @id @default(cuid())
+  professionalId String
+  kind           SubscriptionOrderKind
+  fromTier       SubscriptionTier
+  toTier         SubscriptionTier
+  months         Int                         @default(1)
+  amount         Int
+  credit         Int                         @default(0)
+  newEnds        DateTime
+  status         SubscriptionOrderStatus     @default(PENDING)
+  preferenceId   String?
+  externalPaymentId String?
+  createdAt      DateTime                    @default(now())
+  paidAt         DateTime?
+  professional   Professional                @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId])
 }
 
 enum SubscriptionTier {
@@ -1107,3 +1207,13 @@ model RightsRequest {
 }
 
 
+
+/// Cuenta de Google de PsyDoctor que crea las salas de Meet (una sala nueva por cita). Una sola fila: id "default".
+model GoogleMeetConnection {
+  id            String   @id @default("default")
+  accountEmail  String?
+  refreshToken  Bytes    // cifrado con src/lib/encryption.ts
+  scope         String?
+  connectedById String?
+  connectedAt   DateTime @default(now())
+}

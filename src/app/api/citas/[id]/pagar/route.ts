@@ -1,3 +1,4 @@
+import { getEffectiveTier } from '@/lib/plans'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -87,7 +88,7 @@ export async function POST(
             patientName: session.user.name || 'Paciente',
             professionalName: appointment.professional.user.name || 'Profesional',
             amount: appointment.payment.amount,
-            subscriptionTier: appointment.professional.subscriptionTier,
+            subscriptionTier: getEffectiveTier(appointment.professional),
         })
 
         if (!result.success) {

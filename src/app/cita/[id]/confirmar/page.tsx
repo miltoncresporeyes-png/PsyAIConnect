@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Header, Footer } from '@/components/layout'
 import { formatPrice } from '@/lib/utils'
+import { paymentMethodLabels } from '@/lib/paymentMethods'
 import { Loader2, Check, Calendar, Clock, Video, MapPin, CreditCard, ShieldCheck } from 'lucide-react'
 
 interface Props {
@@ -21,6 +22,10 @@ interface Appointment {
     consultationReason?: string
     professional: {
         sessionPrice: number
+        professionalType?: string
+        profileImageUrl?: string | null
+        acceptedPaymentMethods?: string[]
+        paymentNotes?: string | null
         user: {
             name: string
             image: string | null
@@ -80,10 +85,9 @@ const PROVIDERS: ProviderOption[] = [
 export default function ConfirmarCitaPage({ params }: Props) {
     const router = useRouter()
     const [appointment, setAppointment] = useState<Appointment | null>(null)
-    const [selectedProvider, setSelectedProvider] = useState<ProviderType>('TRANSBANK')
     const [isLoading, setIsLoading] = useState(true)
-    const [isProcessing, setIsProcessing] = useState(false)
     const [error, setError] = useState('')
+    const [imageFailed, setImageFailed] = useState(false)
 
     useEffect(() => {
         const fetchAppointment = async () => {
@@ -102,39 +106,6 @@ export default function ConfirmarCitaPage({ params }: Props) {
         }
         fetchAppointment()
     }, [params.id])
-
-    const handlePayment = async () => {
-        setIsProcessing(true)
-        setError('')
-
-        try {
-            const response = await fetch(`/api/citas/${params.id}/pagar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    provider: selectedProvider,
-                }),
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al procesar pago')
-            }
-
-            if (!data.paymentUrl) {
-                throw new Error('No se recibió la URL de pago de la pasarela.')
-            }
-
-            // Redirect to the chosen payment provider gateway
-            window.location.href = data.paymentUrl
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error al procesar pago')
-            setIsProcessing(false)
-        }
-    }
 
     if (isLoading) {
         return (
@@ -164,6 +135,23 @@ export default function ConfirmarCitaPage({ params }: Props) {
     if (!appointment) return null
 
     const scheduledDate = new Date(appointment.scheduledAt)
+    const professionalName = appointment.professional.user.name || 'Profesional'
+    const avatarSrc = appointment.professional.profileImageUrl || appointment.professional.user.image
+    const professionalRole =
+        appointment.professional.professionalType === 'PSYCHIATRIST' ? 'Psiquiatra' : 'Psicólogo/a'
+    const professionalPaymentLabels = paymentMethodLabels(appointment.professional.acceptedPaymentMethods)
+    const dateLabel = scheduledDate.toLocaleDateString('es-CL', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    })
+    const dateLabelCapitalized = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1)
+    const timeLabel = scheduledDate.toLocaleTimeString('es-CL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    })
 
     return (
         <>
@@ -178,10 +166,10 @@ export default function ConfirmarCitaPage({ params }: Props) {
                                 <Check className="w-8 h-8 text-primary-600" />
                             </div>
                             <h1 className="text-2xl font-heading font-bold text-gray-900 mb-2">
-                                ¡Reserva creada!
+                                ¡Reserva solicitada!
                             </h1>
                             <p className="text-gray-600">
-                                Selecciona tu medio de pago preferido para confirmar tu cita
+                                Tu solicitud fue enviada. El profesional debe aceptarla para confirmar la cita; te avisaremos por correo. 24 horas antes te pediremos reconfirmar tu asistencia.
                             </p>
                         </div>
 
@@ -193,26 +181,28 @@ export default function ConfirmarCitaPage({ params }: Props) {
 
                             {/* Professional */}
                             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-                                <div className="w-16 h-16 rounded-xl bg-primary-100 flex items-center justify-center overflow-hidden relative">
-                                    {appointment.professional.user.image ? (
+                                <div className="w-16 h-16 rounded-xl bg-primary-100 flex items-center justify-center overflow-hidden relative flex-shrink-0">
+                                    {avatarSrc && !imageFailed ? (
                                         <Image
-                                            src={appointment.professional.user.image}
-                                            alt={appointment.professional.user.name}
+                                            src={avatarSrc}
+                                            alt={professionalName}
                                             width={64}
                                             height={64}
-                                            className="object-cover"
+                                            unoptimized
+                                            onError={() => setImageFailed(true)}
+                                            className="object-cover w-16 h-16"
                                         />
                                     ) : (
                                         <span className="text-2xl font-bold text-primary-600">
-                                            {appointment.professional.user.name.charAt(0)}
+                                            {professionalName.charAt(0).toUpperCase()}
                                         </span>
                                     )}
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">
-                                        {appointment.professional.user.name}
+                                    <p className="font-semibold text-gray-900 capitalize">
+                                        {professionalName}
                                     </p>
-                                    <p className="text-sm text-gray-600">Profesional</p>
+                                    <p className="text-sm text-gray-600">{professionalRole}</p>
                                 </div>
                             </div>
 
@@ -220,22 +210,11 @@ export default function ConfirmarCitaPage({ params }: Props) {
                             <div className="grid sm:grid-cols-2 gap-4 mb-6">
                                 <div className="flex items-center gap-3 text-gray-600">
                                     <Calendar className="w-5 h-5 text-gray-400" />
-                                    <span>
-                                        {scheduledDate.toLocaleDateString('es-CL', {
-                                            weekday: 'long',
-                                            day: 'numeric',
-                                            month: 'long',
-                                        })}
-                                    </span>
+                                    <span>{dateLabelCapitalized}</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-gray-600">
                                     <Clock className="w-5 h-5 text-gray-400" />
-                                    <span>
-                                        {scheduledDate.toLocaleTimeString('es-CL', {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })} ({appointment.duration} min)
-                                    </span>
+                                    <span>{timeLabel} hrs · {appointment.duration} min</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-gray-600">
                                     {appointment.modality === 'ONLINE' ? (
@@ -244,7 +223,7 @@ export default function ConfirmarCitaPage({ params }: Props) {
                                         <MapPin className="w-5 h-5 text-gray-400" />
                                     )}
                                     <span>
-                                        {appointment.modality === 'ONLINE' ? 'Videollamada' : 'Presencial'}
+                                        {appointment.modality === 'ONLINE' ? 'Online (videollamada)' : 'Presencial'}
                                     </span>
                                 </div>
                             </div>
@@ -260,7 +239,7 @@ export default function ConfirmarCitaPage({ params }: Props) {
                             {/* Price */}
                             <div className="pt-6 border-t border-gray-100">
                                 <div className="flex items-center justify-between text-lg">
-                                    <span className="font-medium text-gray-900">Total a pagar</span>
+                                    <span className="font-medium text-gray-900">Valor de la sesión</span>
                                     <span className="text-2xl font-bold text-gray-900">
                                         {formatPrice(appointment.payment.amount)}
                                     </span>
@@ -270,33 +249,54 @@ export default function ConfirmarCitaPage({ params }: Props) {
 
                         {/* Payment Provider Selector */}
                         <div className="card p-8 mb-6">
-                            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                <CreditCard className="w-5 h-5 text-primary-600" />
+                            <h2 className="text-lg font-semibold text-gray-500 mb-2 flex items-center gap-2 flex-wrap">
+                                <CreditCard className="w-5 h-5 text-gray-400" />
                                 Elige tu medio de pago
+                                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-600">
+                                    No disponible por ahora
+                                </span>
                             </h2>
                             <p className="text-sm text-gray-600 mb-6">
-                                Tu transacción está 100% cifrada y protegida.
+                                Por ahora PsyDoctor no intermedia los pagos: el profesional define cómo y cuándo cobrar, y te contactará para coordinarlo.
                             </p>
 
-                            <div className="space-y-3">
+                            {professionalPaymentLabels.length > 0 && (
+                                <div className="mb-6 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                                    <p className="text-sm font-semibold text-emerald-900 mb-2">
+                                        {professionalName} acepta:
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {professionalPaymentLabels.map((label) => (
+                                            <span
+                                                key={label}
+                                                className="px-3 py-1 bg-white text-emerald-800 rounded-full text-xs font-medium border border-emerald-200"
+                                            >
+                                                {label}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    {appointment.professional.paymentNotes && (
+                                        <p className="mt-3 text-sm text-emerald-900/80 leading-relaxed">
+                                            {appointment.professional.paymentNotes}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="space-y-3 opacity-50 pointer-events-none select-none" aria-disabled="true">
                                 {PROVIDERS.map((provider) => {
-                                    const isSelected = selectedProvider === provider.id
                                     return (
                                         <div
                                             key={provider.id}
-                                            onClick={() => setSelectedProvider(provider.id)}
-                                            className={`relative flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                                isSelected
-                                                    ? 'border-primary-600 bg-primary-50/40 shadow-sm'
-                                                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                                            }`}
+                                            className="relative flex items-start gap-4 p-4 rounded-xl border-2 border-gray-200 bg-gray-50"
                                         >
                                             <div className="mt-1">
                                                 <input
                                                     type="radio"
                                                     name="paymentProvider"
-                                                    checked={isSelected}
-                                                    onChange={() => setSelectedProvider(provider.id)}
+                                                    checked={false}
+                                                    disabled
+                                                    readOnly
                                                     className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300"
                                                 />
                                             </div>
@@ -333,27 +333,17 @@ export default function ConfirmarCitaPage({ params }: Props) {
                         )}
 
                         {/* Action Button */}
-                        <button
-                            onClick={handlePayment}
-                            disabled={isProcessing}
+                        <Link
+                            href="/dashboard"
                             className="btn-primary w-full flex items-center justify-center gap-2 mb-4 text-base py-3"
                         >
-                            {isProcessing ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Conectando pasarela de pago...
-                                </>
-                            ) : (
-                                <>
-                                    <ShieldCheck className="w-5 h-5" />
-                                    Continuar al pago con {PROVIDERS.find(p => p.id === selectedProvider)?.name}
-                                </>
-                            )}
-                        </button>
+                            <ShieldCheck className="w-5 h-5" />
+                            Ir a mis citas
+                        </Link>
 
                         <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
                             <ShieldCheck className="w-4 h-4 text-gray-400" />
-                            Pago seguro garantizado. Puedes reprogramar o cancelar hasta 24h antes sin costo.
+                            Puedes reprogramar o cancelar hasta 24h antes sin costo.
                         </p>
                     </div>
                 </div>

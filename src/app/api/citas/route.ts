@@ -1,3 +1,4 @@
+import { SESSION_COMMISSION_RATE } from '@/lib/plans'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -5,6 +6,12 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { checkRateLimit, createRateLimitHeaders, getClientIp } from '@/lib/rateLimit'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
+import { redactMeetingLinks } from '@/lib/meetingLink'
+import {
+    MAX_UPCOMING_FOR_NEW_PATIENT,
+    NO_SHOW_BLOCK_THRESHOLD,
+    notifyProfessionalNewRequest,
+} from '@/lib/appointmentPolicy'
 
 // Force dynamic rendering for API routes using auth
 export const dynamic = 'force-dynamic'
@@ -15,6 +22,9 @@ const appointmentSchema = z.object({
     modality: z.enum(['ONLINE', 'IN_PERSON']),
     consultationReason: z.string().optional(),
     guestEmail: z.string().email().optional(),
+    policyAccepted: z.literal(true, {
+        errorMap: () => ({ message: 'Debes aceptar la política de cancelación para reservar' }),
+    }),
 })
 
 export async function POST(request: Request) {
@@ -76,6 +86,42 @@ export async function POST(request: Request) {
             patientId = guestUser.id
         }
 
+        // Reputación del paciente: bloqueo por inasistencias reiteradas
+        const patientRecord = await prisma.user.findUnique({
+            where: { id: patientId! },
+            select: { noShowCount: true },
+        })
+        if ((patientRecord?.noShowCount ?? 0) >= NO_SHOW_BLOCK_THRESHOLD) {
+            return NextResponse.json(
+                {
+                    error:
+                        'Tu cuenta tiene reservas bloqueadas por inasistencias reiteradas. Escríbenos a contacto@psydoctor.cl para revisarlo.',
+                },
+                { status: 403 }
+            )
+        }
+
+        // Paciente nuevo (sin sesiones completadas): una sola cita futura activa a la vez
+        const [completedCount, upcomingActive] = await Promise.all([
+            prisma.appointment.count({ where: { patientId: patientId!, status: 'COMPLETED' } }),
+            prisma.appointment.count({
+                where: {
+                    patientId: patientId!,
+                    status: { in: ['PENDING', 'CONFIRMED'] },
+                    scheduledAt: { gte: new Date() },
+                },
+            }),
+        ])
+        if (completedCount === 0 && upcomingActive >= MAX_UPCOMING_FOR_NEW_PATIENT) {
+            return NextResponse.json(
+                {
+                    error:
+                        'Ya tienes una cita pendiente. Podrás reservar otra cuando se realice o la canceles.',
+                },
+                { status: 400 }
+            )
+        }
+
         // Get professional
         const professional = await prisma.professional.findUnique({
             where: { id: data.professionalId },
@@ -122,13 +168,17 @@ export async function POST(request: Request) {
                 modality: data.modality,
                 consultationReason: data.consultationReason,
                 status: 'PENDING',
+                policyAcceptedAt: new Date(),
             },
         })
 
+        // Avisar al profesional que tiene una solicitud por aceptar
+        void notifyProfessionalNewRequest(appointment.id).catch((err) =>
+            console.error('Notify professional error:', err)
+        )
+
         // Create payment record (pending)
-        const commissionRate = professional.subscriptionTier === 'PREMIUM' ? 0.05 :
-            professional.subscriptionTier === 'PRO' ? 0.08 : 0.12
-        const commission = Math.round(professional.sessionPrice * commissionRate)
+        const commission = Math.round(professional.sessionPrice * SESSION_COMMISSION_RATE)
 
         await prisma.payment.create({
             data: {
@@ -143,7 +193,7 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             appointmentId: appointment.id,
-            message: 'Reserva creada. Procede al pago para confirmar.',
+            message: 'Reserva solicitada. El profesional debe aceptarla para confirmarla.',
         })
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -179,6 +229,27 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url)
         const role = searchParams.get('role') || 'patient'
 
+        // Una cita puntual (sala de videollamada): la devuelve solo a sus participantes
+        const appointmentId = searchParams.get('id')
+        if (appointmentId) {
+            const appointment = await prisma.appointment.findUnique({
+                where: { id: appointmentId },
+                include: {
+                    professional: { include: { user: { select: { name: true, image: true } } } },
+                    patient: { select: { name: true, email: true, image: true } },
+                    payment: true,
+                },
+            })
+            const isParticipant =
+                appointment &&
+                (appointment.patientId === session.user.id || appointment.professional.userId === session.user.id)
+            if (!appointment || !isParticipant) {
+                return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 })
+            }
+            const viewerIsProfessional = appointment.professional.userId === session.user.id
+            return NextResponse.json([redactMeetingLinks(appointment, viewerIsProfessional)])
+        }
+
         let appointments
 
         if (role === 'professional') {
@@ -198,7 +269,7 @@ export async function GET(request: Request) {
                 where: { professionalId: professional.id },
                 include: {
                     patient: {
-                        select: { name: true, email: true, image: true },
+                        select: { name: true, email: true, image: true, noShowCount: true },
                     },
                     payment: true,
                 },
@@ -223,7 +294,10 @@ export async function GET(request: Request) {
             })
         }
 
-        return NextResponse.json(appointments)
+        // En el listado del paciente nunca se incluye el enlace privado del profesional
+        const result =
+            role === 'professional' ? appointments : appointments.map((a) => redactMeetingLinks(a, false))
+        return NextResponse.json(result)
     } catch (error) {
         console.error('Appointments fetch error:', error)
         return NextResponse.json(

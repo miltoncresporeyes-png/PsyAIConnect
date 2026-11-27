@@ -34,6 +34,35 @@ export async function POST(request: Request) {
         if (mpPayment.status === 'approved') {
             const externalReference = mpPayment.external_reference // appointmentId
 
+            // Cobro de suscripcion profesional (external_reference = "sub_<orderId>")
+            if (typeof externalReference === 'string' && externalReference.startsWith('sub_')) {
+                const order = await prisma.subscriptionOrder.findUnique({
+                    where: { id: externalReference.slice(4) },
+                })
+                // El monto aprobado debe coincidir con la orden: no se confia en el cliente.
+                if (order && order.status !== 'PAID' && Math.round(mpPayment.transaction_amount) === order.amount) {
+                    await prisma.$transaction([
+                        prisma.subscriptionOrder.update({
+                            where: { id: order.id },
+                            data: {
+                                status: 'PAID',
+                                paidAt: new Date(),
+                                externalPaymentId: paymentId.toString(),
+                            },
+                        }),
+                        prisma.professional.update({
+                            where: { id: order.professionalId },
+                            data: {
+                                subscriptionTier: order.toTier,
+                                subscriptionEnds: order.newEnds,
+                                subscriptionCancelledAt: null,
+                            },
+                        }),
+                    ])
+                }
+                return NextResponse.json({ status: 'ok' })
+            }
+
             if (externalReference) {
                 const payment = await prisma.payment.findFirst({
                     where: { appointmentId: externalReference },

@@ -191,8 +191,6 @@ export default function NewReimbursementPage() {
         .filter(s => selectedSessions.includes(s.id))
         .reduce((sum, s) => sum + s.invoice.brutAmount, 0)
 
-    const estimatedReimbursement = Math.round(totalAmount * 0.55)
-
     return (
         <div className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
             {/* Progress Steps */}
@@ -266,10 +264,10 @@ export default function NewReimbursementPage() {
                                 <span className="text-gray-700">Total seleccionado:</span>
                                 <span className="font-semibold text-gray-900">{formatCurrency(totalAmount)}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-700">Reembolso estimado (~55%):</span>
-                                <span className="text-xl font-bold text-green-600">{formatCurrency(estimatedReimbursement)}</span>
-                            </div>
+                            <p className="text-xs text-gray-600">
+                                El monto a reembolsar lo define tu Isapre o seguro según tu plan. PsyDoctor no lo calcula
+                                ni lo garantiza.
+                            </p>
                         </div>
                     )}
 

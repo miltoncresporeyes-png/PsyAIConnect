@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { sendEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
+    // Antes era publico: cualquiera podia enviar correos arbitrarios desde el
+    // dominio de PsyDoctor (spam y dano de reputacion). Solo administradores.
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+    if (session.user.role !== 'ADMIN') {
+        return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
+
     try {
         const body = await request.json().catch(() => ({}))
         const targetEmail = body.to || 'contacto@psydoctor.cl'

@@ -199,7 +199,7 @@ export function FloatingWhatsAppButton() {
     {
       id: 'software_planes',
       icon: <FileText className="w-4 h-4 text-teal-700" />,
-      label: 'Planes, comisiones y ficha clínica',
+      label: 'Planes y ficha clínica',
       text: 'Hola, quisiera conocer más sobre el software de gestión de agenda, ficha clínica y condiciones para profesionales.',
     },
     {

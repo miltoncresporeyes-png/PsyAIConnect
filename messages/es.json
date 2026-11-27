@@ -168,7 +168,7 @@
       "ethicsTitle": "Nuestro compromiso ético",
       "ethics": [
         {
-          "title": "Confidencialidad garantizada",
+          "title": "Confidencialidad protegida por ley",
           "description": "Datos clínicos encriptados. Respaldo de privacidad para datos sensibles de salud."
         },
         {
@@ -187,8 +187,8 @@
     "heading": "Da el primer paso hacia tu bienestar, con certeza y transparencia",
     "subheading": "Acceso a psicólogos y psiquiatras inscritos en el Registro de la Superintendencia de Salud, precios claros y boleta para reembolso según tu plan de Isapre o seguro.",
     "tag1": "Inscritos en el Registro de la Superintendencia de Salud",
-    "tag2": "Boleta para reembolso Isapre",
-    "tag3": "Privacidad garantizada",
+    "tag2": "Boleta de honorarios",
+    "tag3": "Datos protegidos por ley",
     "ctaPatient": "Avísame cuando abran",
     "ctaProfessional": "Soy profesional",
     "card1Title": "Para pacientes",
@@ -263,7 +263,7 @@
       },
       {
         "question": "¿Cuánto cuesta una consulta?",
-        "answer": "Cada profesional define su tarifa libremente y esta se muestra antes de agendar. Se entrega boleta electrónica para solicitar reembolso a tu Isapre o seguro de salud según tu plan."
+        "answer": "Cada profesional define su tarifa libremente y esta se muestra antes de agendar. El profesional emite su boleta de honorarios, que puedes presentar a tu Isapre o seguro según las condiciones de tu plan; PsyDoctor no gestiona ni garantiza reembolsos."
       },
       {
         "question": "¿Qué pasa si siento que mi profesional no es el indicado para mí?",

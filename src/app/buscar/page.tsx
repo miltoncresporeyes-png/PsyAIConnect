@@ -102,11 +102,15 @@ function SearchContent() {
                 </div>
 
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3">
-                  Pronto tendremos profesionales en tu zona
+                  {modalidad === "online"
+                    ? "Pronto tendremos profesionales disponibles online"
+                    : "Pronto tendremos profesionales en tu zona"}
                 </h2>
 
                 <p className="text-sm sm:text-base text-[#374151] mb-8 leading-relaxed max-w-lg mx-auto">
-                  Estamos incorporando profesionales verificados en el Registro de la Superintendencia de Salud. Déjanos tus datos y te avisamos en cuanto haya disponibilidad en tu comuna.
+                  {modalidad === "online"
+                    ? "Estamos incorporando profesionales verificados en el Registro de la Superintendencia de Salud. Déjanos tus datos y te avisamos en cuanto haya disponibilidad para atención online."
+                    : "Estamos incorporando profesionales verificados en el Registro de la Superintendencia de Salud. Déjanos tus datos y te avisamos en cuanto haya disponibilidad en tu comuna."}
                 </p>
 
                 {/* Formulario de Lista de Espera destacado */}

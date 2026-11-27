@@ -4,6 +4,7 @@ import { Check, Sparkles, Zap, Crown, HelpCircle } from 'lucide-react'
 import { Header, Footer } from '@/components/layout'
 import { BackButton } from '@/components/ui/BackButton'
 import { PageContainer, PageHeader, CardGrid } from '@/components/layout/shell'
+import { ANNUAL_MONTHS, PLANS, PLAN_ORDER, annualSavings, cyclePrice } from '@/lib/plans'
 
 export const metadata: Metadata = {
     title: { absolute: 'Software y Agenda para Psicólogos en Chile | Planes | PsyDoctor' },
@@ -13,60 +14,28 @@ export const metadata: Metadata = {
     },
 }
 
-const plans = [
-    {
-        name: 'PROGRAMA FUNDADORES',
-        price: '$0',
-        period: ' por 12 meses',
-        description: 'Programa Fundadores: 12 meses sin costo de suscripción. Luego se aplica el plan vigente, con aviso previo de 60 días.',
-        icon: Zap,
-        featured: false,
-        features: [
-            '12 meses de suscripción sin costo para los primeros 20 fundadores',
-            'Insignia de Profesional Fundador y perfil destacado durante el lanzamiento',
-            'Perfil profesional en el directorio',
-            'Agenda médica online y fichas clínicas protegidas (Ley N° 20.584)',
-            'Contacto directo con el equipo para pedir mejoras',
-        ],
-        cta: 'Postular como Fundador',
-    },
-    {
-        name: 'PRO',
-        price: '$29.000',
-        period: '/ mes',
-        description: 'Para profesionales independientes con consulta activa.',
-        icon: Sparkles,
-        featured: true,
-        features: [
-            'Todo lo del plan inicial, más:',
-            'Citas y agenda online ilimitadas',
-            'Recordatorios automáticos por WhatsApp y Email (Evita no-shows)',
-            'Ficha clínica digital protegida (Ley N° 20.584)',
-            'Teleconsulta integrada de alta definición',
-            'Sincronización con Google Calendar',
-            'Soporte técnico prioritario',
-        ],
-        cta: 'Elegir Plan PRO',
-    },
-    {
-        name: 'PREMIUM',
-        price: '$59.000',
-        period: '/ mes',
-        description: 'Herramientas de automatización total para tu consulta médica.',
-        icon: Crown,
-        featured: false,
-        features: [
-            'Todo lo de PRO, más:',
-            'Emisión automática de boletas de honorarios (Conexión SII Chile)',
-            'Múltiples sucursales y ubicaciones',
-            'Estadísticas y reportes contables avanzados',
-            'Priorización y destacado en el directorio',
-            'Asistente de onboarding y migración de datos gratis',
-            'Soporte exclusivo y personalizado 24/7',
-        ],
-        cta: 'Elegir Plan PREMIUM',
-    },
-]
+const planIcons = { STARTER: Zap, PRO: Sparkles, PREMIUM: Crown } as const
+
+const plans = PLAN_ORDER.map((tier) => {
+    const plan = PLANS[tier]
+    return {
+        name: plan.name,
+        price: plan.priceLabel,
+        period: plan.periodLabel,
+        description: plan.description,
+        icon: planIcons[tier],
+        featured: tier === 'PRO',
+        features: plan.features,
+        cta: plan.cta,
+        annual:
+            tier === 'STARTER'
+                ? null
+                : {
+                      price: `$${cyclePrice(tier, ANNUAL_MONTHS).toLocaleString('es-CL')}`,
+                      savings: `$${annualSavings(tier).toLocaleString('es-CL')}`,
+                  },
+    }
+})
 
 export default function PlanesPage() {
     return (
@@ -137,6 +106,15 @@ export default function PlanesPage() {
                                     </span>
                                 </div>
 
+                                {plan.annual && (
+                                    <div className={`mb-4 rounded-xl px-3 py-2 text-xs ${
+                                        plan.featured ? 'bg-white/10 text-teal-100' : 'bg-emerald-50 text-emerald-800'
+                                    }`}>
+                                        <span className="font-bold">Plan anual: {plan.annual.price} al año</span>
+                                        <span className="block">12 meses pagando solo 10 · ahorras {plan.annual.savings}</span>
+                                    </div>
+                                )}
+
                                 {/* Description */}
                                 <p className={`text-sm mb-6 ${
                                     plan.featured ? 'text-teal-100/90' : 'text-gray-600'
@@ -159,7 +137,14 @@ export default function PlanesPage() {
                                             <span className={`text-sm ${
                                                 plan.featured ? 'text-teal-100/90' : 'text-gray-700'
                                             }`}>
-                                                {feature}
+                                                {feature.text}
+                                                {feature.status === 'soon' && (
+                                                    <span className={`ml-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide align-middle ${
+                                                        plan.featured ? 'bg-teal-800 text-teal-200' : 'bg-amber-100 text-amber-800'
+                                                    }`}>
+                                                        Próximamente
+                                                    </span>
+                                                )}
                                             </span>
                                         </li>
                                     ))}
@@ -208,7 +193,12 @@ export default function PlanesPage() {
                         </div>
                         <div>
                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Emisión Contable</h4>
-                            <p className="text-sm font-semibold text-gray-700">Integración con Boleta SII</p>
+                            <p className="text-sm font-semibold text-gray-700">
+                                Integración con Boleta SII
+                                <span className="ml-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide align-middle text-amber-800">
+                                    Próximamente
+                                </span>
+                            </p>
                         </div>
                     </div>
 

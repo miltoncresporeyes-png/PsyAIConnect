@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { Avatar } from '@/components/ui/Avatar'
 import { Header, Footer } from '@/components/layout'
 import { PageContainer, PageHeader, ListContainer, ListItem } from '@/components/layout/shell'
 import { BackToDashboard } from '@/components/ui/BackToDashboard'
@@ -21,9 +21,11 @@ interface Appointment {
     modality: string
     status: string
     videoLink?: string
+    patientReconfirmedAt?: string | null
     consultationReason?: string
     professional?: {
         sessionPrice: number
+        profileImageUrl?: string | null
         user: {
             name: string
             image: string | null
@@ -33,6 +35,7 @@ interface Appointment {
         name: string
         email: string
         image: string | null
+        noShowCount?: number
     }
     payment?: {
         amount: number
@@ -41,7 +44,7 @@ interface Appointment {
 }
 
 const statusLabels: Record<string, { label: string; color: string }> = {
-    PENDING: { label: 'Pendiente pago', color: 'bg-yellow-100 text-yellow-700' },
+    PENDING: { label: 'Esperando aceptación', color: 'bg-yellow-100 text-yellow-700' },
     CONFIRMED: { label: 'Confirmada', color: 'bg-green-100 text-green-700' },
     COMPLETED: { label: 'Completada', color: 'bg-gray-100 text-gray-700' },
     CANCELLED: { label: 'Cancelada', color: 'bg-red-100 text-red-700' },
@@ -81,32 +84,68 @@ export default function CitasPage() {
         }
     }, [status, router, fetchAppointments])
 
-    const handleCancel = async (id: string) => {
-        if (!confirm('¿Estás seguro de que quieres cancelar esta cita?')) return
+    const [actionError, setActionError] = useState('')
 
+    const updateStatus = async (id: string, status: string, cancellationReason?: string) => {
+        setActionError('')
         try {
             const response = await fetch(`/api/citas/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    status: 'CANCELLED',
-                    cancellationReason: 'Cancelada por el usuario',
-                }),
+                body: JSON.stringify({ status, ...(cancellationReason && { cancellationReason }) }),
             })
-
             if (response.ok) {
                 fetchAppointments()
+            } else {
+                const data = await response.json().catch(() => ({}))
+                setActionError(data.error || 'No se pudo actualizar la cita')
             }
         } catch {
-            console.error('Error cancelling appointment')
+            setActionError('No se pudo actualizar la cita')
+        }
+    }
+
+    const handleCancel = (id: string) => {
+        if (!confirm('¿Estás seguro de que quieres cancelar esta cita?')) return
+        updateStatus(id, 'CANCELLED', isProfessional ? 'Cancelada por el profesional' : 'Cancelada por el paciente')
+    }
+
+    const handleAccept = (id: string) => updateStatus(id, 'CONFIRMED')
+
+    const handleReject = (id: string) => {
+        if (!confirm('¿Rechazar esta solicitud? El paciente será avisado para que elija otro horario.')) return
+        updateStatus(id, 'CANCELLED', 'El profesional no puede atender en ese horario')
+    }
+
+    const handleNoShow = (id: string) => {
+        if (!confirm('¿Registrar que el paciente no se conectó? Quedará en su historial de inasistencias.')) return
+        updateStatus(id, 'NO_SHOW')
+    }
+
+    const handleReconfirm = async (id: string) => {
+        setActionError('')
+        try {
+            const response = await fetch(`/api/citas/${id}/reconfirmar`, { method: 'POST' })
+            if (response.ok) {
+                fetchAppointments()
+            } else {
+                const data = await response.json().catch(() => ({}))
+                setActionError(data.error || 'No se pudo reconfirmar la cita')
+            }
+        } catch {
+            setActionError('No se pudo reconfirmar la cita')
         }
     }
 
     const now = new Date()
     const filteredAppointments = appointments.filter(apt => {
         const aptDate = new Date(apt.scheduledAt)
-        if (filter === 'upcoming') return aptDate >= now && apt.status !== 'CANCELLED'
-        if (filter === 'past') return aptDate < now || apt.status === 'CANCELLED' || apt.status === 'COMPLETED'
+        // Una sesion en curso (o recien terminada, dentro de la ventana de ingreso) sigue vigente
+        const stillActive =
+            ['PENDING', 'CONFIRMED'].includes(apt.status) &&
+            now.getTime() <= aptDate.getTime() + (apt.duration + 30) * 60000
+        if (filter === 'upcoming') return stillActive
+        if (filter === 'past') return !stillActive
         return true
     })
 
@@ -153,6 +192,12 @@ export default function CitasPage() {
                     ))}
                 </div>
 
+                {actionError && (
+                    <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {actionError}
+                    </div>
+                )}
+
                 {/* Appointments List */}
                 {filteredAppointments.length === 0 ? (
                     <div className="bg-white rounded-2xl border border-slate-200/90 p-10 text-center shadow-xs">
@@ -182,8 +227,18 @@ export default function CitasPage() {
                         {filteredAppointments.map(apt => {
                             const aptDate = new Date(apt.scheduledAt)
                             const isUpcoming = aptDate >= now && apt.status === 'CONFIRMED'
-                            const canJoin = isUpcoming && apt.modality === 'ONLINE' && apt.videoLink
+                            const canJoin =
+                                apt.status === 'CONFIRMED' &&
+                                apt.modality === 'ONLINE' &&
+                                now.getTime() >= aptDate.getTime() - 15 * 60000 &&
+                                now.getTime() <= aptDate.getTime() + (apt.duration + 30) * 60000
                             const canCancel = ['PENDING', 'CONFIRMED'].includes(apt.status) && aptDate > now
+                            const hoursToStart = (aptDate.getTime() - now.getTime()) / 3600000
+                            const needsReconfirm =
+                                !isProfessional && apt.status === 'CONFIRMED' && !apt.patientReconfirmedAt && aptDate > now && hoursToStart <= 24
+                            const canMarkNoShow =
+                                isProfessional && apt.status === 'CONFIRMED' && now.getTime() >= aptDate.getTime() + 15 * 60000
+                            const awaitingAcceptance = apt.status === 'PENDING' && aptDate > now
 
                             const person = isProfessional ? apt.patient : apt.professional?.user
 
@@ -192,27 +247,49 @@ export default function CitasPage() {
                                     key={apt.id}
                                     action={
                                         <div className="flex flex-wrap items-center gap-2 shrink-0">
-                                            {apt.status === 'PENDING' && !isProfessional && (
-                                                <Link
-                                                    href={`/cita/${apt.id}/confirmar`}
-                                                    className="text-sm text-primary-600 hover:text-primary-700 font-medium whitespace-nowrap"
+                                            {awaitingAcceptance && isProfessional && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleAccept(apt.id)}
+                                                        className="rounded-lg bg-teal-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-teal-800 whitespace-nowrap"
+                                                    >
+                                                        Aceptar
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleReject(apt.id)}
+                                                        className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 whitespace-nowrap"
+                                                    >
+                                                        Rechazar
+                                                    </button>
+                                                </>
+                                            )}
+                                            {needsReconfirm && (
+                                                <button
+                                                    onClick={() => handleReconfirm(apt.id)}
+                                                    className="rounded-lg bg-teal-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-teal-800 whitespace-nowrap"
                                                 >
-                                                    Completar pago →
-                                                </Link>
+                                                    Reconfirmar asistencia
+                                                </button>
+                                            )}
+                                            {canMarkNoShow && (
+                                                <button
+                                                    onClick={() => handleNoShow(apt.id)}
+                                                    className="rounded-lg border border-amber-300 px-3 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 whitespace-nowrap"
+                                                >
+                                                    No se conectó
+                                                </button>
                                             )}
                                             {canJoin && (
-                                                <a
-                                                    href={apt.videoLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                <Link
+                                                    href={`/dashboard/citas/${apt.id}`}
                                                     className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium whitespace-nowrap"
                                                 >
                                                     <Video className="w-4 h-4" />
-                                                    Unirse
+                                                    {isProfessional ? 'Iniciar sesión' : 'Unirme'}
                                                     <ExternalLink className="w-3 h-3" />
-                                                </a>
+                                                </Link>
                                             )}
-                                            {canCancel && (
+                                            {canCancel && !(awaitingAcceptance && isProfessional) && (
                                                 <button
                                                     onClick={() => handleCancel(apt.id)}
                                                     className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 whitespace-nowrap"
@@ -226,21 +303,11 @@ export default function CitasPage() {
                                 >
                                     <Link className="flex w-full items-start gap-4" href={`/dashboard/citas/${apt.id}`}>
                                         {/* Avatar */}
-                                        <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
-                                            {person?.image ? (
-                                                <Image
-                                                    src={person.image}
-                                                    alt={person.name || ''}
-                                                    width={56}
-                                                    height={56}
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <span className="text-xl font-bold text-primary-600">
-                                                    {person?.name?.charAt(0) || '?'}
-                                                </span>
-                                            )}
-                                        </div>
+                                        <Avatar
+                                            src={(!isProfessional && apt.professional?.profileImageUrl) || person?.image}
+                                            name={person?.name}
+                                            size={56}
+                                        />
 
                                         {/* Info */}
                                         <div className="flex-1 min-w-0">
@@ -251,6 +318,14 @@ export default function CitasPage() {
                                                 <span className={`badge ${statusLabels[apt.status]?.color || 'bg-gray-100'} flex-shrink-0`}>
                                                     {statusLabels[apt.status]?.label || apt.status}
                                                 </span>
+                                                {apt.status === 'CONFIRMED' && apt.patientReconfirmedAt && aptDate > now && (
+                                                    <span className="badge bg-teal-50 text-teal-700 flex-shrink-0">Asistencia reconfirmada</span>
+                                                )}
+                                                {isProfessional && (apt.patient?.noShowCount ?? 0) >= 2 && apt.status === 'PENDING' && (
+                                                    <span className="badge bg-amber-100 text-amber-800 flex-shrink-0">
+                                                        {apt.patient?.noShowCount} inasistencias previas
+                                                    </span>
+                                                )}
                                             </div>
 
                                             <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">

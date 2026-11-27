@@ -259,10 +259,10 @@ export default function DisponibilidadPage() {
                                 Política de cancelación visible para tus pacientes
                             </h3>
                             <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                                Los pacientes pueden cancelar o reprogramar sin costo hasta <strong>24 horas antes</strong> de la sesión. Cancelaciones con menor anticipación están sujetas a una retención del 50% según la política estándar.
+                                Los pacientes pueden cancelar o reprogramar sin costo hasta <strong>24 horas antes</strong> de la sesión, y deben reconfirmar su asistencia en ese plazo. Si cancelan con menos anticipación o no se conectan, <strong>tú decides si cobras la sesión</strong>, según la política que informes a tu paciente. PsyDoctor registra la inasistencia, pero no cobra ni retiene el dinero.
                             </p>
                             <span className="text-[11px] text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 font-medium inline-block">
-                                Política activa: 24h anticipación (reembolso 100%) / &lt;24h (reembolso 50%)
+                                Política activa: sin costo hasta 24 h antes · después, cobro a criterio del profesional
                             </span>
                         </div>
 

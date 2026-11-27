@@ -25,11 +25,11 @@ const PREVISIONS = [
     bg: 'bg-teal-50',
     border: 'border-teal-200',
     icon: '🏦',
-    how: 'Con Isapre puedes usar el sistema de reembolso. Presentas la boleta electrónica y recibes el porcentaje según tu plan. Generalmente entre 50% y 90% del valor bonificado.',
+    how: 'Con Isapre puedes solicitar reembolso presentando la boleta de honorarios del profesional. El porcentaje y la aprobación dependen de tu plan y de la cobertura que tengas contratada: consúltalo con tu Isapre.',
     example: {
       sessionPrice: '$40.000',
-      bonificacion: 'Hasta 70%',
-      tuPago: '$12.000 aprox.',
+      bonificacion: 'Según tu plan',
+      tuPago: 'Según tu plan',
     },
   },
 ]
@@ -38,7 +38,7 @@ function ReimbursementExample({ prevision }: { prevision: typeof PREVISIONS[0] }
   return (
     <div className={`mt-4 rounded-xl ${prevision.bg} border ${prevision.border} p-4`}>
       <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">
-        Ejemplo para una sesión de ${prevision.example.sessionPrice}
+        Ejemplo ilustrativo: sesión de ${prevision.example.sessionPrice}
       </p>
       <div className="grid grid-cols-3 gap-3 text-center">
         <div>
@@ -55,7 +55,7 @@ function ReimbursementExample({ prevision }: { prevision: typeof PREVISIONS[0] }
         </div>
       </div>
       <p className="mt-3 text-xs text-gray-500">
-        *Estimación referencial. Los porcentajes exactos dependen de tu plan de salud y el profesional. Todos los profesionales de PsyDoctor emiten boleta electrónica oficial para reembolso.
+        *Información referencial. Si te corresponde bonificación o reembolso, su monto y aprobación dependen de tu plan de salud. PsyDoctor no los gestiona ni los garantiza; cada profesional emite su boleta de honorarios.
       </p>
     </div>
   )
@@ -86,17 +86,17 @@ export function PricingGuidanceSection() {
           {[
             {
               icon: Receipt,
-              title: 'Desde $25.000 por sesión',
+              title: 'Precios claros por profesional',
               description:
-                'Los precios los define cada profesional y los ves en su perfil antes de agendar. Sin costos ocultos ni cobros adicionales.',
+                'Cada profesional define su valor por sesión y lo ves en su perfil antes de agendar. El pago se coordina directamente con él.',
               color: 'text-teal-600',
               bg: 'bg-teal-50',
             },
             {
               icon: Calculator,
-              title: 'Usa Fonasa o Isapre',
+              title: 'Consulta tu cobertura',
               description:
-                'Todos los profesionales emiten boleta electrónica. Puedes bonificar con Fonasa o solicitar reembolso a tu Isapre.',
+                'Cada profesional emite su boleta de honorarios. Según tu previsión, puedes consultar la bonificación de Fonasa (con profesionales en convenio) o el reembolso de tu Isapre.',
               color: 'text-cyan-600',
               bg: 'bg-cyan-50',
             },

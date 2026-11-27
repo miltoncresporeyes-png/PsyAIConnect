@@ -86,7 +86,6 @@ export function exportToPDF(report: MonthlyReportData) {
             ['Total Sesiones', report.financialSummary.totalSessions.toString()],
             ['Monto Bruto', formatCurrency(report.financialSummary.totalBrut)],
             ['Retención SII (15.25%)', formatCurrency(-report.financialSummary.totalSiiRetention)],
-            ['Comisión Plataforma', formatCurrency(-report.financialSummary.totalCommission)],
             ['Monto Líquido', formatCurrency(report.financialSummary.totalNet)],
         ],
         theme: 'grid',
@@ -238,7 +237,6 @@ export function exportToCSV(report: MonthlyReportData) {
     csv += `Total Sesiones,${report.financialSummary.totalSessions}\n`
     csv += `Bruto Acumulado,${report.financialSummary.totalBrut}\n`
     csv += `Retención SII (15.25%),-${report.financialSummary.totalSiiRetention}\n`
-    csv += `Comisión Plataforma,-${report.financialSummary.totalCommission}\n`
     csv += `Líquido Final,${report.financialSummary.totalNet}\n`
     csv += `\n`
 

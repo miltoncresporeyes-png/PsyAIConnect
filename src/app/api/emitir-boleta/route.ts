@@ -4,6 +4,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { spawn } from 'child_process'
 import path from 'path'
+import { prisma } from '@/lib/prisma'
+import { getEffectiveTier } from '@/lib/plans'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // Función para validar datos básicos antes de enviar a Python
 function validarDatosBasicos(data: any): { valido: boolean; error?: string } {
@@ -37,6 +40,29 @@ export async function POST(request: NextRequest): Promise<Response> {
         { error: 'No autorizado' },
         { status: 401 }
       )
+    }
+
+    // Solo profesionales con plan PREMIUM vigente (como indica la oferta): antes
+    // cualquier usuario autenticado, incluso un paciente, podia emitir boletas.
+    if (session.user.role !== 'PROFESSIONAL') {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
+    const professional = await prisma.professional.findUnique({
+      where: { userId: session.user.id },
+      select: { subscriptionTier: true, subscriptionEnds: true },
+    })
+    if (!professional) {
+      return NextResponse.json({ error: 'Perfil profesional no encontrado' }, { status: 404 })
+    }
+    if (getEffectiveTier(professional) !== 'PREMIUM') {
+      return NextResponse.json(
+        { error: 'La emisión automática de boletas requiere el plan PREMIUM vigente.' },
+        { status: 403 }
+      )
+    }
+    const limit = checkRateLimit(`boleta:${session.user.id}`, { limit: 30, windowMs: 60 * 60 * 1000 })
+    if (!limit.allowed) {
+      return NextResponse.json({ error: 'Demasiadas emisiones. Inténtalo más tarde.' }, { status: 429 })
     }
 
     const body = await request.json()

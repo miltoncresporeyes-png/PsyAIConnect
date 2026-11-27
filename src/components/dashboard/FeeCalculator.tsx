@@ -2,7 +2,7 @@
  * Professional Fee Calculator Component
  * 
  * Calculates net income for Chilean mental health professionals
- * considering SII retention (15.25% for 2026) and platform commission
+ * considering SII retention (15.25% for 2026). PsyDoctor no cobra comisión por sesión.
  */
 
 'use client'
@@ -12,34 +12,28 @@ import { Info } from 'lucide-react'
 
 // Chilean tax constants for 2026
 const SII_RETENTION_RATE = 0.1525 // 15.25% mandatory retention
-const PLATFORM_COMMISSION_RATE = 0.114 // 11.4% for PRO tier
 
 interface FeeBreakdown {
     brutAmount: number
     siiRetention: number
-    platformCommission: number
     netAmount: number
     percentages: {
         net: number
         sii: number
-        commission: number
     }
 }
 
 function calculateFees(brutAmount: number): FeeBreakdown {
     const siiRetention = Math.round(brutAmount * SII_RETENTION_RATE)
-    const platformCommission = Math.round(brutAmount * PLATFORM_COMMISSION_RATE)
-    const netAmount = brutAmount - siiRetention - platformCommission
+    const netAmount = brutAmount - siiRetention
 
     return {
         brutAmount,
         siiRetention,
-        platformCommission,
         netAmount,
         percentages: {
             net: (netAmount / brutAmount) * 100,
             sii: (siiRetention / brutAmount) * 100,
-            commission: (platformCommission / brutAmount) * 100,
         },
     }
 }
@@ -67,7 +61,7 @@ export default function FeeCalculator() {
                         <p className="font-semibold mb-1">¿Cómo funciona?</p>
                         <p>
                             Calcula tu ingreso líquido real considerando la retención SII
-                            obligatoria y la comisión de plataforma.
+                            obligatoria. PsyDoctor no cobra comisión por sesión.
                         </p>
                     </div>
                 </div>
@@ -137,24 +131,6 @@ export default function FeeCalculator() {
                         -${fees.siiRetention.toLocaleString('es-CL')}
                     </div>
                 </div>
-
-                {/* Platform Commission */}
-                <div className="flex items-center gap-3">
-                    <div className="w-32 text-sm text-gray-600">Comisión</div>
-                    <div className="flex-1 bg-gray-100 rounded-full h-8 overflow-hidden">
-                        <div
-                            className="h-full bg-indigo-500 flex items-center justify-end px-3 transition-all duration-300"
-                            style={{ width: `${fees.percentages.commission}%` }}
-                        >
-                            <span className="text-white text-sm font-medium">
-                                {fees.percentages.commission.toFixed(1)}%
-                            </span>
-                        </div>
-                    </div>
-                    <div className="w-28 text-right font-semibold text-indigo-600">
-                        -${fees.platformCommission.toLocaleString('es-CL')}
-                    </div>
-                </div>
             </div>
 
             {/* Detailed Breakdown Table */}
@@ -170,13 +146,6 @@ export default function FeeCalculator() {
                     <span>- Retención SII (15.25%)</span>
                     <span className="font-semibold">
                         -${fees.siiRetention.toLocaleString('es-CL')}
-                    </span>
-                </div>
-
-                <div className="flex justify-between text-indigo-600">
-                    <span>- Comisión Plataforma (11.4%)</span>
-                    <span className="font-semibold">
-                        -${fees.platformCommission.toLocaleString('es-CL')}
                     </span>
                 </div>
 
@@ -263,7 +232,7 @@ export default function FeeCalculator() {
                         </p>
                         <ul className="list-disc list-inside space-y-1 text-blue-600 text-xs">
                             <li>Retención SII: 15.25% según Ley de Impuesto a la Renta</li>
-                            <li>Comisión plataforma: 11.4% (tier PRO)</li>
+                            <li>PsyDoctor no cobra comisión por sesión: solo la suscripción</li>
                             <li>Valores aproximados, consulta con tu contador</li>
                         </ul>
                     </div>

@@ -32,7 +32,7 @@ const modalityOptions = [
 ]
 
 export default function CompletarPerfilPage() {
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
     const router = useRouter()
 
     const [isLoading, setIsLoading] = useState(false)
@@ -101,6 +101,10 @@ export default function CompletarPerfilPage() {
             if (!response.ok) {
                 throw new Error(data.error || 'Error al guardar perfil')
             }
+
+            // El rol cambió en la BD: se refresca el token de sesión (el callback jwt
+            // relee el rol), si no el dashboard seguiría mostrando la vista de paciente.
+            await update()
 
             setSuccess(true)
             setTimeout(() => {

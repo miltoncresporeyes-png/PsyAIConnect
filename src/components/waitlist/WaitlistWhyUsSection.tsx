@@ -40,11 +40,11 @@ export function WaitlistWhyUsSection() {
                                 <FileText className="h-4 w-4" aria-hidden="true" />
                             </div>
                             <Heading level={4} className="text-base font-semibold text-tinta">
-                                Boleta y Reembolso Inmediato
+                                Boleta de honorarios
                             </Heading>
                         </div>
                         <p className="text-sm text-tinta/70 leading-relaxed pl-[3.25rem]">
-                            Emisión automática de boleta de honorarios electrónica para reembolso en tu Isapre o seguro complementario sin trámites manuales engorrosos.
+                            Cada profesional emite su boleta de honorarios para que puedas presentarla a tu Isapre o seguro complementario. El reembolso depende de las condiciones de tu plan.
                         </p>
                     </div>
 

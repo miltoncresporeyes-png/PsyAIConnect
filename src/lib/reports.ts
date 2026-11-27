@@ -7,9 +7,10 @@
 
 import { prisma } from '@/lib/prisma'
 import { PrismaClient } from '@/generated/client'
+import { SESSION_COMMISSION_RATE } from '@/lib/plans'
 
 const SII_RETENTION_RATE = 0.1525 // 15.25% for 2026
-const PLATFORM_COMMISSION_RATE = 0.114 // 11.4% PRO tier
+const PLATFORM_COMMISSION_RATE = SESSION_COMMISSION_RATE // 0: sin comisión por sesión
 
 interface MonthlyReportData {
     professionalId: string
