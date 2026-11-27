@@ -31,12 +31,38 @@ producción. Staging usa **su propia base de datos** y un dominio temporal de Ra
 2. Espera el build. Verifica `GET <staging>/api/health` → 200.
 
 ## 5. Cron
-Servicio nuevo en `staging` con **Cron Schedule** `*/10 * * * *`. Define en ese servicio las variables `APP_URL`
-(el dominio de staging) y `CRON_SECRET` (el mismo de la app), y usa este comando:
+La ruta `GET /api/cron/recordatorios-citas` envía recordatorios (24 h y 2 h), libera horarios sin reconfirmar y caduca
+solicitudes sin respuesta. Necesita que algo la llame cada pocos minutos con la clave `CRON_SECRET`.
+
+**a) Generar la clave** (PowerShell; no la compartas por chat) y guardarla como `CRON_SECRET` en el servicio de la app:
+```powershell
+-join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
 ```
-curl -fsS -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/recordatorios-citas"
+
+**b) Crear el servicio del cron** (mismo proyecto y entorno):
+1. **New → Empty Service**, nombre `cron-recordatorios`.
+2. **Settings → Source → Docker Image**: `curlimages/curl:latest`.
+3. **Settings → Deploy**:
+   - Custom Start Command:
+     ```
+     sh -c 'curl -fsS -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/recordatorios-citas"'
+     ```
+   - Cron Schedule: `*/10 * * * *` (Railway permite un mínimo de 5 minutos).
+4. **Variables** del servicio cron:
+   - `CRON_SECRET` = `${{PsyAIConnect.CRON_SECRET}}` (referencia a la variable de la app; ajusta el nombre del servicio si es otro).
+   - `APP_URL` = dominio del entorno (staging: el temporal de Railway; producción: `https://psydoctor.cl`).
+5. Desplegar el servicio.
+
+**c) Comprobar**
+```powershell
+curl.exe -s -H "Authorization: Bearer TU_CLAVE" https://TU-DOMINIO/api/cron/recordatorios-citas
 ```
-Respuesta esperada: `{"ok":true,"reminded24h":0,"reminded2h":0,"released":0,"expiredPending":0}`.
+Respuesta esperada: `{"ok":true,"reminded24h":0,"reminded2h":0,"released":0,"expiredPending":0}`. Sin la cabecera debe
+responder 401. En los registros del servicio cron debe haber una ejecución cada 10 minutos con código de salida 0.
+
+**Alternativa sin servicio en Railway:** un servicio externo (p. ej. cron-job.org) que llame a la misma URL cada
+10 minutos con la cabecera `Authorization: Bearer <CRON_SECRET>`. Debe mantenerse siempre activo: sin él no hay
+recordatorios ni liberación de horarios.
 
 ## 6. Datos de prueba
 Registra desde la web: una **profesional**, un **paciente** y un **administrador** (el rol admin se asigna por SQL):
