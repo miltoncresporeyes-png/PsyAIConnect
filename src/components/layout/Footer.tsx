@@ -19,6 +19,7 @@ export function Footer() {
             { name: 'Orientador de bienestar', href: '/orientador' },
             { name: 'Para profesionales', href: '/profesionales' },
             { name: 'Preguntas Frecuentes', href: '/faq' },
+            { name: 'Soporte y feedback', href: '/soporte' },
             { name: 'Cómo Funciona', href: '/#como-funciona' },
             { name: 'Psicólogo con Fonasa', href: '/psicologo-con/fonasa' },
             { name: 'Psicólogo para ansiedad', href: '/psicologo-online/ansiedad' },
