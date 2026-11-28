@@ -10,7 +10,7 @@ export interface MercadoPagoPreferenceParams {
     currencyId?: string
     payerEmail: string
     payerName?: string
-    externalReference: string // appointmentId
+    externalReference: string // appointmentId o sub_<orderId>
     backUrls: {
         success: string
         failure: string
@@ -56,12 +56,15 @@ export async function createMercadoPagoPreference(
         ],
         payer: {
             email: params.payerEmail,
-            name: params.payerName || 'Paciente',
+            name: params.payerName || 'Profesional',
         },
         external_reference: params.externalReference,
         back_urls: params.backUrls,
         auto_return: 'approved',
-        statement_descriptor: 'PSYCONNECT',
+        statement_descriptor: 'PSYDOCTOR',
+        // El enlace de pago caduca a las 48 h: la orden pendiente no queda abierta para siempre
+        expires: true,
+        expiration_date_to: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
         ...(params.notificationUrl && { notification_url: params.notificationUrl }),
     }
 

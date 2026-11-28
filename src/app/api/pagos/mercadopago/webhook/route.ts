@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getMercadoPagoPayment } from '@/lib/mercadopago'
 import { sendAppointmentConfirmationEmail } from '@/lib/email'
+import { verifyMercadoPagoSignature } from '@/lib/mercadopagoWebhook'
+import { applySubscriptionPayment, subscriptionOrderIdFrom } from '@/lib/subscriptionPayments'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,40 +30,36 @@ export async function POST(request: Request) {
             return NextResponse.json({ received: true })
         }
 
+        // Firma de la notificación (secreto del webhook). Si no hay secreto se procesa igual porque el
+        // estado del pago siempre se consulta a la API de Mercado Pago, pero se deja advertencia.
+        const webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET
+        if (webhookSecret) {
+            const valid = verifyMercadoPagoSignature({
+                xSignature: request.headers.get('x-signature'),
+                xRequestId: request.headers.get('x-request-id'),
+                dataId: searchParams.get('data.id') || (body?.data?.id != null ? String(body.data.id) : null),
+                secret: webhookSecret,
+            })
+            if (!valid) {
+                console.error('[mercadopago] Firma de webhook inválida')
+                return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
+            }
+        } else if (process.env.NODE_ENV === 'production') {
+            console.warn('[mercadopago] MERCADOPAGO_WEBHOOK_SECRET no está definido: las notificaciones no se validan por firma')
+        }
+
         // Consult payment details directly from Mercado Pago API
         const mpPayment = await getMercadoPagoPayment(paymentId.toString())
 
+        // Cobro de suscripción profesional (external_reference = "sub_<orderId>"): cualquier estado
+        if (subscriptionOrderIdFrom(mpPayment.external_reference)) {
+            const outcome = await applySubscriptionPayment({ ...mpPayment, id: mpPayment.id ?? paymentId })
+            if (!outcome.handled) console.warn('[mercadopago] Pago de suscripción no aplicado:', outcome.reason, paymentId)
+            return NextResponse.json({ status: 'ok' })
+        }
+
         if (mpPayment.status === 'approved') {
             const externalReference = mpPayment.external_reference // appointmentId
-
-            // Cobro de suscripcion profesional (external_reference = "sub_<orderId>")
-            if (typeof externalReference === 'string' && externalReference.startsWith('sub_')) {
-                const order = await prisma.subscriptionOrder.findUnique({
-                    where: { id: externalReference.slice(4) },
-                })
-                // El monto aprobado debe coincidir con la orden: no se confia en el cliente.
-                if (order && order.status !== 'PAID' && Math.round(mpPayment.transaction_amount) === order.amount) {
-                    await prisma.$transaction([
-                        prisma.subscriptionOrder.update({
-                            where: { id: order.id },
-                            data: {
-                                status: 'PAID',
-                                paidAt: new Date(),
-                                externalPaymentId: paymentId.toString(),
-                            },
-                        }),
-                        prisma.professional.update({
-                            where: { id: order.professionalId },
-                            data: {
-                                subscriptionTier: order.toTier,
-                                subscriptionEnds: order.newEnds,
-                                subscriptionCancelledAt: null,
-                            },
-                        }),
-                    ])
-                }
-                return NextResponse.json({ status: 'ok' })
-            }
 
             if (externalReference) {
                 const payment = await prisma.payment.findFirst({
@@ -125,7 +123,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ status: 'ok' })
     } catch (error) {
         console.error('Error en webhook de Mercado Pago:', error)
-        // Return 200/ok to avoid repeated retries for bad payloads
-        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 200 })
+        // 500: Mercado Pago reintenta con espera creciente (el procesamiento es idempotente)
+        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
     }
 }

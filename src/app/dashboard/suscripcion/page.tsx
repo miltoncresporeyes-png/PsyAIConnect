@@ -50,6 +50,8 @@ function SuscripcionContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const pago = searchParams?.get('pago')
+    // Mercado Pago agrega el id del pago al volver del checkout
+    const paymentId = searchParams?.get('payment_id') || searchParams?.get('collection_id')
 
     const [data, setData] = useState<SubscriptionData | null>(null)
     const [loading, setLoading] = useState(true)
@@ -76,6 +78,27 @@ function SuscripcionContent() {
             else void load()
         }
     }, [status, session, router, load])
+
+    // Al volver del checkout se confirma el pago de inmediato (no se espera solo al webhook)
+    useEffect(() => {
+        if (status !== 'authenticated' || !paymentId || !/^\d{3,20}$/.test(paymentId)) return
+        let active = true
+        fetch('/api/profesional/suscripcion/verificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentId }),
+        })
+            .then(async (res) => {
+                const json = await res.json().catch(() => ({}))
+                if (!active) return
+                if (res.ok && json.result === 'activated') setMessage({ type: 'ok', text: '¡Pago confirmado! Tu plan ya está activo. Te enviamos el comprobante por correo.' })
+                if (res.ok) await load()
+            })
+            .catch(() => undefined)
+        return () => {
+            active = false
+        }
+    }, [status, paymentId, load])
 
     useEffect(() => {
         if (pago === 'ok') setMessage({ type: 'ok', text: 'Recibimos tu pago. Tu plan se activa en cuanto Mercado Pago lo confirme (suele ser inmediato).' })
