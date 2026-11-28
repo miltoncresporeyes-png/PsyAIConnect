@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAdmin } from '@/lib/adminGuard'
 import { prisma } from '@/lib/prisma'
+import { FOUNDER_SLOTS, FOUNDER_TIER, firstFreeSlot, founderBenefitEnd } from '@/lib/founders'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
     try {
-        const session = await getServerSession(authOptions)
-        if (!session || session.user?.role !== 'ADMIN') {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
-        }
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
 
         const { searchParams } = new URL(req.url)
         const format = searchParams.get('format')
@@ -93,10 +91,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await getServerSession(authOptions)
-        if (!session || session.user?.role !== 'ADMIN') {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
-        }
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
 
         const body = await req.json().catch(() => null)
         if (!body) {
@@ -135,53 +131,90 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'El motivo de rechazo es obligatorio' }, { status: 400 })
             }
 
-            const updated = await prisma.founderApplication.update({
-                where: { id },
-                data: {
-                    estado: 'rechazado',
-                    motivoRechazo: motivoRechazo.trim(),
-                },
+            const wasApproved = application.estado === 'aprobado'
+            const [updated] = await prisma.$transaction(async (tx) => {
+                const result = await tx.founderApplication.update({
+                    where: { id },
+                    data: {
+                        estado: 'rechazado',
+                        motivoRechazo: motivoRechazo.trim(),
+                        // Libera el cupo para que lo use otra persona
+                        numeroCupo: null,
+                        fechaInicioBeneficio: null,
+                        fechaFinBeneficio: null,
+                    },
+                })
+                if (wasApproved && application.fechaFinBeneficio) {
+                    await revokeFounderPlan(tx, application.email, application.fechaFinBeneficio)
+                }
+                return [result]
             })
             return NextResponse.json({ success: true, application: updated })
         }
 
         // Action 3: Aprobar perfil fundador
         if (action === 'aprobar') {
-            // Contar fundadores ya aprobados
-            const approvedCount = await prisma.founderApplication.count({
-                where: { estado: 'aprobado' },
-            })
-
-            // Bloquear la aprobación del fundador N° 21
-            if (approvedCount >= 20) {
-                return NextResponse.json(
-                    { error: 'Cupos completos. No es posible aprobar más de 20 profesionales fundadores.' },
-                    { status: 400 }
-                )
+            if (application.estado === 'aprobado') {
+                return NextResponse.json({ error: 'Esta postulación ya está aprobada' }, { status: 400 })
             }
 
-            // Calcular número correlativo de cupo (1 a 20)
-            const numeroCupo = approvedCount + 1
             const fechaInicio = new Date()
-            const fechaFin = new Date(fechaInicio)
-            fechaFin.setFullYear(fechaFin.getFullYear() + 1) // +12 meses
+            const fechaFin = founderBenefitEnd(fechaInicio)
 
-            const updated = await prisma.founderApplication.update({
-                where: { id },
-                data: {
-                    estado: 'aprobado',
-                    numeroCupo,
-                    fechaInicioBeneficio: fechaInicio,
-                    fechaFinBeneficio: fechaFin,
-                    motivoRechazo: null,
-                },
-            })
+            // Hasta 3 intentos: si dos aprobaciones simultáneas eligen el mismo cupo, la restricción única reintenta
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const outcome = await prisma.$transaction(async (tx) => {
+                        const taken = await tx.founderApplication.findMany({
+                            where: { estado: 'aprobado' },
+                            select: { numeroCupo: true },
+                        })
+                        const numeroCupo = firstFreeSlot(taken.map((t) => t.numeroCupo))
+                        if (numeroCupo === null) return null
 
-            return NextResponse.json({
-                success: true,
-                application: updated,
-                message: `Fundador aprobado con éxito. Asignado cupo correlativo N° ${numeroCupo} de 20.`,
-            })
+                        const updated = await tx.founderApplication.update({
+                            where: { id },
+                            data: {
+                                estado: 'aprobado',
+                                numeroCupo,
+                                fechaInicioBeneficio: fechaInicio,
+                                fechaFinBeneficio: fechaFin,
+                                motivoRechazo: null,
+                            },
+                        })
+
+                        // Activa el plan Pro de la cuenta con ese correo (si ya existe)
+                        const professional = await findProfessionalByEmail(tx, application.email)
+                        if (professional) {
+                            await tx.professional.update({
+                                where: { id: professional.id },
+                                data: { subscriptionTier: FOUNDER_TIER, subscriptionEnds: fechaFin, subscriptionCancelledAt: null, isFounder: true },
+                            })
+                        }
+                        return { updated, numeroCupo, accountActivated: Boolean(professional) }
+                    })
+
+                    if (!outcome) {
+                        return NextResponse.json(
+                            { error: `Cupos completos. No es posible aprobar más de ${FOUNDER_SLOTS} profesionales fundadores.` },
+                            { status: 400 }
+                        )
+                    }
+
+                    return NextResponse.json({
+                        success: true,
+                        application: outcome.updated,
+                        accountActivated: outcome.accountActivated,
+                        message: outcome.accountActivated
+                            ? `Fundador aprobado. Cupo N° ${outcome.numeroCupo} de ${FOUNDER_SLOTS} y plan Pro activado por 12 meses.`
+                            : `Fundador aprobado. Cupo N° ${outcome.numeroCupo} de ${FOUNDER_SLOTS}. Aún no existe una cuenta profesional con ese correo, por lo que el plan Pro no se activó.`,
+                    })
+                } catch (err) {
+                    const code = (err as { code?: string })?.code
+                    if (code === 'P2002' && attempt < 2) continue
+                    throw err
+                }
+            }
         }
 
         return NextResponse.json({ error: 'Acción no válida' }, { status: 400 })
@@ -189,4 +222,25 @@ export async function POST(req: NextRequest) {
         console.error('Error updating founder application:', error)
         return NextResponse.json({ error: 'Error al actualizar postulación' }, { status: 500 })
     }
+}
+
+type Tx = Pick<typeof prisma, 'user' | 'professional'>
+
+async function findProfessionalByEmail(tx: Tx, email: string) {
+    const user = await tx.user.findFirst({
+        where: { email: { equals: email, mode: 'insensitive' } },
+        select: { professional: { select: { id: true } } },
+    })
+    return user?.professional ?? null
+}
+
+/** Quita el plan de fundador solo si sigue siendo el que se concedió (no toca planes pagados). */
+async function revokeFounderPlan(tx: Tx, email: string, grantedEnd: Date) {
+    const professional = await findProfessionalByEmail(tx, email)
+    if (!professional) return
+    await tx.professional.update({ where: { id: professional.id }, data: { isFounder: false } })
+    await tx.professional.updateMany({
+        where: { id: professional.id, subscriptionTier: FOUNDER_TIER, subscriptionEnds: grantedEnd },
+        data: { subscriptionTier: 'STARTER', subscriptionEnds: null },
+    })
 }

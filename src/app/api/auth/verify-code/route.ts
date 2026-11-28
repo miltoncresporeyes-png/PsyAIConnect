@@ -1,4 +1,5 @@
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
+import { applyFounderBenefitForEmail } from '@/lib/founderBenefit'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
@@ -20,7 +21,7 @@ function createProfessionalSlug(name: string | null | undefined, userId: string)
     return `${base || 'profesional'}-${userId.slice(0, 6)}`
 }
 
-async function ensureProfessionalProfile(userId: string, name: string | null | undefined) {
+async function ensureProfessionalProfile(userId: string, name: string | null | undefined, email?: string | null) {
     const existing = await prisma.professional.findUnique({
         where: { userId },
         select: { id: true },
@@ -408,7 +409,7 @@ export async function POST(request: Request) {
                 })
 
                 if (updatedUser.role === 'PROFESSIONAL') {
-                    await ensureProfessionalProfile(updatedUser.id, updatedUser.name)
+                    await ensureProfessionalProfile(updatedUser.id, updatedUser.name, updatedUser.email)
                 }
 
                 await prisma.emailVerificationCode.deleteMany({ where: { email } })
@@ -433,7 +434,7 @@ export async function POST(request: Request) {
             })
 
             if (role === 'PROFESSIONAL') {
-                await ensureProfessionalProfile(user.id, user.name)
+                await ensureProfessionalProfile(user.id, user.name, user.email)
             }
 
             await prisma.emailVerificationCode.deleteMany({ where: { email } })
