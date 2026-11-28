@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { Header, Footer } from '@/components/layout'
 import {
     Loader2, Calendar, Clock, DollarSign, Users,
-    Settings, LogOut, ExternalLink, BarChart3, FileText,
+    Settings, LogOut, ExternalLink, BarChart3, FileText, Star,
     Sparkles, ArrowRight, CheckCircle2, ShieldCheck, HeartPulse,
     HelpCircle, ChevronRight, AlertCircle, Compass, Zap
 , CreditCard, Video } from 'lucide-react'
@@ -84,8 +84,11 @@ export default function DashboardPage() {
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login')
+        } else if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
+            // El administrador no tiene vista de paciente ni de profesional: su espacio es /admin
+            router.replace('/admin')
         }
-    }, [status, router])
+    }, [status, session, router])
 
     // Fetch de datos para el profesional
     useEffect(() => {
@@ -256,6 +259,15 @@ export default function DashboardPage() {
     }
 
     if (!session) return null
+
+    // Mientras se redirige al panel de administracion no se dibuja la vista de paciente
+    if (session.user.role === 'ADMIN') {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Loader2 className="w-8 h-8 animate-spin text-teal-700" />
+            </div>
+        )
+    }
 
     const isProfessional = session.user.role === 'PROFESSIONAL'
     const userName = session.user.name?.split(' ')[0] || 'Usuario'
@@ -551,6 +563,23 @@ export default function DashboardPage() {
                                             </h3>
                                             <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
                                                 Configura días y bloques online/presencial
+                                            </p>
+                                        </div>
+                                    </Link>
+
+                                    <Link
+                                        href="/dashboard/reputacion"
+                                        className="group rounded-2xl bg-white p-4 border border-slate-200 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                                            <Star className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-800 transition">
+                                                Mi reputación
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-tight">
+                                                Opiniones, nivel y respuestas
                                             </p>
                                         </div>
                                     </Link>

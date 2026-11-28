@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/adminGuard'
 import { connectWithCode, GoogleMeetError } from '@/lib/googleMeet'
+import { logAdminAction } from '@/lib/adminLogs'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +33,15 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        await connectWithCode(code, guard.adminId)
+        const { accountEmail } = await connectWithCode(code, guard.adminId)
+        await logAdminAction({
+            adminId: guard.adminId,
+            adminName: guard.adminName || undefined,
+            action: 'CONNECT_GOOGLE_MEET',
+            targetType: 'SYSTEM',
+            targetId: 'google-meet',
+            targetEmail: accountEmail || undefined,
+        })
         return back(req, { ok: '1' })
     } catch (err) {
         console.error('[google-meet] callback error:', err)

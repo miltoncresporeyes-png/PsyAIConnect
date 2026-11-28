@@ -55,6 +55,23 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
     log(`[Middleware] Incoming request for: ${pathname}`)
 
+    // ── API de administracion: solo con sesion de ADMIN (segunda barrera; cada ruta tambien valida) ──
+    if (pathname.startsWith('/api/admin')) {
+        // La exportacion de lista de espera tambien admite un token de servicio por cabecera
+        // (ADMIN_EXPORT_TOKEN): ahi la validacion la hace la propia ruta.
+        if (pathname === '/api/admin/export-waitlist' && request.headers.get('authorization')) {
+            return NextResponse.next()
+        }
+        const apiToken = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+        if (!apiToken || apiToken.mfa === false) {
+            return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+        }
+        if (apiToken.role !== 'ADMIN') {
+            return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+        }
+        return NextResponse.next()
+    }
+
     // ── 0. Rewrite locale-prefixed paths to base routes when needed ─────────
     const localeMatch = pathname.match(/^\/(en|fr|pt)(\/.*)?$/)
     if (localeMatch) {
@@ -142,5 +159,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*$).*)',
+        '/api/admin/:path*',
     ],
 }

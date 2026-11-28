@@ -1,38 +1,129 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/adminGuard'
 import { sendEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/adminLogs'
 
 export const dynamic = 'force-dynamic'
+
+/** Detalle de un usuario para el panel: datos, perfil profesional, citas recientes y acciones de administradores. */
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
+    try {
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
+
+        const user = await prisma.user.findUnique({
+            where: { id: params.id },
+            include: {
+                patientProfile: true,
+                professional: true,
+                appointmentsAsPatient: {
+                    orderBy: { scheduledAt: 'desc' },
+                    take: 20,
+                    include: {
+                        payment: { select: { amount: true, status: true } },
+                        professional: { select: { user: { select: { name: true } } } },
+                    },
+                },
+            },
+        })
+        if (!user) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+
+        let professionalStats: { total: number; completed: number; noShow: number; upcoming: number } | null = null
+        let professionalAppointments: {
+            id: string
+            scheduledAt: Date
+            status: string
+            modality: string
+            patientName: string | null
+        }[] = []
+        if (user.professional) {
+            const pid = user.professional.id
+            const now = new Date()
+            const [total, completed, noShow, upcoming, recent] = await Promise.all([
+                prisma.appointment.count({ where: { professionalId: pid } }),
+                prisma.appointment.count({ where: { professionalId: pid, status: 'COMPLETED' } }),
+                prisma.appointment.count({ where: { professionalId: pid, status: 'NO_SHOW' } }),
+                prisma.appointment.count({ where: { professionalId: pid, status: { in: ['PENDING', 'CONFIRMED'] }, scheduledAt: { gte: now } } }),
+                prisma.appointment.findMany({
+                    where: { professionalId: pid },
+                    orderBy: { scheduledAt: 'desc' },
+                    take: 20,
+                    select: { id: true, scheduledAt: true, status: true, modality: true, patient: { select: { name: true } } },
+                }),
+            ])
+            professionalStats = { total, completed, noShow, upcoming }
+            professionalAppointments = recent.map((a) => ({
+                id: a.id,
+                scheduledAt: a.scheduledAt,
+                status: a.status,
+                modality: a.modality,
+                patientName: a.patient.name,
+            }))
+        }
+
+        const history = await prisma.adminLog.findMany({
+            where: { targetId: user.id },
+            orderBy: { createdAt: 'desc' },
+            take: 15,
+            select: { id: true, action: true, adminName: true, details: true, createdAt: true },
+        })
+
+        return NextResponse.json({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            role: user.role,
+            createdAt: user.createdAt,
+            isActive: user.isActive,
+            adminNotes: user.adminNotes,
+            noShowCount: user.noShowCount,
+            patientProfile: user.patientProfile,
+            professional: user.professional
+                ? {
+                      rut: user.professional.rut,
+                      licenseNumber: user.professional.licenseNumber,
+                      professionalType: user.professional.professionalType,
+                      specialties: user.professional.specialties,
+                      verificationStatus: user.professional.verificationStatus,
+                      isPublic: user.professional.isPublic,
+                      subscriptionTier: user.professional.subscriptionTier,
+                      subscriptionEnds: user.professional.subscriptionEnds,
+                      sessionPrice: user.professional.sessionPrice,
+                      sessionDuration: user.professional.sessionDuration,
+                      slug: user.professional.slug,
+                  }
+                : null,
+            professionalStats,
+            professionalAppointments,
+            appointments: user.appointmentsAsPatient.map((a) => ({
+                id: a.id,
+                scheduledAt: a.scheduledAt,
+                status: a.status,
+                modality: a.modality,
+                professionalName: a.professional.user.name,
+                payment: a.payment,
+            })),
+            history,
+        })
+    } catch (error) {
+        console.error('Admin user detail error:', error)
+        return NextResponse.json({ error: 'Error al obtener el usuario' }, { status: 500 })
+    }
+}
 
 export async function PATCH(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
-        const session = await getServerSession(authOptions)
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
+        const adminUser = { id: guard.adminId, name: guard.adminName }
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'No autorizado' },
-                { status: 401 }
-            )
-        }
+        const { action, adminNotes, role } = await request.json()
 
-        const adminUser = await prisma.user.findUnique({
-            where: { id: session.user.id },
-        })
-
-        if (adminUser?.role !== 'ADMIN') {
-            return NextResponse.json(
-                { error: 'Acceso denegado' },
-                { status: 403 }
-            )
-        }
-
-        const { action, adminNotes } = await request.json()
 
         if (!action) {
             return NextResponse.json(
@@ -53,6 +144,12 @@ export async function PATCH(
         }
 
         if (action === 'ban') {
+            if (user.id === adminUser.id) {
+                return NextResponse.json({ error: 'No puedes desactivar tu propia cuenta' }, { status: 400 })
+            }
+            if (user.role === 'ADMIN' && (await prisma.user.count({ where: { role: 'ADMIN', isActive: true } })) <= 1) {
+                return NextResponse.json({ error: 'No puedes desactivar al último administrador' }, { status: 400 })
+            }
             await prisma.user.update({
                 where: { id: params.id },
                 data: { isActive: false },
@@ -105,11 +202,12 @@ export async function PATCH(
                 },
             })
 
-            const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/restablecer-contrasena?token=${resetToken}`
+            const baseUrl = (process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '')
+            const resetUrl = `${baseUrl}/restablecer-contrasena?token=${resetToken}`
 
             await sendEmail({
                 to: user.email,
-                subject: '🔐 Restablecer contraseña - PsyConnect',
+                subject: '🔐 Restablecer contraseña - PsyDoctor',
                 html: `
 <!DOCTYPE html>
 <html>
@@ -177,6 +275,44 @@ export async function PATCH(
             })
 
             return NextResponse.json({ success: true, message: 'Notas actualizadas' })
+        }
+
+        if (action === 'setRole') {
+            if (role !== 'ADMIN' && role !== 'PATIENT' && role !== 'PROFESSIONAL') {
+                return NextResponse.json({ error: 'Rol no válido' }, { status: 400 })
+            }
+            if (user.id === adminUser.id) {
+                return NextResponse.json({ error: 'No puedes cambiar tu propio rol' }, { status: 400 })
+            }
+            if (user.role === role) {
+                return NextResponse.json({ error: 'El usuario ya tiene ese rol' }, { status: 400 })
+            }
+            // Un profesional solo puede serlo si tiene perfil profesional; un administrador deja de serlo volviendo a su rol real
+            if (role === 'PROFESSIONAL') {
+                const hasProfile = await prisma.professional.findUnique({ where: { userId: user.id }, select: { id: true } })
+                if (!hasProfile) {
+                    return NextResponse.json({ error: 'No tiene perfil profesional: no se puede asignar ese rol' }, { status: 400 })
+                }
+            }
+            if (user.role === 'ADMIN' && (await prisma.user.count({ where: { role: 'ADMIN', isActive: true } })) <= 1) {
+                return NextResponse.json({ error: 'No puedes quitar el rol al último administrador' }, { status: 400 })
+            }
+
+            await prisma.user.update({ where: { id: params.id }, data: { role } })
+            await logAdminAction({
+                adminId: adminUser.id,
+                adminName: adminUser.name || undefined,
+                action: 'SET_ROLE',
+                targetType: 'USER',
+                targetId: user.id,
+                targetName: user.name || undefined,
+                targetEmail: user.email,
+                details: { from: user.role, to: role },
+            })
+            return NextResponse.json({
+                success: true,
+                message: `Rol actualizado a ${role}. Surte efecto cuando la persona vuelva a iniciar sesión.`,
+            })
         }
 
         return NextResponse.json(

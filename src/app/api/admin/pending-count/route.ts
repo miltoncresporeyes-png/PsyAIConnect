@@ -1,44 +1,31 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAdmin } from '@/lib/adminGuard'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
     try {
-        const session = await getServerSession(authOptions)
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'No autorizado' },
-                { status: 401 }
-            )
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-        })
-
-        if (user?.role !== 'ADMIN') {
-            return NextResponse.json(
-                { error: 'Acceso denegado' },
-                { status: 403 }
-            )
-        }
-
-        const [pendingProfessionals, pendingFounders] = await Promise.all([
+        const [pendingProfessionals, pendingFounders, newTickets, pendingReviews] = await Promise.all([
             prisma.professional.count({
                 where: { verificationStatus: 'PENDING' },
             }),
             prisma.founderApplication.count({
                 where: { estado: 'pendiente' },
             }),
+            prisma.supportTicket.count({ where: { status: 'NEW' } }),
+            // Opiniones por revisar + publicadas con reportes abiertos del profesional
+            prisma.review.count({ where: { OR: [{ status: 'PENDING_REVIEW' }, { status: 'PUBLISHED', reports: { some: { status: 'OPEN' } } }] } }),
         ])
 
         return NextResponse.json({
             pendingProfessionals,
             pendingFounders,
+            newTickets,
+            pendingReviews,
         })
     } catch (error) {
         console.error('Pending count error:', error)

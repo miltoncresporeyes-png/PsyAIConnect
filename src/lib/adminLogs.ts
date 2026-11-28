@@ -7,8 +7,17 @@ export type AdminAction =
     | 'UNBAN_USER'
     | 'RESET_PASSWORD'
     | 'UPDATE_NOTES'
+    | 'SET_ROLE'
+    | 'CONNECT_GOOGLE_MEET'
+    | 'DISCONNECT_GOOGLE_MEET'
+    | 'UPDATE_TICKET'
+    | 'UPDATE_PAYMENT_METHOD'
+    | 'REMOVE_REVIEW'
+    | 'APPROVE_REVIEW'
+    | 'RESTORE_REVIEW'
+    | 'DISMISS_REVIEW_REPORT'
 
-export type TargetType = 'USER' | 'PROFESSIONAL'
+export type TargetType = 'USER' | 'PROFESSIONAL' | 'SYSTEM'
 
 interface LogAdminActionParams {
     adminId: string

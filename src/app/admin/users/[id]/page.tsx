@@ -1,26 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
+import { useState } from 'react'
 import Link from 'next/link'
-import {
-    Loader2,
-    ArrowLeft,
-    User,
-    Phone,
-    Mail,
-    Calendar,
-    CreditCard,
-    AlertTriangle,
-    Ban,
-    RotateCcw,
-    Save,
-    Stethoscope,
-    Shield,
-    ShieldOff
-} from 'lucide-react'
-import { BackButton } from '../../../../components/ui/BackButton'
+import { useParams } from 'next/navigation'
+import { ArrowLeft, Ban, KeyRound, RotateCcw, Save, ShieldCheck } from 'lucide-react'
+import { useAdminData } from '@/components/admin/useAdminData'
+import { Card, ErrorBox, Pill, Spinner, Td, Th, type PillTone } from '@/components/admin/ui'
+import { ROLE_LABELS, STATUS_LABELS, TIER_LABELS, VERIFICATION_LABELS, formatCLP, formatDate, formatDateTime, formatNumber } from '@/components/admin/format'
 
 interface UserDetail {
     id: string
@@ -31,13 +17,8 @@ interface UserDetail {
     createdAt: string
     isActive: boolean
     adminNotes: string | null
-    patientProfile: {
-        rut: string | null
-        birthDate: string | null
-        gender: string | null
-        region: string | null
-        comuna: string | null
-    } | null
+    noShowCount: number
+    patientProfile: { region: string | null; comuna: string | null } | null
     professional: {
         rut: string | null
         licenseNumber: string | null
@@ -45,400 +26,235 @@ interface UserDetail {
         specialties: string[]
         verificationStatus: string
         isPublic: boolean
+        subscriptionTier: string
+        subscriptionEnds: string | null
+        sessionPrice: number
+        sessionDuration: number
+        slug: string
     } | null
+    professionalStats: { total: number; completed: number; noShow: number; upcoming: number } | null
+    professionalAppointments: { id: string; scheduledAt: string; status: string; modality: string; patientName: string | null }[]
     appointments: {
         id: string
         scheduledAt: string
         status: string
         modality: string
         professionalName: string | null
-        payment: {
-            amount: number
-            status: string
-        } | null
+        payment: { amount: number; status: string } | null
     }[]
+    history: { id: string; action: string; adminName: string | null; details: Record<string, unknown> | null; createdAt: string }[]
 }
 
-const roleLabels: Record<string, string> = {
-    PATIENT: 'Paciente',
-    PROFESSIONAL: 'Profesional',
-    ADMIN: 'Administrador',
+const statusTone: Record<string, PillTone> = { COMPLETED: 'ok', CONFIRMED: 'info', PENDING: 'warn', CANCELLED: 'neutral', NO_SHOW: 'bad' }
+const ACTION_LABELS: Record<string, string> = {
+    BAN_USER: 'Desactivó la cuenta',
+    UNBAN_USER: 'Reactivó la cuenta',
+    RESET_PASSWORD: 'Envió restablecimiento de contraseña',
+    UPDATE_NOTES: 'Actualizó las notas internas',
+    SET_ROLE: 'Cambió el rol',
+    APPROVE_PROFESSIONAL: 'Aprobó al profesional',
+    REJECT_PROFESSIONAL: 'Rechazó al profesional',
 }
 
-const statusLabels: Record<string, { label: string; class: string }> = {
-    PENDING: { label: 'Pendiente', class: 'bg-yellow-100 text-yellow-700' },
-    CONFIRMED: { label: 'Confirmada', class: 'bg-blue-100 text-blue-700' },
-    COMPLETED: { label: 'Completada', class: 'bg-green-100 text-green-700' },
-    CANCELLED: { label: 'Cancelada', class: 'bg-red-100 text-red-700' },
-    NO_SHOW: { label: 'No asistió', class: 'bg-gray-100 text-gray-700' },
-}
+export default function AdminUserDetailPage() {
+    const { id } = useParams<{ id: string }>()
+    const { data, error, loading, reload } = useAdminData<UserDetail>(id ? `/api/admin/users/${id}` : null)
+    const [notes, setNotes] = useState<string | null>(null)
+    const [busy, setBusy] = useState(false)
+    const [message, setMessage] = useState<{ type: 'ok' | 'error'; text: string } | null>(null)
+    const [newRole, setNewRole] = useState('')
 
-const paymentStatusLabels: Record<string, { label: string; class: string }> = {
-    PENDING: { label: 'Pendiente', class: 'bg-yellow-100 text-yellow-700' },
-    COMPLETED: { label: 'Pagado', class: 'bg-green-100 text-green-700' },
-    REFUNDED: { label: 'Reembolsado', class: 'bg-purple-100 text-purple-700' },
-    FAILED: { label: 'Fallido', class: 'bg-red-100 text-red-700' },
-}
+    if (loading && !data) return <Spinner />
+    if (error && !data) return <ErrorBox message={error} />
+    if (!data) return null
 
-export default function UserDetailPage() {
-    const { data: session, status } = useSession()
-    const router = useRouter()
-    const params = useParams()
-    const userId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : undefined
-    const [user, setUser] = useState<UserDetail | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [adminNotes, setAdminNotes] = useState('')
-    const [savingNotes, setSavingNotes] = useState(false)
-    const [actionLoading, setActionLoading] = useState<string | null>(null)
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.push('/login')
-        } else if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
-            router.push('/403')
-        }
-    }, [status, session, router])
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                if (!userId) return
-                const response = await fetch(`/api/admin/users/${userId}`)
-                if (response.ok) {
-                    const data = await response.json()
-                    setUser(data)
-                    setAdminNotes(data.adminNotes || '')
-                }
-            } catch (error) {
-                console.error('Error fetching user:', error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        if (status === 'authenticated' && session?.user?.role === 'ADMIN' && userId) {
-            fetchUser()
-        }
-    }, [status, session, userId])
-
-    const handleSaveNotes = async () => {
-        setSavingNotes(true)
+    const act = async (body: Record<string, unknown>, confirmText?: string) => {
+        if (confirmText && !confirm(confirmText)) return
+        setBusy(true)
+        setMessage(null)
         try {
-            if (!userId) return
-            const response = await fetch(`/api/admin/users/${userId}`, {
+            const res = await fetch(`/api/admin/users/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'updateNotes', adminNotes }),
+                body: JSON.stringify(body),
             })
-            if (response.ok) {
-                setMessage({ type: 'success', text: 'Notas guardadas' })
-                setTimeout(() => setMessage(null), 3000)
-            }
-        } catch (error) {
-            console.error('Error saving notes:', error)
-            setMessage({ type: 'error', text: 'Error al guardar notas' })
+            const json = await res.json().catch(() => ({}))
+            if (!res.ok) throw new Error(json.error || 'No se pudo completar la acción')
+            setMessage({ type: 'ok', text: json.message || 'Listo' })
+            reload()
+        } catch (err) {
+            setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Error' })
         } finally {
-            setSavingNotes(false)
+            setBusy(false)
         }
     }
 
-    const handleBan = async () => {
-        if (!confirm(`¿Estás seguro de banear a ${user?.name || user?.email}?`)) return
-        setActionLoading('ban')
-        try {
-            if (!userId) return
-            const response = await fetch(`/api/admin/users/${userId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: user?.isActive ? 'ban' : 'unban' }),
-            })
-            if (response.ok) {
-                setUser(prev => prev ? { ...prev, isActive: !prev.isActive } : null)
-                setMessage({ type: 'success', text: user?.isActive ? 'Usuario baneado' : 'Usuario desbaneado' })
-                setTimeout(() => setMessage(null), 3000)
-            }
-        } catch (error) {
-            console.error('Error banning user:', error)
-        } finally {
-            setActionLoading(null)
-        }
-    }
-
-    const handleResetPassword = async () => {
-        setActionLoading('reset')
-        try {
-            if (!userId) return
-            const response = await fetch(`/api/admin/users/${userId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'resetPassword' }),
-            })
-            if (response.ok) {
-                setMessage({ type: 'success', text: 'Email de recuperación enviado' })
-                setTimeout(() => setMessage(null), 3000)
-            }
-        } catch (error) {
-            console.error('Error resetting password:', error)
-        } finally {
-            setActionLoading(null)
-        }
-    }
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('es-CL', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        })
-    }
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP',
-            maximumFractionDigits: 0,
-        }).format(amount)
-    }
-
-    if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-[400px] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            </div>
-        )
-    }
-
-    if (!user) {
-        return (
-            <div className="text-center py-12">
-                <p className="text-gray-500">Usuario no encontrado</p>
-                <Link href="/admin/usuarios" className="text-blue-600 hover:underline mt-2 inline-block">
-                    Volver a usuarios
-                </Link>
-            </div>
-        )
-    }
+    const notesValue = notes ?? data.adminNotes ?? ''
+    const pro = data.professional
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <BackButton href="/admin/usuarios" variant="chevron" />
-                <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        {user.name || 'Sin nombre'}
-                    </h1>
-                    <p className="text-gray-500">{user.email}</p>
+        <div className="space-y-4">
+            <Link href="/admin/usuarios" className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">
+                <ArrowLeft className="h-4 w-4" aria-hidden /> Usuarios
+            </Link>
+
+            <header className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h1 className="text-2xl font-semibold text-slate-900">{data.name || 'Sin nombre'}</h1>
+                    <p className="text-sm text-slate-500">{data.email}{data.phone ? ` · ${data.phone}` : ''}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Pill tone={data.role === 'ADMIN' ? 'info' : 'neutral'}>{ROLE_LABELS[data.role] ?? data.role}</Pill>
+                        {data.isActive ? <Pill tone="ok">Activo</Pill> : <Pill tone="bad">Desactivado</Pill>}
+                        {data.noShowCount > 0 && <Pill tone="warn">{data.noShowCount} inasistencia(s)</Pill>}
+                        <span className="text-xs text-slate-500">Registrado el {formatDate(data.createdAt)}</span>
+                    </div>
                 </div>
-                <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                    user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                }`}>
-                    {user.isActive ? 'Activo' : 'Inactivo'}
-                </span>
-            </div>
+            </header>
 
             {message && (
-                <div className={`p-3 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <p role={message.type === 'error' ? 'alert' : 'status'} className={`rounded-xl px-4 py-3 text-sm ${message.type === 'ok' ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`}>
                     {message.text}
-                </div>
+                </p>
             )}
 
-            <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-xl border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <User className="w-5 h-5" />
-                            Datos Personales
-                        </h2>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <p className="text-sm text-gray-500">Nombre</p>
-                                <p className="font-medium text-gray-900">{user.name || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">RUT</p>
-                                <p className="font-medium text-gray-900">{user.patientProfile?.rut || user.professional?.rut || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Email</p>
-                                <p className="font-medium text-gray-900 flex items-center gap-2">
-                                    <Mail className="w-4 h-4 text-gray-400" />
-                                    {user.email}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Teléfono</p>
-                                <p className="font-medium text-gray-900 flex items-center gap-2">
-                                    <Phone className="w-4 h-4 text-gray-400" />
-                                    {user.phone || '-'}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Rol</p>
-                                <p className="font-medium text-gray-900">{roleLabels[user.role] || user.role}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Fecha de registro</p>
-                                <p className="font-medium text-gray-900 flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-gray-400" />
-                                    {formatDate(user.createdAt)}
-                                </p>
-                            </div>
-                        </div>
-
-                        {user.professional && (
-                            <div className="mt-6 pt-6 border-t border-gray-200">
-                                <h3 className="text-md font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                    <Stethoscope className="w-5 h-5" />
-                                    Datos Profesionales
-                                </h3>
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <p className="text-sm text-gray-500">Tipo</p>
-                                        <p className="font-medium text-gray-900">{user.professional.professionalType}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Licencia</p>
-                                        <p className="font-medium text-gray-900">{user.professional.licenseNumber || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Especialidades</p>
-                                        <div className="flex flex-wrap gap-1 mt-1">
-                                            {user.professional.specialties.map(s => (
-                                                <span key={s} className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
-                                                    {s}
-                                                </span>
-                                            ))}
+            <div className="grid gap-4 lg:grid-cols-3">
+                <div className="space-y-4 lg:col-span-2">
+                    {pro && (
+                        <Card title="Perfil profesional" action={<Link href={`/profesional/${pro.slug}`} target="_blank" className="text-xs font-medium text-blue-700 hover:underline">Ver perfil público</Link>}>
+                            <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                <div><dt className="text-xs text-slate-500">Verificación</dt><dd><Pill tone={pro.verificationStatus === 'VERIFIED' ? 'ok' : pro.verificationStatus === 'PENDING' ? 'warn' : 'bad'}>{VERIFICATION_LABELS[pro.verificationStatus]}</Pill></dd></div>
+                                <div><dt className="text-xs text-slate-500">Visible en el buscador</dt><dd className="font-medium">{pro.isPublic ? 'Sí' : 'No'}</dd></div>
+                                <div><dt className="text-xs text-slate-500">Plan</dt><dd className="font-medium">{TIER_LABELS[pro.subscriptionTier] ?? pro.subscriptionTier}{pro.subscriptionEnds ? ` · hasta ${formatDate(pro.subscriptionEnds)}` : ''}</dd></div>
+                                <div><dt className="text-xs text-slate-500">Sesión</dt><dd className="font-medium">{formatCLP(pro.sessionPrice)} · {pro.sessionDuration} min</dd></div>
+                                <div><dt className="text-xs text-slate-500">RUT</dt><dd className="font-medium">{pro.rut || '—'}</dd></div>
+                                <div><dt className="text-xs text-slate-500">Registro Superintendencia</dt><dd className="font-medium">{pro.licenseNumber || '—'}</dd></div>
+                                <div className="col-span-2"><dt className="text-xs text-slate-500">Especialidades</dt><dd className="font-medium">{pro.specialties.length ? pro.specialties.join(', ') : '—'}</dd></div>
+                            </dl>
+                            {data.professionalStats && (
+                                <div className="mt-4 grid grid-cols-4 gap-2 border-t border-slate-100 pt-3 text-center">
+                                    {[
+                                        ['Citas', data.professionalStats.total],
+                                        ['Completadas', data.professionalStats.completed],
+                                        ['Inasistencias', data.professionalStats.noShow],
+                                        ['Próximas', data.professionalStats.upcoming],
+                                    ].map(([label, value]) => (
+                                        <div key={label as string}>
+                                            <p className="text-lg font-semibold text-slate-900 tabular-nums">{formatNumber(value as number)}</p>
+                                            <p className="text-[11px] text-slate-500">{label}</p>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Estado verificación</p>
-                                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded mt-1 ${
-                                            user.professional.verificationStatus === 'VERIFIED' 
-                                                ? 'bg-green-100 text-green-700' 
-                                                : 'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                            {user.professional.verificationStatus}
-                                        </span>
-                                    </div>
+                                    ))}
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </Card>
+                    )}
 
-                    <div className="bg-white rounded-xl border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <Calendar className="w-5 h-5" />
-                            Historial de Citas
-                        </h2>
-                        {user.appointments.length === 0 ? (
-                            <p className="text-gray-500 text-sm">No hay citas registradas</p>
-                        ) : (
-                            <div className="space-y-3">
-                                {user.appointments.map(apt => (
-                                    <div key={apt.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{apt.professionalName}</p>
-                                            <p className="text-sm text-gray-500">{formatDate(apt.scheduledAt)}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded ${statusLabels[apt.status]?.class}`}>
-                                                {statusLabels[apt.status]?.label || apt.status}
-                                            </span>
-                                            {apt.payment && (
-                                                <p className="text-sm text-gray-500 mt-1">
-                                                    {formatCurrency(apt.payment.amount)} - 
-                                                    <span className={`ml-1 ${paymentStatusLabels[apt.payment.status]?.class.replace('bg-', 'text-')}`}>
-                                                        {paymentStatusLabels[apt.payment.status]?.label || apt.payment.status}
-                                                    </span>
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-6">
-                    <div className="bg-white rounded-xl border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <Shield className="w-5 h-5" />
-                            Acciones
-                        </h2>
-                        <div className="space-y-3">
-                            <button
-                                onClick={handleBan}
-                                disabled={actionLoading === 'ban'}
-                                className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                                    user.isActive
-                                        ? 'bg-red-600 text-white hover:bg-red-700'
-                                        : 'bg-green-600 text-white hover:bg-green-700'
-                                } disabled:opacity-50`}
-                            >
-                                {actionLoading === 'ban' ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : user.isActive ? (
-                                    <>
-                                        <Ban className="w-4 h-4" />
-                                        Banear Usuario
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShieldOff className="w-4 h-4" />
-                                        Desbanear Usuario
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                onClick={handleResetPassword}
-                                disabled={actionLoading === 'reset'}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                            >
-                                {actionLoading === 'reset' ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <>
-                                        <RotateCcw className="w-4 h-4" />
-                                        Resetear Password
-                                    </>
-                                )}
-                            </button>
+                    <Card title={pro ? 'Citas del profesional (últimas 20)' : 'Citas como paciente (últimas 20)'} className="!p-0 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[520px]">
+                                <thead className="border-y border-slate-200 bg-slate-50">
+                                    <tr><Th>Fecha</Th><Th>{pro ? 'Paciente' : 'Profesional'}</Th><Th>Modalidad</Th><Th>Estado</Th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {(pro
+                                        ? data.professionalAppointments.map((a) => ({ id: a.id, scheduledAt: a.scheduledAt, who: a.patientName, status: a.status, modality: a.modality }))
+                                        : data.appointments.map((a) => ({ id: a.id, scheduledAt: a.scheduledAt, who: a.professionalName, status: a.status, modality: a.modality }))
+                                    ).map((a) => (
+                                        <tr key={a.id}>
+                                            <Td className="whitespace-nowrap">{formatDateTime(a.scheduledAt)}</Td>
+                                            <Td>{a.who || '—'}</Td>
+                                            <Td>{a.modality === 'ONLINE' ? 'Online' : 'Presencial'}</Td>
+                                            <Td><Pill tone={statusTone[a.status] ?? 'neutral'}>{STATUS_LABELS[a.status] ?? a.status}</Pill></Td>
+                                        </tr>
+                                    ))}
+                                    {(pro ? data.professionalAppointments : data.appointments).length === 0 && (
+                                        <tr><Td className="py-8 text-center text-slate-500">Sin citas registradas.</Td></tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                    </Card>
 
-                    <div className="bg-white rounded-xl border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <AlertTriangle className="w-5 h-5" />
-                            Notas Internas
-                        </h2>
-                        <p className="text-sm text-gray-500 mb-3">
-                            Notas privadas solo visibles para administradores
-                        </p>
+                    <Card title="Notas internas" subtitle="Solo las ven los administradores">
                         <textarea
-                            value={adminNotes}
-                            onChange={(e) => setAdminNotes(e.target.value)}
-                            placeholder="Ej: Cliente VIP, Usuario conflictivo, etc."
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                            value={notesValue}
+                            onChange={(e) => setNotes(e.target.value)}
                             rows={4}
+                            className="w-full rounded-lg border border-slate-200 p-3 text-sm focus:border-slate-400 focus:outline-none"
+                            placeholder="Observaciones, contexto de soporte, acuerdos…"
                         />
                         <button
-                            onClick={handleSaveNotes}
-                            disabled={savingNotes}
-                            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            type="button"
+                            disabled={busy || notes === null}
+                            onClick={() => act({ action: 'updateNotes', adminNotes: notesValue })}
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2.5 sm:py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
                         >
-                            {savingNotes ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <>
-                                    <Save className="w-4 h-4" />
-                                    Guardar Notas
-                                </>
-                            )}
+                            <Save className="h-3.5 w-3.5" aria-hidden /> Guardar notas
                         </button>
-                    </div>
+                    </Card>
+                </div>
+
+                <div className="space-y-4">
+                    <Card title="Acciones">
+                        <div className="space-y-2">
+                            {data.isActive ? (
+                                <button type="button" disabled={busy} onClick={() => act({ action: 'ban' }, '¿Desactivar esta cuenta? No podrá iniciar sesión.')}
+                                    className="flex w-full items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50">
+                                    <Ban className="h-4 w-4" aria-hidden /> Desactivar cuenta
+                                </button>
+                            ) : (
+                                <button type="button" disabled={busy} onClick={() => act({ action: 'unban' })}
+                                    className="flex w-full items-center gap-2 rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50">
+                                    <RotateCcw className="h-4 w-4" aria-hidden /> Reactivar cuenta
+                                </button>
+                            )}
+                            <button type="button" disabled={busy} onClick={() => act({ action: 'resetPassword' }, '¿Enviar un correo para restablecer la contraseña?')}
+                                className="flex w-full items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                                <KeyRound className="h-4 w-4" aria-hidden /> Restablecer contraseña
+                            </button>
+                        </div>
+                    </Card>
+
+                    <Card title="Rol" subtitle="El cambio surte efecto cuando la persona vuelve a iniciar sesión">
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={newRole}
+                                onChange={(e) => setNewRole(e.target.value)}
+                                aria-label="Nuevo rol"
+                                className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2.5 sm:py-1.5 text-sm"
+                            >
+                                <option value="">Rol actual: {ROLE_LABELS[data.role] ?? data.role}</option>
+                                {(['PATIENT', 'PROFESSIONAL', 'ADMIN'] as const).filter((r) => r !== data.role).map((r) => (
+                                    <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+                                ))}
+                            </select>
+                            <button
+                                type="button"
+                                disabled={busy || !newRole}
+                                onClick={() => act({ action: 'setRole', role: newRole }, `¿Cambiar el rol a ${ROLE_LABELS[newRole]}? ${newRole === 'ADMIN' ? 'Tendrá acceso total al panel de administración.' : ''}`)}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2.5 sm:py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                            >
+                                <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Aplicar
+                            </button>
+                        </div>
+                    </Card>
+
+                    <Card title="Historial de acciones">
+                        {data.history.length === 0 ? (
+                            <p className="text-xs text-slate-500">Sin acciones de administradores sobre esta cuenta.</p>
+                        ) : (
+                            <ul className="space-y-3">
+                                {data.history.map((h) => (
+                                    <li key={h.id} className="text-xs">
+                                        <p className="font-medium text-slate-900">{ACTION_LABELS[h.action] ?? h.action}</p>
+                                        <p className="text-slate-500">
+                                            {h.adminName || 'Administrador'} · {formatDateTime(h.createdAt)}
+                                            {h.action === 'SET_ROLE' && h.details ? ` · ${String(h.details.from)} → ${String(h.details.to)}` : ''}
+                                        </p>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Card>
                 </div>
             </div>
         </div>
