@@ -29,7 +29,7 @@ export const PENDING_EXPIRE_HOURS = 2
 
 const HOUR = 60 * 60 * 1000
 
-function baseUrl() {
+export function baseUrl() {
     return process.env.NEXTAUTH_URL || 'http://localhost:3000'
 }
 
@@ -52,7 +52,7 @@ function fmtTime(d: Date) {
     })
 }
 
-function layout(title: string, body: string, ctaLabel?: string, ctaUrl?: string) {
+export function layout(title: string, body: string, ctaLabel?: string, ctaUrl?: string) {
     const cta =
         ctaLabel && ctaUrl
             ? `<p style="margin:24px 0"><a href="${ctaUrl}" style="background:#0f766e;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600">${ctaLabel}</a></p>`

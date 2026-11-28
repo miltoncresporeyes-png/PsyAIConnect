@@ -16,6 +16,7 @@ import {
   Loader2,
   ExternalLink,
 } from 'lucide-react'
+import { formatCLP } from '@/lib/format'
 
 interface PaymentItem {
   id: string
@@ -141,7 +142,7 @@ export default function PagosYBoletasPage() {
                     </div>
 
                     <p className="text-xs text-slate-500">
-                      Fecha: {dateStr} • Monto: ${(p.amount || 0).toLocaleString('es-CL')} CLP
+                      Fecha: {dateStr} • Monto: {formatCLP((p.amount || 0))} CLP
                     </p>
                   </div>
 

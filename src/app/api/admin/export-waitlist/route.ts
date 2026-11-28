@@ -19,12 +19,12 @@ export async function GET(req: NextRequest) {
     const authHeader = req.headers.get('authorization')
     const adminToken = process.env.ADMIN_EXPORT_TOKEN
 
+    // El token de exportacion solo se acepta por cabecera (en la URL quedaria en los registros)
     const isAuthorized =
         (session?.user && (session.user as any).role === 'ADMIN') ||
-        (adminToken && authHeader === `Bearer ${adminToken}`) ||
-        (adminToken && req.nextUrl.searchParams.get('token') === adminToken)
+        (adminToken && authHeader === `Bearer ${adminToken}`)
 
-    if (!isAuthorized && process.env.NODE_ENV === 'production') {
+    if (!isAuthorized) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 

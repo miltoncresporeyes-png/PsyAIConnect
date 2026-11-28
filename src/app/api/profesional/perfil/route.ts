@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { applyFounderBenefitForEmail } from '@/lib/founderBenefit'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -87,6 +88,8 @@ export async function POST(request: Request) {
                     isPublic: true,
                 },
             })
+
+            await applyFounderBenefitForEmail(user.email)
 
             // Update user role if not already professional
             await prisma.user.update({

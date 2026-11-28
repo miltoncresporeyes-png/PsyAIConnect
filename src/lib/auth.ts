@@ -1,4 +1,5 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import { applyFounderBenefitForEmail } from '@/lib/founderBenefit'
 import { type NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -22,6 +23,9 @@ function createProfessionalSlug(name: string | null | undefined, userId: string)
         .replace(/\s+/g, "-")
     return `${base || "profesional"}-${userId.slice(0, 6)}`
 }
+
+/** Cada cuanto se revalida rol y estado del usuario contra la base de datos. */
+const SESSION_RECHECK_MS = 60 * 1000
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma as any),
@@ -195,9 +199,33 @@ export const authOptions: NextAuthOptions = {
                 }
             }
 
+            // Revalida rol y estado contra la BD como maximo cada minuto: un usuario
+            // desactivado o degradado pierde el acceso sin esperar a que expire el JWT.
+            if (token.id && !user && (!token.checkedAt || Date.now() - token.checkedAt > SESSION_RECHECK_MS)) {
+                try {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: token.id as string },
+                        select: { role: true, isActive: true },
+                    })
+                    if (!dbUser || dbUser.isActive === false) {
+                        token.deactivated = true
+                    } else {
+                        token.deactivated = false
+                        token.role = dbUser.role
+                    }
+                    token.checkedAt = Date.now()
+                } catch (error) {
+                    // Ante un fallo de BD se conserva la sesion y se reintenta en la siguiente lectura
+                    console.error("[auth] No se pudo revalidar la sesion:", error)
+                }
+            }
+
             return token
         },
         async session({ session, token }) {
+            if (token.deactivated) {
+                return { expires: session.expires, deactivated: true } as unknown as typeof session
+            }
             // Con el segundo paso pendiente la sesion no expone usuario: asi las
             // rutas de API que exigen session.user responden 401 hasta confirmar.
             if (token.mfa === false) {

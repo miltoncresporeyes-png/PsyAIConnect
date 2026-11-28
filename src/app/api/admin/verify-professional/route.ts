@@ -1,6 +1,5 @@
-﻿import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/adminGuard'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/adminLogs'
@@ -9,25 +8,8 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
     try {
-        const session = await getServerSession(authOptions)
-
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'No autorizado' },
-                { status: 401 }
-            )
-        }
-
-        const adminUser = await prisma.user.findUnique({
-            where: { id: session.user.id },
-        })
-
-        if (adminUser?.role !== 'ADMIN') {
-            return NextResponse.json(
-                { error: 'Acceso denegado' },
-                { status: 403 }
-            )
-        }
+        const guard = await requireAdmin()
+        if ('error' in guard) return guard.error
 
         const { professionalId, action, rejectionReason } = await request.json()
 
@@ -84,7 +66,7 @@ export async function POST(request: Request) {
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Tu cuenta ha sido verificada</p>
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <h2 style="color: #1f2937; margin-top: 0;">Hola ${professional.user.name || 'Profesional'} ðŸ‘‹</h2>
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${professional.user.name || 'Profesional'}</h2>
         <p style="color: #4b5563;">¡Buenas noticias! Tu cuenta de profesional en <strong>PsyDoctor</strong> ha sido <strong>verificada exitosamente</strong>.</p>
         <p style="color: #4b5563;">Ahora puedes:</p>
         <ul style="color: #4b5563; line-height: 2;">
@@ -115,8 +97,8 @@ export async function POST(request: Request) {
             })
 
             await logAdminAction({
-                adminId: adminUser.id,
-                adminName: adminUser.name || undefined,
+                adminId: guard.adminId,
+                adminName: guard.adminName ?? undefined,
                 action: 'APPROVE_PROFESSIONAL',
                 targetType: 'PROFESSIONAL',
                 targetId: professional.id,
@@ -160,8 +142,8 @@ export async function POST(request: Request) {
             })
 
             await logAdminAction({
-                adminId: adminUser.id,
-                adminName: adminUser.name || undefined,
+                adminId: guard.adminId,
+                adminName: guard.adminName ?? undefined,
                 action: 'REJECT_PROFESSIONAL',
                 targetType: 'PROFESSIONAL',
                 targetId: professional.id,

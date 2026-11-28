@@ -1,12 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, Shield, Check, Users } from 'lucide-react'
-import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
 
 export function CTASection() {
-    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false)
 
     return (
         <section 
@@ -45,14 +43,13 @@ export function CTASection() {
                     </div>
 
                     <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-                        <button 
-                            type="button"
-                            onClick={() => setIsWaitlistOpen(true)} 
+                        <Link
+                            href="/profesionales"
                             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 font-semibold text-slate-900 transition-all shadow-lg hover:-translate-y-0.5 hover:bg-slate-100 cursor-pointer"
                         >
-                            <span>Avísame cuando abran</span>
+                            <span>Buscar profesional</span>
                             <ArrowRight className="w-5 h-5" aria-hidden="true" />
-                        </button>
+                        </Link>
                         <Link 
                             href="/registro?tipo=profesional" 
                             className="inline-flex items-center justify-center rounded-2xl border border-white/25 px-8 py-4 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
@@ -108,10 +105,6 @@ export function CTASection() {
                 </div>
             </div>
 
-            <PatientWaitlistModal
-                isOpen={isWaitlistOpen}
-                onClose={() => setIsWaitlistOpen(false)}
-            />
         </section>
     )
 }

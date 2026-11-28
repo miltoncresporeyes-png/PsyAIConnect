@@ -1,15 +1,10 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { formatCLP } from '@/lib/format'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
-export function formatPrice(amount: number): string {
-    return new Intl.NumberFormat('es-CL', {
-        style: 'currency',
-        currency: 'CLP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount)
-}
+/** @deprecated usa formatCLP de '@/lib/format' */
+export const formatPrice = (amount: number): string => formatCLP(amount)

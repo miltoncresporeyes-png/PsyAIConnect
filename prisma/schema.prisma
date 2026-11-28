@@ -73,23 +73,25 @@ model LoginChallenge {
 }
 
 model User {
-  id                    String          @id @default(cuid())
-  email                 String          @unique
+  id                    String                 @id @default(cuid())
+  reviewsWritten        Review[]               @relation("ReviewAuthor")
+  email                 String                 @unique
   emailVerified         DateTime?
   name                  String?
   password              String?
   phone                 String?
   image                 String?
-  role                  UserRole        @default(PATIENT)
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-  profileCompleted      Boolean         @default(false)
-  noShowCount           Int             @default(0) // Inasistencias registradas como paciente (reputacion)
-  isActive             Boolean         @default(true)
-  adminNotes           String?         // Notas internas del admin
+  role                  UserRole               @default(PATIENT)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  profileCompleted      Boolean                @default(false)
+  noShowCount           Int                    @default(0) // Inasistencias registradas como paciente (reputacion)
+  isActive              Boolean                @default(true)
+  adminNotes            String? // Notas internas del admin
   accounts              Account[]
-  appointmentsAsPatient Appointment[]   @relation("PatientAppointments")
-  conversations         Conversation[]  @relation("ConversationPatient")
+  appointmentsAsPatient Appointment[]          @relation("PatientAppointments")
+  supportTickets        SupportTicket[]
+  conversations         Conversation[]         @relation("ConversationPatient")
   consents              ConsentLog[]
   patientProfile        PatientProfile?
   professional          Professional?
@@ -136,55 +138,64 @@ model EmergencyContact {
 }
 
 model Professional {
-  id                     String             @id @default(cuid())
-  userId                 String             @unique
-  rut                    String?
-  professionalType       ProfessionalType
-  licenseNumber          String?
-  licensePdfUrl          String?  // URL del PDF del título profesional
-  bio                    String?
-  slug                   String             @unique
-  specialties            String[]
-  modality               Modality           @default(BOTH)
-  sessionPrice           Int
-  sessionDuration        Int                @default(50)
-  profileImageUrl        String?
-  verificationStatus     VerificationStatus @default(PENDING)
-  verifiedAt             DateTime?
-  subscriptionTier       SubscriptionTier   @default(STARTER)
-  subscriptionEnds       DateTime?
+  id                      String                         @id @default(cuid())
+  userId                  String                         @unique
+  rut                     String?
+  professionalType        ProfessionalType
+  licenseNumber           String?
+  licensePdfUrl           String? // URL del PDF del título profesional
+  bio                     String?
+  slug                    String                         @unique
+  specialties             String[]
+  modality                Modality                       @default(BOTH)
+  sessionPrice            Int
+  sessionDuration         Int                            @default(50)
+  profileImageUrl         String?
+  verificationStatus      VerificationStatus             @default(PENDING)
+  verifiedAt              DateTime?
+  subscriptionTier        SubscriptionTier               @default(STARTER)
+  subscriptionEnds        DateTime?
   subscriptionCancelledAt DateTime? // Baja de la renovacion: conserva el plan hasta subscriptionEnds
-  isActive               Boolean            @default(true)
-  isPublic               Boolean            @default(false)
-  createdAt              DateTime           @default(now())
-  updatedAt              DateTime           @updatedAt
-  comuna                 String?
-  officeAddress          String?
-  region                 String?
-  acceptedPaymentMethods String[]  // IDs de src/lib/paymentMethods.ts
-  paymentNotes           String?   // Indicaciones de pago del profesional (cuando y como cobra)
-  meetingUrl             String?   // Enlace de videollamada del profesional (Meet/Zoom/Teams). Privado: nunca se expone en listados
+  isFounder               Boolean                        @default(false) // Fundador activo: insignia visible junto al nivel
+  ratingScore             Float? // Promedio bayesiano (src/lib/reputation.ts)
+  ratingCount             Int                            @default(0)
+  reputationTier          String                         @default("NEW") // NEW | TRUSTED | OUTSTANDING | EXCELLENCE
+  attendanceRate          Float?
+  responseHours           Float? // Mediana de horas en responder solicitudes de cita (ultimos 12 meses)
+  reputationUpdatedAt     DateTime?
+  reviews                 Review[]
+  renewalReminderFor      DateTime? // Valor de subscriptionEnds para el que ya se envio el aviso de vencimiento (evita duplicados)
+  isActive                Boolean                        @default(true)
+  isPublic                Boolean                        @default(false)
+  createdAt               DateTime                       @default(now())
+  updatedAt               DateTime                       @updatedAt
+  comuna                  String?
+  officeAddress           String?
+  region                  String?
+  acceptedPaymentMethods  String[] // IDs de src/lib/paymentMethods.ts
+  paymentNotes            String? // Indicaciones de pago del profesional (cuando y como cobra)
+  meetingUrl              String? // Enlace de videollamada del profesional (Meet/Zoom/Teams). Privado: nunca se expone en listados
   meetingRoomRestrictedAt DateTime? // El profesional declaro que su sala exige admitir a cada participante (anti ingreso no autorizado)
-  linkedinUrl            String?
+  linkedinUrl             String?
   // UX Redesign: Human-centered fields
-  targetAudience         String?   // "Para quién suele ser útil"
-  approachDescription    String?   // "Cómo acompaña"
-  yearsExperience        Int?      // Años de experiencia
-  firstSessionInfo       String?   // Info sobre primera sesión
+  targetAudience          String? // "Para quién suele ser útil"
+  approachDescription     String? // "Cómo acompaña"
+  yearsExperience         Int? // Años de experiencia
+  firstSessionInfo        String? // Info sobre primera sesión
   // Suspensión voluntaria temporal
-  suspendedAt            DateTime?
-  suspendedUntil         DateTime? // Fecha hasta la cual la agenda permanece pausada
-  suspensionReason       String?   // Motivo (ej. vacaciones, capacitación, descanso)
-  appointments           Appointment[]                   @relation("ProfessionalAppointments")
-  availability           Availability[]
-  clinicalNotes          ClinicalNote[]
-  isapreConvenios        ProfessionalIsapreConvenio[]
-  fonasaAcceptance       ProfessionalFonasaAcceptance[]
-  monthlyReports         MonthlyReport[]
-  preReservations        PreReservation[]
-  subscriptionOrders     SubscriptionOrder[]
-  conversations          Conversation[]                  @relation("ConversationProfessional")
-  user                   User                            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  suspendedAt             DateTime?
+  suspendedUntil          DateTime? // Fecha hasta la cual la agenda permanece pausada
+  suspensionReason        String? // Motivo (ej. vacaciones, capacitación, descanso)
+  appointments            Appointment[]                  @relation("ProfessionalAppointments")
+  availability            Availability[]
+  clinicalNotes           ClinicalNote[]
+  isapreConvenios         ProfessionalIsapreConvenio[]
+  fonasaAcceptance        ProfessionalFonasaAcceptance[]
+  monthlyReports          MonthlyReport[]
+  preReservations         PreReservation[]
+  subscriptionOrders      SubscriptionOrder[]
+  conversations           Conversation[]                 @relation("ConversationProfessional")
+  user                    User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Availability {
@@ -226,27 +237,29 @@ model Appointment {
   status             AppointmentStatus @default(PENDING)
   videoLink          String?
   consultationReason String?
-  
+
   // Campos de asistencia en tiempo real
-  attendanceStatus   AttendanceStatus  @default(EN_ESPERA)
-  pacienteOnline     Boolean           @default(false)
-  profesionalOnline  Boolean           @default(false)
-  patientJoinedAt   DateTime?
+  attendanceStatus     AttendanceStatus @default(EN_ESPERA)
+  pacienteOnline       Boolean          @default(false)
+  profesionalOnline    Boolean          @default(false)
+  patientJoinedAt      DateTime?
   professionalJoinedAt DateTime?
-  sessionStartedAt  DateTime?
-  sessionEndedAt     DateTime?
-  
+  sessionStartedAt     DateTime?
+  sessionEndedAt       DateTime?
+
   cancelledAt        DateTime?
   cancelledBy        String?
   cancellationReason String?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  
-  patient            User              @relation("PatientAppointments", fields: [patientId], references: [id])
-  professional       Professional      @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
-  clinicalNotes      ClinicalNote[]
-  payment            Payment?
-  invoice            Invoice?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  patient                User                  @relation("PatientAppointments", fields: [patientId], references: [id])
+  professional           Professional          @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+  clinicalNotes          ClinicalNote[]
+  payment                Payment?
+  invoice                Invoice?
+  review                 Review?
+  reviewInvite           ReviewInvite?
   reimbursementRequestId String?
   reimbursementRequest   ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id])
 
@@ -254,18 +267,18 @@ model Appointment {
   policyAcceptedAt        DateTime? // El paciente acepto la politica de cancelacion al reservar
   professionalConfirmedAt DateTime? // El profesional acepto la cita
   patientReconfirmedAt    DateTime? // El paciente reconfirmo asistencia (24h antes)
-  meetSpaceName           String?   // Sala de Meet creada para esta cita (spaces/xxxx); el enlace va en videoLink
+  meetSpaceName           String? // Sala de Meet creada para esta cita (spaces/xxxx); el enlace va en videoLink
   reminder24hSentAt       DateTime?
   reminder2hSentAt        DateTime?
   noShowMarkedAt          DateTime?
-  noShowEvidence          Json?     // Instantanea de asistencia al marcar la inasistencia
+  noShowEvidence          Json? // Instantanea de asistencia al marcar la inasistencia
 
+  @@unique([professionalId, scheduledAt])
   @@index([attendanceStatus])
   @@index([pacienteOnline])
   @@index([profesionalOnline])
   @@index([patientId, scheduledAt])
   @@index([professionalId, scheduledAt])
-  @@unique([professionalId, scheduledAt])
 }
 
 model Payment {
@@ -293,64 +306,64 @@ model Payment {
 }
 
 model ClinicalNote {
-  id                    String       @id @default(cuid())
+  id                    String    @id @default(cuid())
   appointmentId         String
   professionalId        String
   encryptedContent      Bytes?
   deletedAt             DateTime?
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
   encryptedIndicaciones Bytes?
-  
+
   // Firma digital para inmutabilidad
-  contentHash           String?      @unique
-  signature            String?      // Firma digital del profesional
-  signedAt             DateTime?    // Timestamp de firma
-  
+  contentHash String?   @unique
+  signature   String? // Firma digital del profesional
+  signedAt    DateTime? // Timestamp de firma
+
   // Metadata de auditoría
-  isFinalized          Boolean      @default(false)
-  finalizedAt          DateTime?
-  
+  isFinalized Boolean   @default(false)
+  finalizedAt DateTime?
+
   // Tags para analytics
-  diagnosticTag        String?      // Tag de diagnóstico para agregación
-  treatmentType         String?      // Tipo de tratamiento
-  
-  appointment           Appointment  @relation(fields: [appointmentId], references: [id])
-  professional          Professional @relation(fields: [professionalId], references: [id])
-  annexes              ClinicalNoteAnnex[]
-  
+  diagnosticTag String? // Tag de diagnóstico para agregación
+  treatmentType String? // Tipo de tratamiento
+
+  appointment  Appointment         @relation(fields: [appointmentId], references: [id])
+  professional Professional        @relation(fields: [professionalId], references: [id])
+  annexes      ClinicalNoteAnnex[]
+
   @@index([diagnosticTag])
   @@index([professionalId])
 }
 
 model ClinicalNoteAnnex {
-  id                    String       @id @default(cuid())
-  clinicalNoteId        String
-  content               String       @db.Text
-  encryptedContent      Bytes?
-  createdAt             DateTime     @default(now())
-  createdBy             String       // professionalId
-  
+  id               String   @id @default(cuid())
+  clinicalNoteId   String
+  content          String   @db.Text
+  encryptedContent Bytes?
+  createdAt        DateTime @default(now())
+  createdBy        String // professionalId
+
   // Firma del anexo
-  contentHash           String?      @unique
-  signature            String?
-  signedAt             DateTime?
-  
-  clinicalNote          ClinicalNote @relation(fields: [clinicalNoteId], references: [id], onDelete: Cascade)
-  
+  contentHash String?   @unique
+  signature   String?
+  signedAt    DateTime?
+
+  clinicalNote ClinicalNote @relation(fields: [clinicalNoteId], references: [id], onDelete: Cascade)
+
   @@index([clinicalNoteId])
 }
 
 model ClinicalAccessAudit {
-  id              String   @id @default(cuid())
-  userId          String   // Quién accede
-  userRole        String   // ADMIN, PROFESSIONAL, etc.
-  patientId       String   // Titular de la ficha
-  action          String   // VIEW_HISTORY, VIEW_NOTE, EXPORT, UPDATE_NOTE
-  resourceId      String?  // appointmentId or noteId
-  ipAddress       String?
-  userAgent       String?
-  timestamp       DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String // Quién accede
+  userRole   String // ADMIN, PROFESSIONAL, etc.
+  patientId  String // Titular de la ficha
+  action     String // VIEW_HISTORY, VIEW_NOTE, EXPORT, UPDATE_NOTE
+  resourceId String? // appointmentId or noteId
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
 
   @@index([patientId, timestamp])
   @@index([userId, timestamp])
@@ -358,62 +371,62 @@ model ClinicalAccessAudit {
 }
 
 model ClinicalNoteDraft {
-  id                    String       @id @default(cuid())
-  appointmentId         String       @unique
-  professionalId        String
-  content               String       @db.Text
-  templateId            String?
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-  locked                Boolean      @default(false)
-  lockedAt              DateTime?
-  lockedBySession       String?
-  
+  id              String    @id @default(cuid())
+  appointmentId   String    @unique
+  professionalId  String
+  content         String    @db.Text
+  templateId      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  locked          Boolean   @default(false)
+  lockedAt        DateTime?
+  lockedBySession String?
+
   @@index([appointmentId])
   @@index([professionalId])
 }
 
 model ClinicalNoteSnapshot {
-  id                    String       @id @default(cuid())
-  draftId               String
-  content               String       @db.Text
-  createdAt             DateTime     @default(now())
-  
+  id        String   @id @default(cuid())
+  draftId   String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
   @@index([draftId])
 }
 
 model ClinicalTemplate {
-  id              String       @id @default(cuid())
-  name            String
-  description     String?
-  content         String       @db.Text
-  category        String       @default("general")
-  professionalId  String?
-  isGlobal        Boolean      @default(false)
-  isActive        Boolean      @default(true)
-  sortOrder       Int          @default(0)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  content        String   @db.Text
+  category       String   @default("general")
+  professionalId String?
+  isGlobal       Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
   @@index([professionalId])
   @@index([isGlobal])
   @@index([category])
 }
 
 model ClinicalAnalytics {
-  id                    String       @id @default(cuid())
-  professionalId        String?
-  
+  id             String  @id @default(cuid())
+  professionalId String?
+
   // Tipo de análisis
-  analysisType          String       // "medications", "diagnoses", "patterns", "outcomes"
-  
+  analysisType String // "medications", "diagnoses", "patterns", "outcomes"
+
   // Resultados agregados (JSON)
-  results               Json
-  sampleSize            Int
-  
+  results    Json
+  sampleSize Int
+
   // Metadata
-  generatedAt           DateTime     @default(now())
-  
+  generatedAt DateTime @default(now())
+
   @@index([professionalId])
   @@index([analysisType])
   @@index([generatedAt])
@@ -571,21 +584,21 @@ model Message {
 
 // Cobro de la suscripcion profesional (Mercado Pago, pago por periodo).
 model SubscriptionOrder {
-  id             String                      @id @default(cuid())
-  professionalId String
-  kind           SubscriptionOrderKind
-  fromTier       SubscriptionTier
-  toTier         SubscriptionTier
-  months         Int                         @default(1)
-  amount         Int
-  credit         Int                         @default(0)
-  newEnds        DateTime
-  status         SubscriptionOrderStatus     @default(PENDING)
-  preferenceId   String?
+  id                String                  @id @default(cuid())
+  professionalId    String
+  kind              SubscriptionOrderKind
+  fromTier          SubscriptionTier
+  toTier            SubscriptionTier
+  months            Int                     @default(1)
+  amount            Int
+  credit            Int                     @default(0)
+  newEnds           DateTime
+  status            SubscriptionOrderStatus @default(PENDING)
+  preferenceId      String?
   externalPaymentId String?
-  createdAt      DateTime                    @default(now())
-  paidAt         DateTime?
-  professional   Professional                @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  createdAt         DateTime                @default(now())
+  paidAt            DateTime?
+  professional      Professional            @relation(fields: [professionalId], references: [id], onDelete: Cascade)
 
   @@index([professionalId])
 }
@@ -629,63 +642,63 @@ enum WaitlistType {
 
 // Catálogo de Isapres en Chile
 model Isapre {
-  id                  String                         @id @default(cuid())
-  code                String                         @unique
-  name                String
-  legalName           String
-  rut                 String                         @unique
-  isActive            Boolean                        @default(true)
-  createdAt           DateTime                       @default(now())
-  updatedAt           DateTime                       @updatedAt
-  
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  legalName String
+  rut       String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   professionalConvenios ProfessionalIsapreConvenio[]
-  patientCoverages    PatientCoverage[]
+  patientCoverages      PatientCoverage[]
   reimbursementRequests ReimbursementRequest[]
-  
+
   @@index([code])
   @@index([isActive])
 }
 
 // Planes de Fonasa
 model FonasaTramo {
-  id                  String                         @id @default(cuid())
-  tramo               String                         @unique
+  id                  String  @id @default(cuid())
+  tramo               String  @unique
   name                String
   description         String?
   copaymentPercentage Int
-  isActive            Boolean                        @default(true)
-  
+  isActive            Boolean @default(true)
+
   professionalAcceptance ProfessionalFonasaAcceptance[]
-  patientCoverages    PatientCoverage[]
+  patientCoverages       PatientCoverage[]
 }
 
 // Convenios con Isapres que acepta el profesional
 model ProfessionalIsapreConvenio {
-  id                  String       @id @default(cuid())
-  professionalId      String
-  isapreId            String
-  
-  acceptsBono         Boolean      @default(false)
-  acceptsReembolso    Boolean      @default(false)
-  
-  convenioCode        String?
-  prestacionCode      String?
-  bonoAmount          Int?
-  copaymentAmount     Int?
-  
+  id             String @id @default(cuid())
+  professionalId String
+  isapreId       String
+
+  acceptsBono      Boolean @default(false)
+  acceptsReembolso Boolean @default(false)
+
+  convenioCode    String?
+  prestacionCode  String?
+  bonoAmount      Int?
+  copaymentAmount Int?
+
   reembolsoPercentage Int?
-  
-  isActive            Boolean      @default(true)
-  validFrom           DateTime?
-  validUntil          DateTime?
-  notes               String?
-  
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-  
-  professional        Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  isapre              Isapre       @relation(fields: [isapreId], references: [id])
-  
+
+  isActive   Boolean   @default(true)
+  validFrom  DateTime?
+  validUntil DateTime?
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  isapre       Isapre       @relation(fields: [isapreId], references: [id])
+
   @@unique([professionalId, isapreId])
   @@index([professionalId])
   @@index([isapreId])
@@ -694,26 +707,26 @@ model ProfessionalIsapreConvenio {
 
 // Aceptación de Fonasa por el profesional
 model ProfessionalFonasaAcceptance {
-  id                  String       @id @default(cuid())
-  professionalId      String
-  fonasaTramoId       String
-  
-  acceptsMLE          Boolean      @default(false)
-  acceptsBonoArancel  Boolean      @default(false)
-  
+  id             String @id @default(cuid())
+  professionalId String
+  fonasaTramoId  String
+
+  acceptsMLE         Boolean @default(false)
+  acceptsBonoArancel Boolean @default(false)
+
   bonoLevel           String?
   bonoAmount          Int?
   copaymentPercentage Int?
-  
-  isActive            Boolean      @default(true)
-  notes               String?
-  
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-  
-  professional        Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  fonasaTramo         FonasaTramo  @relation(fields: [fonasaTramoId], references: [id])
-  
+
+  isActive Boolean @default(true)
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  fonasaTramo  FonasaTramo  @relation(fields: [fonasaTramoId], references: [id])
+
   @@unique([professionalId, fonasaTramoId])
   @@index([professionalId])
   @@index([fonasaTramoId])
@@ -721,31 +734,31 @@ model ProfessionalFonasaAcceptance {
 
 // Cobertura del paciente
 model PatientCoverage {
-  id                  String           @id @default(cuid())
-  patientProfileId    String           @unique
-  
-  healthSystem        HealthSystem
-  
-  isapreId            String?
-  isapre              Isapre?          @relation(fields: [isapreId], references: [id])
-  isaprePlan          String?
-  hasBonoIMED         Boolean          @default(false)
-  
-  fonasaTramoId       String?
-  fonasaTramo         FonasaTramo?     @relation(fields: [fonasaTramoId], references: [id])
-  
-  credentialNumber    String?
-  validUntil          DateTime?
-  
-  isVerified          Boolean          @default(false)
-  verifiedAt          DateTime?
-  verificationMethod  String?
-  
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  
-  patientProfile      PatientProfile   @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
-  
+  id               String @id @default(cuid())
+  patientProfileId String @unique
+
+  healthSystem HealthSystem
+
+  isapreId    String?
+  isapre      Isapre? @relation(fields: [isapreId], references: [id])
+  isaprePlan  String?
+  hasBonoIMED Boolean @default(false)
+
+  fonasaTramoId String?
+  fonasaTramo   FonasaTramo? @relation(fields: [fonasaTramoId], references: [id])
+
+  credentialNumber String?
+  validUntil       DateTime?
+
+  isVerified         Boolean   @default(false)
+  verifiedAt         DateTime?
+  verificationMethod String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientProfile PatientProfile @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+
   @@index([isapreId])
   @@index([fonasaTramoId])
   @@index([healthSystem])
@@ -765,43 +778,43 @@ model PatientCoverage {
 
 // Reporte mensual consolidado del profesional
 model MonthlyReport {
-  id                String   @id @default(cuid())
-  professionalId    String
-  professional      Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  
+  id             String       @id @default(cuid())
+  professionalId String
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
   // Período del reporte
-  year              Int
-  month             Int      // 1-12
-  generatedAt       DateTime @default(now())
-  
+  year        Int
+  month       Int // 1-12
+  generatedAt DateTime @default(now())
+
   // Resumen Financiero
   totalSessions     Int
-  totalBrut         Int      // Total bruto acumulado
-  totalSiiRetention Int      // 15.25% del bruto
-  totalCommission   Int      // Comisión plataforma
-  totalNet          Int      // Líquido a percibir
-  
+  totalBrut         Int // Total bruto acumulado
+  totalSiiRetention Int // 15.25% del bruto
+  totalCommission   Int // Comisión plataforma
+  totalNet          Int // Líquido a percibir
+
   // Desglose por Previsión
-  isapresCount      Int      @default(0)
-  isapresBrut       Int      @default(0)
-  fonasaCount       Int      @default(0)
-  fonasaBrut        Int      @default(0)
-  privateCount      Int      @default(0)
-  privateBrut       Int      @default(0)
-  
+  isapresCount Int @default(0)
+  isapresBrut  Int @default(0)
+  fonasaCount  Int @default(0)
+  fonasaBrut   Int @default(0)
+  privateCount Int @default(0)
+  privateBrut  Int @default(0)
+
   // Métricas de Gestión
-  completedCount    Int      // Sesiones asistidas
-  cancelledCount    Int      // Sesiones canceladas
-  attendanceRate    Float    // % asistencia
-  avgIncomePerHour  Int      // Promedio por hora
-  
+  completedCount   Int // Sesiones asistidas
+  cancelledCount   Int // Sesiones canceladas
+  attendanceRate   Float // % asistencia
+  avgIncomePerHour Int // Promedio por hora
+
   // Metadata
-  pdfUrl            String?  // URL del PDF generado
-  csvUrl            String?  // URL del CSV generado
-  
+  pdfUrl String? // URL del PDF generado
+  csvUrl String? // URL del CSV generado
+
   // Relaciones
-  invoices          Invoice[]
-  
+  invoices Invoice[]
+
   @@unique([professionalId, year, month])
   @@index([professionalId, year, month])
   @@index([year, month])
@@ -809,32 +822,32 @@ model MonthlyReport {
 
 // Boleta de honorarios individual
 model Invoice {
-  id                String   @id @default(cuid())
-  reportId          String?
-  report            MonthlyReport? @relation(fields: [reportId], references: [id])
-  
-  appointmentId     String   @unique
-  appointment       Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  
+  id       String         @id @default(cuid())
+  reportId String?
+  report   MonthlyReport? @relation(fields: [reportId], references: [id])
+
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
   // Datos de la Boleta
-  invoiceNumber     String   @unique // Número de boleta (auto-generado)
-  issueDate         DateTime
-  
+  invoiceNumber String   @unique // Número de boleta (auto-generado)
+  issueDate     DateTime
+
   // Montos
-  brutAmount        Int
-  siiRetention      Int      // 15.25%
-  netAmount         Int
-  
+  brutAmount   Int
+  siiRetention Int // 15.25%
+  netAmount    Int
+
   // Clasificación
-  healthSystem      HealthSystem // FONASA, ISAPRE, PRIVATE
-  isapre            String?  // Nombre de Isapre si aplica
-  
+  healthSystem HealthSystem // FONASA, ISAPRE, PRIVATE
+  isapre       String? // Nombre de Isapre si aplica
+
   // Estado
-  status            InvoiceStatus @default(PENDING)
-  paidAt            DateTime?
-  
-  createdAt         DateTime @default(now())
-  
+  status InvoiceStatus @default(PENDING)
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+
   @@index([reportId])
   @@index([invoiceNumber])
   @@index([issueDate])
@@ -854,54 +867,54 @@ enum InvoiceStatus {
 
 // Solicitud de reembolso del paciente
 model ReimbursementRequest {
-  id                String   @id @default(cuid())
-  patientId         String
-  patient           User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  
+  id        String @id @default(cuid())
+  patientId String
+  patient   User   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
   // Período
-  requestDate       DateTime @default(now())
-  month             Int
-  year              Int
-  
+  requestDate DateTime @default(now())
+  month       Int
+  year        Int
+
   // Sesiones incluidas
-  appointments      Appointment[]
-  totalAmount       Int
+  appointments           Appointment[]
+  totalAmount            Int
   estimatedReimbursement Int
-  
+
   // Previsión
-  healthSystem      HealthSystem
-  isapreId          String?
-  isapre            Isapre?  @relation(fields: [isapreId], references: [id])
-  
+  healthSystem HealthSystem
+  isapreId     String?
+  isapre       Isapre?      @relation(fields: [isapreId], references: [id])
+
   // Documentos generados
-  kitPdfUrl         String?
+  kitPdfUrl          String?
   hasMedicalReferral Boolean @default(false)
-  referralDocUrl    String?
-  
+  referralDocUrl     String?
+
   // Estado y seguimiento
-  status            ReimbursementStatus @default(DRAFT)
-  submittedAt       DateTime?
-  processedAt       DateTime?
-  reimbursedAmount  Int?
-  trackingNumber    String?
-  notes             String?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
+  status           ReimbursementStatus @default(DRAFT)
+  submittedAt      DateTime?
+  processedAt      DateTime?
+  reimbursedAmount Int?
+  trackingNumber   String?
+  notes            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([patientId])
   @@index([status])
   @@index([year, month])
 }
 
 enum ReimbursementStatus {
-  DRAFT           // Borrador, no enviado
-  PENDING         // Enviado, esperando respuesta
-  IN_REVIEW       // En revisión por Isapre
-  APPROVED        // Aprobado
-  REJECTED        // Rechazado
-  PAID            // Pagado
-  CANCELLED       // Cancelado por usuario
+  DRAFT // Borrador, no enviado
+  PENDING // Enviado, esperando respuesta
+  IN_REVIEW // En revisión por Isapre
+  APPROVED // Aprobado
+  REJECTED // Rechazado
+  PAID // Pagado
+  CANCELLED // Cancelado por usuario
 }
 
 // =============================================
@@ -911,17 +924,17 @@ enum ReimbursementStatus {
 model PreReservation {
   id             String   @id @default(cuid())
   professionalId String
-  sessionEmail   String?  // Email de sesión anónima (antes de registro)
-  userId         String?  // Usuario si ya está registrado
+  sessionEmail   String? // Email de sesión anónima (antes de registro)
+  userId         String? // Usuario si ya está registrado
   scheduledAt    DateTime // Fecha y hora de la cita
   duration       Int      @default(50)
   expiresAt      DateTime // Expira en 10 minutos
   token          String   @unique // Token único para validar la reserva
   confirmed      Boolean  @default(false)
   createdAt      DateTime @default(now())
-  
-  professional   Professional @relation(fields: [professionalId], references: [id])
-  user           User?        @relation(fields: [userId], references: [id])
+
+  professional Professional @relation(fields: [professionalId], references: [id])
+  user         User?        @relation(fields: [userId], references: [id])
 
   @@index([professionalId, scheduledAt])
   @@index([expiresAt])
@@ -929,16 +942,16 @@ model PreReservation {
 }
 
 model AdminLog {
-  id            String   @id @default(cuid())
-  adminId       String   // ID del admin que realizó la acción
-  adminName     String?  // Nombre del admin (por si se borra el usuario)
-  action        String   // Tipo de acción: APPROVE_PROFESSIONAL, REJECT_PROFESSIONAL, BAN_USER, UNBAN_USER, RESET_PASSWORD, UPDATE_NOTES
-  targetType    String   // Tipo de objetivo: USER, PROFESSIONAL
-  targetId      String   // ID del usuario/profesional afectado
-  targetName    String?  // Nombre del objetivo (por si se borra)
-  targetEmail   String?  // Email del objetivo
-  details       Json?    // Detalles adicionales en formato JSON
-  createdAt     DateTime @default(now())
+  id          String   @id @default(cuid())
+  adminId     String // ID del admin que realizó la acción
+  adminName   String? // Nombre del admin (por si se borra el usuario)
+  action      String // Tipo de acción: APPROVE_PROFESSIONAL, REJECT_PROFESSIONAL, BAN_USER, UNBAN_USER, RESET_PASSWORD, UPDATE_NOTES
+  targetType  String // Tipo de objetivo: USER, PROFESSIONAL
+  targetId    String // ID del usuario/profesional afectado
+  targetName  String? // Nombre del objetivo (por si se borra)
+  targetEmail String? // Email del objetivo
+  details     Json? // Detalles adicionales en formato JSON
+  createdAt   DateTime @default(now())
 
   @@index([adminId])
   @@index([targetId])
@@ -952,54 +965,54 @@ model AdminLog {
 // =============================================
 
 model InvoiceQueue {
-  id                String           @id @default(cuid())
-  appointmentId     String           @unique
-  
+  id            String @id @default(cuid())
+  appointmentId String @unique
+
   // Datos necesarios para emitir la boleta
   pacienteRut      String
   pacienteNombre   String
   pacienteEmail    String?
   pacienteTelefono String?
-  
+
   servicioDescripcion String
-  servicioFecha    DateTime
-  servicioMonto    Int
-  descuento         Int              @default(0)
-  
+  servicioFecha       DateTime
+  servicioMonto       Int
+  descuento           Int      @default(0)
+
   // Datos del profesional/emisor
-  profesionalRut   String
+  profesionalRut    String
   profesionalNombre String
-  
+
   // Estado del procesamiento
-  status            InvoiceQueueStatus @default(PENDING)
-  attempts          Int              @default(0)
-  maxAttempts      Int              @default(3)
-  lastAttemptAt    DateTime?
-  nextAttemptAt    DateTime?
-  
+  status        InvoiceQueueStatus @default(PENDING)
+  attempts      Int                @default(0)
+  maxAttempts   Int                @default(3)
+  lastAttemptAt DateTime?
+  nextAttemptAt DateTime?
+
   // Resultado
-  invoiceNumber    String?          // Número de boleta emitida
-  siiFolio         String?          // Folio SII
-  siiStatus        String?           // Estado del SII
-  errorMessage     String?
-  errorCode        String?
-  
+  invoiceNumber String? // Número de boleta emitida
+  siiFolio      String? // Folio SII
+  siiStatus     String? // Estado del SII
+  errorMessage  String?
+  errorCode     String?
+
   // Tracking
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  completedAt      DateTime?
-  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
   @@index([status])
   @@index([nextAttemptAt])
   @@index([createdAt])
 }
 
 enum InvoiceQueueStatus {
-  PENDING       // En cola, sin procesar
-  PROCESSING    // Actualmente procesándose
-  COMPLETED     // Emitida exitosamente
-  FAILED        // Fallida después de todos los reintentos
-  CANCELLED    // Cancelada por el usuario
+  PENDING // En cola, sin procesar
+  PROCESSING // Actualmente procesándose
+  COMPLETED // Emitida exitosamente
+  FAILED // Fallida después de todos los reintentos
+  CANCELLED // Cancelada por el usuario
   MANUAL_REVIEW // Requiere revisión manual
 }
 
@@ -1009,40 +1022,40 @@ enum InvoiceQueueStatus {
 // =============================================
 
 model WaitingRoom {
-  id                  String          @id @default(cuid())
-  appointmentId       String          @unique
-  
+  id            String @id @default(cuid())
+  appointmentId String @unique
+
   // Estado de la sala
-  status              WaitingRoomStatus @default(CHECK_IN)
-  
+  status WaitingRoomStatus @default(CHECK_IN)
+
   // Tiempos
-  patientJoinedAt     DateTime?
-  patientReadyAt      DateTime?
+  patientJoinedAt      DateTime?
+  patientReadyAt       DateTime?
   professionalJoinedAt DateTime?
-  sessionStartedAt    DateTime?
-  
+  sessionStartedAt     DateTime?
+
   // Device checks
-  cameraTested        Boolean         @default(false)
-  micTested           Boolean         @default(false)
-  speakerTested       Boolean         @default(false)
-  
+  cameraTested  Boolean @default(false)
+  micTested     Boolean @default(false)
+  speakerTested Boolean @default(false)
+
   // Profesional
-  professionalNotified Boolean         @default(false)
-  
+  professionalNotified Boolean @default(false)
+
   // Metadata
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([appointmentId])
 }
 
 enum WaitingRoomStatus {
-  CHECK_IN      // Paciente verificando equipo
-  WAITING       // Paciente esperando al profesional
-  READY         // Profesional unido, listo para entrar
-  IN_SESSION    // En la sesión
-  COMPLETED     // Sesión finalizada
+  CHECK_IN // Paciente verificando equipo
+  WAITING // Paciente esperando al profesional
+  READY // Profesional unido, listo para entrar
+  IN_SESSION // En la sesión
+  COMPLETED // Sesión finalizada
 }
 
 // =============================================
@@ -1082,8 +1095,8 @@ model WaitlistPatient {
   name            String?
   whatsapp        String?
   comuna          String
-  careType        String?                  // 'psicologia', 'psiquiatria', 'no_estoy_seguro'
-  modality        String?                  // 'online', 'presencial', 'ambas'
+  careType        String? // 'psicologia', 'psiquiatria', 'no_estoy_seguro'
+  modality        String? // 'online', 'presencial', 'ambas'
   motivoCategoria WaitlistMotivoCategoria?
   prevision       WaitlistPrevision?
   consentAt       DateTime                 @default(now())
@@ -1129,11 +1142,11 @@ model FounderApplication {
   id                       String    @id @default(cuid())
   nombreCompleto           String
   rut                      String
-  profesion                String    // 'psicologo' o 'psiquiatra'
-  registroSuperintendencia String    // Nº de inscripción en el Registro Nacional de Prestadores Individuales
+  profesion                String // 'psicologo' o 'psiquiatra'
+  registroSuperintendencia String // Nº de inscripción en el Registro Nacional de Prestadores Individuales
   email                    String    @unique
   telefono                 String
-  modalidadAtencion        String    // 'online' | 'presencial' | 'ambas'
+  modalidadAtencion        String // 'online' | 'presencial' | 'ambas'
   comunaRegion             String
   declaracionVigente       Boolean   @default(true)
   fechaAceptacion          DateTime  @default(now())
@@ -1156,16 +1169,16 @@ model FounderApplication {
 
 // Registro de auditoría para accesos y modificaciones de datos clínicos/sensibles
 model AuditLog {
-  id         String   @id @default(cuid())
-  userId     String
-  userRole   String
-  action     String
-  resource   String
-  patientId  String?
-  details    String?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  userRole  String
+  action    String
+  resource  String
+  patientId String?
+  details   String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([patientId])
@@ -1178,7 +1191,7 @@ model AuditLog {
 model EmotionalCheckIn {
   id        String   @id @default(cuid())
   userId    String
-  estado    String   // 'mal' | 'regular' | 'bien' | 'muy_bien'
+  estado    String // 'mal' | 'regular' | 'bien' | 'muy_bien'
   isShared  Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -1193,7 +1206,7 @@ model RightsRequest {
   trackingNumber String    @unique
   userId         String
   userEmail      String
-  tipoDerecho    String    // 'acceso' | 'rectificacion' | 'supresion' | 'oposicion' | 'portabilidad'
+  tipoDerecho    String // 'acceso' | 'rectificacion' | 'supresion' | 'oposicion' | 'portabilidad'
   motivo         String
   estado         String    @default("pendiente") // 'pendiente' | 'en_tramite' | 'resuelto' | 'rechazado'
   respuesta      String?
@@ -1206,14 +1219,147 @@ model RightsRequest {
   @@map("solicitudes_derechos")
 }
 
-
-
 /// Cuenta de Google de PsyDoctor que crea las salas de Meet (una sala nueva por cita). Una sola fila: id "default".
 model GoogleMeetConnection {
   id            String   @id @default("default")
   accountEmail  String?
-  refreshToken  Bytes    // cifrado con src/lib/encryption.ts
+  refreshToken  Bytes // cifrado con src/lib/encryption.ts
   scope         String?
   connectedById String?
   connectedAt   DateTime @default(now())
+}
+
+/// Latido de tareas programadas (cron): permite al panel de administracion ver si siguen corriendo.
+model SystemHeartbeat {
+  name       String   @id // ej. "cron-recordatorios"
+  lastRunAt  DateTime
+  lastStatus String // "ok" | "error"
+  lastResult Json?
+  lastError  String?
+  runCount   Int      @default(0)
+}
+
+enum TicketType {
+  PROBLEM
+  SUGGESTION
+  QUESTION
+  OTHER
+}
+
+enum TicketStatus {
+  NEW
+  IN_REVIEW
+  RESOLVED
+  DISCARDED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+/// Feedback de usuarios: problemas, sugerencias y consultas. Se gestiona desde /admin/tickets.
+model SupportTicket {
+  id            String         @id @default(cuid())
+  number        Int            @unique @default(autoincrement()) // numero legible: #1042
+  userId        String? // null si lo envia un visitante sin sesion
+  userRole      String? // PATIENT | PROFESSIONAL al momento de enviarlo
+  contactName   String?
+  contactEmail  String? // obligatorio para visitantes; para usuarios se toma de su cuenta
+  type          TicketType
+  status        TicketStatus   @default(NEW)
+  priority      TicketPriority @default(NORMAL)
+  subject       String
+  message       String         @db.Text
+  pageUrl       String? // pagina desde donde se envio (solo ruta, sin parametros)
+  userAgent     String?
+  adminNotes    String?        @db.Text // notas internas: nunca las ve el usuario
+  adminResponse String?        @db.Text // respuesta visible para el usuario en /soporte
+  respondedAt   DateTime?
+  resolvedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([type])
+  @@index([userId])
+}
+
+/// Interruptor global de cada medio de pago del catálogo (src/lib/paymentMethods.ts).
+/// Sin fila = habilitado. Lo administra el panel admin.
+model PaymentMethodSetting {
+  methodId  String   @id
+  enabled   Boolean  @default(true)
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+enum ReviewStatus {
+  PUBLISHED
+  PENDING_REVIEW
+  REMOVED
+}
+
+/// Opinion verificada: una por cita COMPLETED, escrita por el paciente de esa cita.
+model Review {
+  id             String       @id @default(cuid())
+  appointmentId  String       @unique
+  patientId      String
+  professionalId String
+  rating         Int // 1..5
+  punctuality    Int?
+  clarity        Int?
+  booking        Int?
+  recommends     Boolean?
+  comment        String? // max 500; solo servicio, nunca contenido clinico
+  status         ReviewStatus @default(PUBLISHED)
+  flagReason     String? // Por que el filtro automatico la envio a revision
+  removedReason  String?
+  removedBy      String?
+  reply          String?
+  repliedAt      DateTime?
+  editableUntil  DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  appointment  Appointment    @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patient      User           @relation("ReviewAuthor", fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional   @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  reports      ReviewReport[]
+
+  @@index([professionalId, status, createdAt])
+  @@index([status, createdAt])
+}
+
+/// Control de invitaciones a opinar (evita duplicados del cron).
+model ReviewInvite {
+  id            String    @id @default(cuid())
+  appointmentId String    @unique
+  sentAt        DateTime?
+  reminderAt    DateTime?
+  expiresAt     DateTime
+  createdAt     DateTime  @default(now())
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([sentAt])
+}
+
+/// Reporte de un profesional sobre una opinion que cree que rompe las reglas. Lo resuelve el admin.
+model ReviewReport {
+  id         String    @id @default(cuid())
+  reviewId   String
+  reporterId String // User del profesional que reporta
+  reason     String // 10..300
+  status     String    @default("OPEN") // OPEN | RESOLVED | DISMISSED
+  resolvedBy String?
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, reporterId])
+  @@index([status, createdAt])
 }

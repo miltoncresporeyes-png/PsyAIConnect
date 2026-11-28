@@ -25,5 +25,7 @@ declare module "next-auth/jwt" {
         role: string
         sid?: string
         mfa?: boolean
+        checkedAt?: number
+        deactivated?: boolean
     }
 }

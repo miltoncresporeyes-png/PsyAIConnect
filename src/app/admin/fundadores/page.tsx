@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import {
     Loader2,
     CheckCircle2,
@@ -39,9 +37,6 @@ interface FounderApplication {
 }
 
 export default function AdminFundadoresPage() {
-    const { data: session, status } = useSession()
-    const router = useRouter()
-
     const [applications, setApplications] = useState<FounderApplication[]>([])
     const [approvedCount, setApprovedCount] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
@@ -54,14 +49,6 @@ export default function AdminFundadoresPage() {
     const [rejectApp, setRejectApp] = useState<FounderApplication | null>(null)
     const [motivoRechazo, setMotivoRechazo] = useState('')
     const [actionError, setActionError] = useState('')
-
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.push('/login')
-        } else if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
-            router.push('/403')
-        }
-    }, [status, session, router])
 
     const fetchApplications = async () => {
         try {
@@ -79,18 +66,16 @@ export default function AdminFundadoresPage() {
     }
 
     useEffect(() => {
-        if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
-            fetchApplications()
-        }
-    }, [status, session])
+        fetchApplications()
+    }, [])
 
     const handleApprove = async (app: FounderApplication) => {
         if (approvedCount >= 20) {
-            alert('Cupos completos. No es posible aprobar más de 20 profesionales fundadores.')
+            setActionError('Cupos completos. No es posible aprobar más de 20 profesionales fundadores.')
             return
         }
 
-        if (!confirm(`¿Aprobar a ${app.nombreCompleto} como Profesional Fundador? Se asignará correlativamente el cupo N° ${approvedCount + 1} de 20 y 12 meses de beneficio.`)) {
+        if (!confirm(`¿Aprobar a ${app.nombreCompleto} como Profesional Fundador? Se asignará el primer cupo libre (de 20), se activará el plan Pro por 12 meses en su cuenta y se descontará un cupo.`)) {
             return
         }
 
@@ -104,12 +89,12 @@ export default function AdminFundadoresPage() {
             })
             const data = await res.json()
             if (!res.ok) {
-                alert(data.error || 'Error al aprobar')
+                setActionError(data.error || 'Error al aprobar')
             } else {
                 await fetchApplications()
             }
         } catch (err) {
-            alert('Error de conexión al aprobar')
+            setActionError('Error de conexión al aprobar')
         } finally {
             setProcessingId(null)
         }
@@ -193,7 +178,7 @@ export default function AdminFundadoresPage() {
     })
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="space-y-4">
             {/* Header & Badges */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
@@ -216,6 +201,12 @@ export default function AdminFundadoresPage() {
                     </button>
                 </div>
             </div>
+
+            {actionError && !showRejectModal && (
+                <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {actionError}
+                </p>
+            )}
 
             {/* Cupos Counter Banner */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -434,7 +425,7 @@ export default function AdminFundadoresPage() {
                                                         type="button"
                                                         onClick={() => handleApprove(app)}
                                                         disabled={processingId === app.id || approvedCount >= 20}
-                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs disabled:opacity-40 transition"
+                                                        className="inline-flex items-center gap-1 px-3 py-2.5 sm:py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs disabled:opacity-40 transition"
                                                     >
                                                         {processingId === app.id ? (
                                                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -448,7 +439,7 @@ export default function AdminFundadoresPage() {
                                                         type="button"
                                                         onClick={() => openRejectModal(app)}
                                                         disabled={processingId === app.id}
-                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs transition"
+                                                        className="inline-flex items-center gap-1 px-3 py-2.5 sm:py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs transition"
                                                     >
                                                         <XCircle className="h-3 w-3" />
                                                         <span>Rechazar</span>

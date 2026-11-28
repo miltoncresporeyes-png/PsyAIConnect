@@ -406,6 +406,18 @@ export function generateVerificationCode(): string {
 }
 
 /**
+ * Digitos de un codigo de un solo uso para correos.
+ *
+ * Va en una sola linea (white-space: nowrap) y con un tamano que cabe en pantallas de celular angostas:
+ * 6 digitos en Courier New a 32 px con 6 px de espaciado miden ~150 px. Con 40 px y 8 px medían ~190 px y,
+ * en clientes como Gmail movil, el sexto digito bajaba a una segunda linea.
+ * El padding izquierdo compensa el espaciado final que agrega letter-spacing, para que quede centrado.
+ */
+export function codeDigitsHtml(code: string): string {
+    return `<div style="font-size: 32px; line-height: 1.2; font-weight: 700; color: #0f766e; letter-spacing: 6px; padding-left: 6px; font-family: 'Courier New', Courier, monospace; white-space: nowrap; word-break: keep-all;">${escapeHtml(code)}</div>`
+}
+
+/**
  * Send verification code email for registration
  */
 export async function sendVerificationCodeEmail(
@@ -429,13 +441,11 @@ export async function sendVerificationCodeEmail(
         <h2 style="color: #1f2937; margin-top: 0;">¡Hola ${escapeHtml(name)}! 👋</h2>
         <p style="color: #4b5563;">Gracias por registrarte en PsyDoctor. Para completar tu registro, ingresa el siguiente código de verificación:</p>
         
-        <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border: 2px solid #14b8a6; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
+        <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border: 2px solid #14b8a6; border-radius: 12px; padding: 24px 12px; text-align: center; margin: 30px 0;">
             <p style="margin: 0 0 10px; color: #0d9488; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">
                 Tu código de verificación
             </p>
-            <div style="font-size: 40px; font-weight: 700; color: #0f766e; letter-spacing: 8px; font-family: 'Courier New', monospace;">
-                ${code}
-            </div>
+            ${codeDigitsHtml(code)}
         </div>
         
         <p style="color: #6b7280; font-size: 14px; text-align: center;">
@@ -478,8 +488,8 @@ export async function sendLoginCodeEmail(
     <div style="background: #ffffff; padding: 32px 30px; border: 1px solid #e5e7eb; border-top: none;">
         <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(name || '')}</h2>
         <p style="color: #4b5563;">Usa este código para confirmar tu inicio de sesión:</p>
-        <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
-            <div style="font-size: 38px; font-weight: 700; color: #0f766e; letter-spacing: 8px; font-family: 'Courier New', monospace;">${code}</div>
+        <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 12px; padding: 24px 12px; text-align: center; margin: 24px 0;">
+            ${codeDigitsHtml(code)}
         </div>
         <p style="color: #6b7280; font-size: 14px; text-align: center;">Expira en <strong>10 minutos</strong>.</p>
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
@@ -526,6 +536,48 @@ export async function sendNewMessageNotificationEmail(
     return sendEmail({
         to: email,
         subject: 'Tienes un mensaje nuevo - PsyDoctor',
+        html,
+    })
+}
+
+/**
+ * Aviso al profesional: su plan de pago vence en pocos dias.
+ */
+export async function sendPlanExpiringEmail(
+    email: string,
+    name: string,
+    planLabel: string,
+    endsAt: Date,
+    cancelled: boolean
+): Promise<EmailResult> {
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const dateLabel = endsAt.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Santiago' })
+    const detail = cancelled
+        ? 'Como diste de baja la renovación, tu plan terminará en esa fecha y tu cuenta pasará al plan gratuito.'
+        : 'Para no perder los beneficios de tu plan, revisa tu suscripción y renuévala antes de esa fecha.'
+    const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
+    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: 24px; border-radius: 16px 16px 0 0; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 26px;">PsyDoctor</h1>
+    </div>
+    <div style="background: #ffffff; padding: 32px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px;">
+        <h2 style="color: #1f2937; margin-top: 0;">Hola ${escapeHtml(name || '')}</h2>
+        <p style="color: #4b5563;">Tu plan <strong>${escapeHtml(planLabel)}</strong> vence el <strong>${escapeHtml(dateLabel)}</strong>.</p>
+        <p style="color: #4b5563;">${detail}</p>
+        <p style="text-align: center; margin: 28px 0;">
+            <a href="${baseUrl}/dashboard/suscripcion" style="background: #0f766e; color: #fff; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600;">Ver mi suscripción</a>
+        </p>
+        <p style="color: #9ca3af; font-size: 12px; text-align: center;">Si tienes dudas, escríbenos desde la sección Soporte.</p>
+    </div>
+</body>
+</html>`
+
+    return sendEmail({
+        to: email,
+        subject: 'Tu plan de PsyDoctor vence en una semana',
         html,
     })
 }

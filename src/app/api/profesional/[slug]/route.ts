@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getDisabledPaymentMethodIds } from '@/lib/paymentMethodSettings'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
@@ -59,7 +60,11 @@ export async function GET(
             )
         }
 
-        return NextResponse.json(professional)
+        const disabledMethods = await getDisabledPaymentMethodIds()
+        return NextResponse.json({
+            ...professional,
+            acceptedPaymentMethods: (professional.acceptedPaymentMethods ?? []).filter((m) => !disabledMethods.has(m)),
+        })
     } catch (error) {
         console.error('Professional fetch error:', error)
         return NextResponse.json(

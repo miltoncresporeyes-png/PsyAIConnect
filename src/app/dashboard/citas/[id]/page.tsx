@@ -260,6 +260,16 @@ export default function CitaDetallePage({ params }: { params: { id: string } }) 
                         </p>
                     )}
 
+                    {!isProfessional && apt.status === 'COMPLETED' && (
+                        <div className="mb-6 rounded-xl border border-teal-200 bg-teal-50 p-4">
+                            <p className="text-sm font-medium text-teal-900">¿Cómo fue tu sesión?</p>
+                            <p className="mt-1 text-xs text-teal-800">Tu opinión ayuda a otros pacientes. Tu nombre no se muestra.</p>
+                            <Link href={`/opinar/${apt.id}`} className="mt-3 inline-flex min-h-[44px] items-center rounded-lg bg-teal-700 px-4 text-sm font-medium text-white hover:bg-teal-800">
+                                Dejar mi opinión
+                            </Link>
+                        </div>
+                    )}
+
                     {apt.status === 'CANCELLED' && apt.cancellationReason && (
                         <p className="text-sm text-red-700 mb-6">Motivo de cancelación: {apt.cancellationReason}</p>
                     )}
