@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
+import { formatCLP } from '@/lib/format'
 
 // ============================================
 // Types
@@ -197,7 +198,7 @@ export async function POST(request: NextRequest) {
                     matchScore,
                     image: prof.user.image || prof.profileImageUrl,
                     acceptsInsurance: getInsuranceLabel(answers.insurance),
-                    price: `$${prof.sessionPrice.toLocaleString('es-CL')}`,
+                    price: `${formatCLP(prof.sessionPrice)}`,
                     modalities: prof.modality === 'BOTH'
                         ? ['Online', 'Presencial']
                         : prof.modality === 'ONLINE'
@@ -226,7 +227,7 @@ export async function POST(request: NextRequest) {
                     matchScore: 60, // Default score
                     image: prof.user.image || prof.profileImageUrl,
                     acceptsInsurance: getInsuranceLabel(answers.insurance),
-                    price: `$${prof.sessionPrice.toLocaleString('es-CL')}`,
+                    price: `${formatCLP(prof.sessionPrice)}`,
                     modalities: prof.modality === 'BOTH'
                         ? ['Online', 'Presencial']
                         : prof.modality === 'ONLINE'

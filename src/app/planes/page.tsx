@@ -5,6 +5,7 @@ import { Header, Footer } from '@/components/layout'
 import { BackButton } from '@/components/ui/BackButton'
 import { PageContainer, PageHeader, CardGrid } from '@/components/layout/shell'
 import { ANNUAL_MONTHS, PLANS, PLAN_ORDER, annualSavings, cyclePrice } from '@/lib/plans'
+import { formatCLP } from '@/lib/format'
 
 export const metadata: Metadata = {
     title: { absolute: 'Software y Agenda para Psicólogos en Chile | Planes | PsyDoctor' },
@@ -31,8 +32,8 @@ const plans = PLAN_ORDER.map((tier) => {
             tier === 'STARTER'
                 ? null
                 : {
-                      price: `$${cyclePrice(tier, ANNUAL_MONTHS).toLocaleString('es-CL')}`,
-                      savings: `$${annualSavings(tier).toLocaleString('es-CL')}`,
+                      price: `${formatCLP(cyclePrice(tier, ANNUAL_MONTHS))}`,
+                      savings: `${formatCLP(annualSavings(tier))}`,
                   },
     }
 })

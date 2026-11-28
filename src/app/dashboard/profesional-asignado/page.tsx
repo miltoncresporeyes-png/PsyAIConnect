@@ -18,6 +18,7 @@ import {
   MapPin,
   ShieldCheck,
 } from 'lucide-react'
+import { formatCLP } from '@/lib/format'
 
 export default function MiProfesionalPage() {
   const [loading, setLoading] = useState(true)
@@ -140,7 +141,7 @@ export default function MiProfesionalPage() {
               <div>
                 <p className="text-slate-500 mb-0.5">Tarifa por sesión:</p>
                 <p className="font-semibold text-slate-800">
-                  ${(professional.sessionPrice || 0).toLocaleString('es-CL')} CLP
+                  {formatCLP((professional.sessionPrice || 0))} CLP
                 </p>
               </div>
             </div>

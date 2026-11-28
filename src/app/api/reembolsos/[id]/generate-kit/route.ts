@@ -10,6 +10,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { formatCLP } from '@/lib/format'
 
 export async function POST(
     req: NextRequest,
@@ -86,8 +87,8 @@ export async function POST(
         if (request.isapre) {
             doc.text(`Isapre: ${request.isapre.name}`, 20, 90)
         }
-        doc.text(`Total: $${request.totalAmount.toLocaleString('es-CL')}`, 20, 100)
-        doc.text(`Reembolso Estimado: $${request.estimatedReimbursement.toLocaleString('es-CL')}`, 20, 110)
+        doc.text(`Total: ${formatCLP(request.totalAmount)}`, 20, 100)
+        doc.text(`Reembolso Estimado: ${formatCLP(request.estimatedReimbursement)}`, 20, 110)
         doc.text(`Sesiones: ${request.appointments.length}`, 20, 120)
 
         // Página 2: Detalle de Sesiones
@@ -99,7 +100,7 @@ export async function POST(
             new Date(apt.scheduledAt).toLocaleDateString('es-CL'),
             apt.professional.user.name || 'N/A',
             apt.invoice?.invoiceNumber || 'N/A',
-            `$${(apt.invoice?.brutAmount || 0).toLocaleString('es-CL')}`
+            `${formatCLP((apt.invoice?.brutAmount || 0))}`
         ])
 
         autoTable(doc, {

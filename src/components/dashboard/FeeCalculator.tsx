@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import { Info } from 'lucide-react'
+import { formatCLP } from '@/lib/format'
 
 // Chilean tax constants for 2026
 const SII_RETENTION_RATE = 0.1525 // 15.25% mandatory retention
@@ -85,7 +86,7 @@ export default function FeeCalculator() {
 
                 <div className="text-center">
                     <span className="text-4xl font-bold text-indigo-600">
-                        ${sessionPrice.toLocaleString('es-CL')}
+                        {formatCLP(sessionPrice)}
                     </span>
                 </div>
             </div>
@@ -110,7 +111,7 @@ export default function FeeCalculator() {
                         </div>
                     </div>
                     <div className="w-28 text-right font-semibold text-green-600">
-                        ${fees.netAmount.toLocaleString('es-CL')}
+                        {formatCLP(fees.netAmount)}
                     </div>
                 </div>
 
@@ -128,7 +129,7 @@ export default function FeeCalculator() {
                         </div>
                     </div>
                     <div className="w-28 text-right font-semibold text-amber-600">
-                        -${fees.siiRetention.toLocaleString('es-CL')}
+                        -{formatCLP(fees.siiRetention)}
                     </div>
                 </div>
             </div>
@@ -138,14 +139,14 @@ export default function FeeCalculator() {
                 <div className="flex justify-between text-gray-700">
                     <span>Monto Bruto</span>
                     <span className="font-semibold">
-                        ${fees.brutAmount.toLocaleString('es-CL')}
+                        {formatCLP(fees.brutAmount)}
                     </span>
                 </div>
 
                 <div className="flex justify-between text-amber-600">
                     <span>- Retención SII (15.25%)</span>
                     <span className="font-semibold">
-                        -${fees.siiRetention.toLocaleString('es-CL')}
+                        -{formatCLP(fees.siiRetention)}
                     </span>
                 </div>
 
@@ -156,7 +157,7 @@ export default function FeeCalculator() {
                         </span>
                         <div className="flex items-center gap-2">
                             <span className="text-2xl font-bold text-green-600">
-                                ${fees.netAmount.toLocaleString('es-CL')}
+                                {formatCLP(fees.netAmount)}
                             </span>
                             <svg
                                 className="w-6 h-6 text-green-500"
@@ -198,7 +199,7 @@ export default function FeeCalculator() {
                         📊 Ingreso Mensual Proyectado
                     </div>
                     <div className="text-4xl font-bold text-indigo-600 mb-1">
-                        ${monthlyNet.toLocaleString('es-CL')}
+                        {formatCLP(monthlyNet)}
                     </div>
                     <div className="text-sm text-gray-500">
                         ({sessionsPerMonth} sesiones × $
@@ -206,7 +207,7 @@ export default function FeeCalculator() {
                     </div>
                     <div className="mt-3 pt-3 border-t border-indigo-200">
                         <div className="text-xs text-gray-600">
-                            Bruto mensual: ${monthlyBrut.toLocaleString('es-CL')}
+                            Bruto mensual: {formatCLP(monthlyBrut)}
                         </div>
                     </div>
                 </div>
