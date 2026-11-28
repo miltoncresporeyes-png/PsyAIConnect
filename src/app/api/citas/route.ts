@@ -274,6 +274,7 @@ export async function GET(request: Request) {
                     payment: true,
                 },
                 orderBy: { scheduledAt: 'desc' },
+                take: 500,
             })
         } else {
             // Get patient's appointments
