@@ -11,6 +11,9 @@ import { authOptions } from '@/lib/auth'
 import { BackToDashboard } from '@/components/ui/BackToDashboard'
 import type { Metadata } from 'next'
 import { paymentMethodLabels } from '@/lib/paymentMethods'
+import { getDisabledPaymentMethodIds } from '@/lib/paymentMethodSettings'
+import { ReputationBadge } from '@/components/reputation/ReputationBadge'
+import { ReviewsSection } from '@/components/reputation/ReviewsSection'
 
 interface Props {
     params: { slug: string }
@@ -124,6 +127,10 @@ export default async function ProfessionalProfilePage({ params }: Props) {
             linkedinUrl: true,
             acceptedPaymentMethods: true,
             paymentNotes: true,
+            ratingScore: true,
+            ratingCount: true,
+            reputationTier: true,
+            isFounder: true,
             profileImageUrl: true,
             comuna: true,
             region: true,
@@ -150,7 +157,8 @@ export default async function ProfessionalProfilePage({ params }: Props) {
     const profileUrl = `https://psydoctor.cl/profesional/${professional.slug}`
     const typeLabel = professionalTypeLabels[professional.professionalType] || 'Profesional'
     const isPsychiatrist = professional.professionalType === 'PSYCHIATRIST'
-    const paymentLabels = paymentMethodLabels(professional.acceptedPaymentMethods)
+    const disabledMethods = await getDisabledPaymentMethodIds()
+    const paymentLabels = paymentMethodLabels((professional.acceptedPaymentMethods ?? []).filter((m) => !disabledMethods.has(m)))
 
     const professionalEntity = isPsychiatrist
         ? {
@@ -289,6 +297,9 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                                     <p className="text-lg text-primary-600 font-medium">
                                         {professionalTypeLabels[professional.professionalType]}
                                     </p>
+                                    <div className="mt-1.5">
+                                        <ReputationBadge score={professional.ratingScore} count={professional.ratingCount} tier={professional.reputationTier} isFounder={professional.isFounder} />
+                                    </div>
                                     {professional.yearsExperience && (
                                         <p className="text-sm text-gray-500 mb-3">
                                             +{professional.yearsExperience} años de experiencia
@@ -357,6 +368,9 @@ export default async function ProfessionalProfilePage({ params }: Props) {
                                 {professional.bio}
                             </p>
                         </div>
+
+                        {/* Opiniones verificadas */}
+                        <ReviewsSection professionalId={professional.id} />
 
                         {/* Formas de pago */}
                         {paymentLabels.length > 0 && (

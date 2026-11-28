@@ -279,6 +279,14 @@ export default function CitasPage() {
                                                     No se conectó
                                                 </button>
                                             )}
+                                            {!isProfessional && apt.status === 'COMPLETED' && (
+                                                <Link
+                                                    href={`/opinar/${apt.id}`}
+                                                    className="inline-flex items-center gap-1 text-sm text-teal-700 hover:text-teal-800 font-medium whitespace-nowrap"
+                                                >
+                                                    Dejar opinión
+                                                </Link>
+                                            )}
                                             {canJoin && (
                                                 <Link
                                                     href={`/dashboard/citas/${apt.id}`}

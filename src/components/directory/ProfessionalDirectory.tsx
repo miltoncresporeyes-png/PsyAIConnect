@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { MapPin, Shield, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { formatPrice } from '@/lib/utils'
+import { ReputationBadge } from '@/components/reputation/ReputationBadge'
 
 interface Props {
     limit?: number
@@ -36,6 +37,10 @@ export async function ProfessionalDirectory({ limit = 12 }: Props) {
                     sessionPrice: true
                     verificationStatus: true
                     profileImageUrl: true
+                    ratingScore: true
+                    ratingCount: true
+                    reputationTier: true
+                    isFounder: true
                     user: { select: { name: true; image: true } }
                 }
             }>
@@ -54,9 +59,13 @@ export async function ProfessionalDirectory({ limit = 12 }: Props) {
                 sessionPrice: true,
                 verificationStatus: true,
                 profileImageUrl: true,
+                ratingScore: true,
+                ratingCount: true,
+                reputationTier: true,
+                isFounder: true,
                 user: { select: { name: true, image: true } },
             },
-            orderBy: { verificationStatus: 'asc' },
+            orderBy: [{ ratingScore: { sort: 'desc', nulls: 'last' } }, { verificationStatus: 'asc' }],
             take: limit,
         })
     } catch (error) {
@@ -123,6 +132,7 @@ export async function ProfessionalDirectory({ limit = 12 }: Props) {
                                                 {professional.user.name}
                                             </h3>
                                             <p className="text-sm text-primary-700">{typeLabel}</p>
+                                            <ReputationBadge compact score={professional.ratingScore} count={professional.ratingCount} tier={professional.reputationTier} isFounder={professional.isFounder} />
                                         </div>
                                     </div>
 

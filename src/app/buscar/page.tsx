@@ -9,6 +9,8 @@ import { Header, Footer } from "../../components/layout";
 import { PageContainer, CardGrid } from "../../components/layout/shell";
 import { PatientWaitlistForm } from "../../components/waitlist/PatientWaitlistForm";
 import { MapPin, Sparkles, UserPlus } from "lucide-react";
+import { formatCLP } from '@/lib/format'
+import { ReputationBadge } from '@/components/reputation/ReputationBadge'
 
 interface RealProfessional {
   id: string;
@@ -21,6 +23,10 @@ interface RealProfessional {
   profileImageUrl: string | null;
   bio: string | null;
   modality: string;
+  ratingScore?: number | null;
+  ratingCount?: number | null;
+  reputationTier?: string | null;
+  isFounder?: boolean | null;
   user: {
     name: string | null;
     image: string | null;
@@ -202,6 +208,9 @@ function SearchContent() {
                           <p className="text-xs text-slate-500 mt-0.5">
                             Inscrito en el Registro de la Superintendencia de Salud
                           </p>
+                          <div className="mt-1.5">
+                            <ReputationBadge compact score={prof.ratingScore} count={prof.ratingCount} tier={prof.reputationTier} isFounder={prof.isFounder} />
+                          </div>
                         </div>
                       </div>
 
@@ -224,7 +233,7 @@ function SearchContent() {
                         📍 {prof.comuna || "Chile"}
                       </span>
                       <span className="font-bold text-slate-900">
-                        ${prof.sessionPrice.toLocaleString("es-CL")} CLP
+                        {formatCLP(prof.sessionPrice)} CLP
                       </span>
                     </div>
                   </Link>

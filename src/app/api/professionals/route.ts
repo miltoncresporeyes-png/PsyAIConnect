@@ -46,6 +46,10 @@ export async function GET(req: NextRequest) {
                 profileImageUrl: true,
                 bio: true,
                 modality: true,
+                ratingScore: true,
+                ratingCount: true,
+                reputationTier: true,
+                isFounder: true,
                 user: {
                     select: {
                         name: true,
@@ -53,7 +57,9 @@ export async function GET(req: NextRequest) {
                     },
                 },
             },
-            orderBy: { createdAt: 'desc' },
+            // Mejor valoradas primero; las nuevas (sin nota) después, de más reciente a más antigua
+            orderBy: [{ ratingScore: { sort: 'desc', nulls: 'last' } }, { createdAt: 'desc' }],
+            take: 200,
         })
 
         return NextResponse.json({
