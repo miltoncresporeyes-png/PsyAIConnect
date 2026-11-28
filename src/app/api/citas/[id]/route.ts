@@ -1,4 +1,5 @@
 import { getWaitlistBlockedResponse } from '@/lib/waitlistGuard'
+import { getDisabledPaymentMethodIds } from '@/lib/paymentMethodSettings'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -90,7 +91,15 @@ export async function GET(
 
         // El enlace de videollamada del profesional es privado: el paciente lo obtiene en /unirse
         const viewerIsProfessional = professional?.id === appointment.professionalId
-        return NextResponse.json(redactMeetingLinks(appointment, viewerIsProfessional))
+        const disabledMethods = await getDisabledPaymentMethodIds()
+        const visible = {
+            ...appointment,
+            professional: {
+                ...appointment.professional,
+                acceptedPaymentMethods: (appointment.professional.acceptedPaymentMethods ?? []).filter((m: string) => !disabledMethods.has(m)),
+            },
+        }
+        return NextResponse.json(redactMeetingLinks(visible, viewerIsProfessional))
     } catch (error) {
         console.error('Appointment fetch error:', error)
         return NextResponse.json(

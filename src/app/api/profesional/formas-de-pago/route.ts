@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { PAYMENT_NOTES_MAX_LENGTH, normalizePaymentMethods, isPaymentMethodId } from '@/lib/paymentMethods'
+import { getDisabledPaymentMethodIds } from '@/lib/paymentMethodSettings'
 import { screenMessage } from '@/lib/chat'
 
 export const dynamic = 'force-dynamic'
@@ -26,8 +27,10 @@ async function requireProfessional() {
 export async function GET() {
     const { professional, error } = await requireProfessional()
     if (error) return error
+    const disabled = await getDisabledPaymentMethodIds()
     return NextResponse.json({
-        methods: normalizePaymentMethods(professional.acceptedPaymentMethods),
+        disabled: Array.from(disabled),
+        methods: normalizePaymentMethods(professional.acceptedPaymentMethods).filter((m) => !disabled.has(m)),
         notes: professional.paymentNotes ?? '',
     })
 }
@@ -49,7 +52,11 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
     }
 
+    const disabled = await getDisabledPaymentMethodIds()
     const methods = normalizePaymentMethods(parsed.data.methods)
+    if (methods.some((m) => disabled.has(m))) {
+        return NextResponse.json({ error: 'Una de las formas de pago elegidas ya no está disponible' }, { status: 400 })
+    }
     if (methods.length === 0) {
         return NextResponse.json({ error: 'Selecciona al menos una forma de pago' }, { status: 400 })
     }

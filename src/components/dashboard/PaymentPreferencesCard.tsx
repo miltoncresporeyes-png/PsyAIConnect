@@ -15,6 +15,7 @@ export function PaymentPreferencesCard() {
     const [saving, setSaving] = useState(false)
     const [methods, setMethods] = useState<string[]>([])
     const [notes, setNotes] = useState('')
+    const [disabledIds, setDisabledIds] = useState<string[]>([])
     const [draftMethods, setDraftMethods] = useState<string[]>([])
     const [draftNotes, setDraftNotes] = useState('')
     const [message, setMessage] = useState<{ type: 'ok' | 'error'; text: string } | null>(null)
@@ -27,6 +28,7 @@ export function PaymentPreferencesCard() {
                 if (!active || !data) return
                 setMethods(data.methods ?? [])
                 setNotes(data.notes ?? '')
+                setDisabledIds(data.disabled ?? [])
             })
             .finally(() => active && setLoading(false))
         return () => {
@@ -111,7 +113,7 @@ export function PaymentPreferencesCard() {
             ) : editing ? (
                 <div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                        {PAYMENT_METHODS.map((m) => {
+                        {PAYMENT_METHODS.filter((m) => !disabledIds.includes(m.id)).map((m) => {
                             const checked = draftMethods.includes(m.id)
                             return (
                                 <label
