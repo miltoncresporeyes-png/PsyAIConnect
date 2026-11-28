@@ -6,17 +6,19 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { Menu, X, User, LogOut, LayoutDashboard, UserCircle, ArrowRight } from 'lucide-react'
 import { Logo } from './Logo'
+import { InstallPwaButton } from '@/components/pwa/InstallPwaButton'
 import { CrisisBanner } from './CrisisBanner'
-import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
 import { ImmediateHelpModal } from '@/components/dashboard/ImmediateHelpModal'
 
 export function Header() {
     const { data: session, status } = useSession()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-    const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false)
 
     const isLoggedIn = status === 'authenticated' && session?.user
+    const isAdmin = session?.user?.role === 'ADMIN'
+    const dashboardHref = isAdmin ? '/admin' : '/dashboard'
+    const dashboardLabel = isAdmin ? 'Panel de administración' : 'Dashboard'
 
     const navigation = [
         { name: 'Profesionales', href: '/profesionales' },
@@ -83,21 +85,24 @@ export function Header() {
                                     {isUserMenuOpen && (
                                         <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-2xl border border-slate-100 bg-white py-1.5 shadow-xl shadow-slate-900/10">
                                             <Link
-                                                href="/dashboard"
+                                                href={dashboardHref}
                                                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
                                                 <LayoutDashboard className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                                Dashboard
+                                                {dashboardLabel}
                                             </Link>
-                                            <Link
-                                                href="/dashboard/perfil"
-                                                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
-                                                onClick={() => setIsUserMenuOpen(false)}
-                                            >
-                                                <UserCircle className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                                Mi Perfil
-                                            </Link>
+                                            {!isAdmin && (
+                                                <Link
+                                                    href="/dashboard/perfil"
+                                                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                                                    onClick={() => setIsUserMenuOpen(false)}
+                                                >
+                                                    <UserCircle className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                                                    Mi Perfil
+                                                </Link>
+                                            )}
+                                            <InstallPwaButton className="w-full px-4 text-slate-700 hover:bg-slate-50" />
                                             <div className="my-1 border-t border-slate-100" />
                                             <button
                                                 onClick={() => signOut({ callbackUrl: '/' })}
@@ -162,11 +167,11 @@ export function Header() {
                                 {isLoggedIn ? (
                                     <>
                                         <Link
-                                            href="/dashboard"
+                                            href={dashboardHref}
                                             className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
-                                            Dashboard
+                                            {dashboardLabel}
                                         </Link>
                                         <button
                                             onClick={() => signOut({ callbackUrl: '/' })}
@@ -198,11 +203,6 @@ export function Header() {
                     )}
                 </nav>
             </div>
-
-            <PatientWaitlistModal
-                isOpen={isWaitlistModalOpen}
-                onClose={() => setIsWaitlistModalOpen(false)}
-            />
         </header>
     )
 }

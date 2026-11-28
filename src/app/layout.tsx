@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { CrisisBanner, WhatsAppAssistant } from '@/components/layout'
-import { NewsletterPopup } from '@/components/newsletter/NewsletterPopup'
 import { Providers } from '@/components/providers/Providers'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import Script from 'next/script'
+import { PwaRegister } from '@/components/pwa/PwaRegister'
 
 export const viewport: Viewport = {
     width: 'device-width',
@@ -15,6 +15,9 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+    applicationName: 'PsyDoctor',
+    appleWebApp: { capable: true, title: 'PsyDoctor', statusBarStyle: 'default' },
+    icons: { apple: '/icons/apple-touch-icon.png' },
     title: {
         default: 'PsyDoctor | Psicólogos y psiquiatras online en Chile',
         template: '%s | PsyDoctor',
@@ -247,8 +250,8 @@ export default async function RootLayout({
                     }}
                 />
                 <NextIntlClientProvider messages={messages}>
+                    <PwaRegister />
                     <Providers>
-                        <NewsletterPopup />
                         <main className="w-full max-w-full min-w-0">{children}</main>
                         <WhatsAppAssistant />
                     </Providers>

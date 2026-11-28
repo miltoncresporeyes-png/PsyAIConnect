@@ -66,11 +66,21 @@ const nextConfig = {
   },
 
   async headers() {
+    // El service worker nunca debe quedar cacheado para que las actualizaciones lleguen
+    const swHeaders = {
+      source: '/sw.js',
+      headers: [
+        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        { key: 'Service-Worker-Allowed', value: '/' },
+      ],
+    };
+
     if (process.env.NODE_ENV !== 'production') {
-      return [];
+      return [swHeaders];
     }
 
     return [
+      swHeaders,
       {
         source: '/:path*',
         headers: [

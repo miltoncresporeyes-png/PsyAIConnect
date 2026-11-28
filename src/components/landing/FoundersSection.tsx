@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { Award, Sparkles, UserCheck, MessageSquare, ArrowRight, UserPlus, MapPin } from 'lucide-react'
-import { PatientWaitlistModal } from '@/components/waitlist/PatientWaitlistModal'
 
 const FOUNDER_BENEFITS = [
     {
@@ -24,7 +23,6 @@ const FOUNDER_BENEFITS = [
 ]
 
 export function FoundersSection() {
-    const [isPatientModalOpen, setIsPatientModalOpen] = useState(false)
 
     return (
         <section
@@ -131,28 +129,23 @@ export function FoundersSection() {
                                 ¿Eres paciente?
                             </h3>
                             <p className="text-xs sm:text-sm text-[#374151] leading-relaxed">
-                                Estamos convocando a profesionales en tu zona. Deja tus datos para avisarte apenas abramos disponibilidad.
+                                Encuentra psicólogos y psiquiatras verificados, revisa su disponibilidad y reserva tu sesión online.
                             </p>
                         </div>
 
                         <div className="mt-6 pt-5 border-t border-slate-100">
-                            <button
-                                type="button"
-                                onClick={() => setIsPatientModalOpen(true)}
+                            <Link
+                                href="/profesionales"
                                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-teal-700 bg-teal-50/60 px-5 py-3 text-sm font-semibold text-teal-900 hover:bg-teal-100/70 transition"
                             >
-                                <span>Avísame cuando abran en mi comuna</span>
+                                <span>Buscar profesional</span>
                                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <PatientWaitlistModal
-                isOpen={isPatientModalOpen}
-                onClose={() => setIsPatientModalOpen(false)}
-            />
         </section>
     )
 }
